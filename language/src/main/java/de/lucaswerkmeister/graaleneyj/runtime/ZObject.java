@@ -54,6 +54,6 @@ public class ZObject implements TruffleObject {
 		return members.get(member);
 	}
 
-	// no write-related methods are enforced, objects are immutable
+	// no write-related methods are exported, objects are immutable
 
 }
