@@ -20,6 +20,29 @@ de.lucaswerkmeister.graaleneyj.runtime.ZList@548a24a
 Evaluating JSON *objects* doesn’t really work yet.
 (Also, the path to the eneyj data – to resolve e. g. a reference to `Z1` – is currently hard-coded.)
 
+## High-level overview
+
+[Truffle][] is an API for building language interpreters.
+A parser creates an Abstract Syntax Tree (AST) consisting of tree nodes;
+those tree nodes can then be evaluated into runtime values.
+
+Broadly speaking, GraalEneyj is split into two kinds of classes:
+classes representing tree nodes, and classes representing runtime values.
+The parser ([`ZCanonicalJsonParser`][]) creates tree nodes from JSON input;
+the tree nodes can then be evaluated into runtime values.
+For example, a [`ZListLiteralNode`][] tree node is evaluated by evaluating its child nodes,
+then collecting them into a [`ZList`][] runtime value
+(a linked list ending with the `ZList.NIL` singleton).
+Note that not all runtime values are instances of our custom classes:
+for example, we map strings (`Z6`) and booleans (`Z54`, `Z55`) to the corresponding Java types.
+
+GraalVM, then, is a special version of the Java Virtual Machine (JVM)
+which knows how to compile language implementations written in Truffle into high-performance native code.
+It can also compile and optimize code between language implementations:
+given Truffle implementations of JavaScript and Python, for example,
+it should be possible to call JavaScript and Python implementations of Z-functions
+with little to no performance cost.
+
 ## Attribution
 
 This is loosely based on [SimpleLanguage][], especially the `pom.xml` files.
@@ -34,5 +57,9 @@ By sending a pull request or otherwise contributing to this project,
 you agree to make your contribution available under this license.
 
 [GraalVM]: https://www.graalvm.org/
+[Truffle]: https://github.com/oracle/graal/tree/master/truffle#readme
+[`ZCanonicalJsonParser`]: language/src/main/java/de/lucaswerkmeister/graaleneyj/parser/ZCanonicalJsonParser.java
+[`ZListLiteralNode`]: language/src/main/java/de/lucaswerkmeister/graaleneyj/nodes/ZListLiteralNode.java
+[`ZList`]: language/src/main/java/de/lucaswerkmeister/graaleneyj/runtime/ZList.java
 [eneyj]: https://github.com/google/abstracttext/tree/master/eneyj#readme
 [SimpleLanguage]: https://github.com/graalvm/simplelanguage#readme
