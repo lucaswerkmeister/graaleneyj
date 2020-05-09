@@ -6,6 +6,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
+
 import de.lucaswerkmeister.graaleneyj.nodes.ZListLiteralNode;
 import de.lucaswerkmeister.graaleneyj.nodes.ZNode;
 import de.lucaswerkmeister.graaleneyj.nodes.ZObjectLiteralNode;
@@ -14,7 +15,7 @@ import de.lucaswerkmeister.graaleneyj.nodes.ZReferenceLiteralNode;
 import de.lucaswerkmeister.graaleneyj.nodes.ZStringLiteralNode;
 
 public class ZCanonicalJsonParser {
-	
+
 	public static ZNode parseJsonElement(JsonElement json) {
 		if (json instanceof JsonObject) {
 			return parseJsonObject((JsonObject) json);
@@ -32,17 +33,18 @@ public class ZCanonicalJsonParser {
 		}
 		throw new IllegalStateException("JSON element was neither object nor array nor primitive");
 	}
-	
+
 	public static ZObjectLiteralNode parseJsonObject(JsonObject json) {
 		ZObjectLiteralMemberNode[] members = new ZObjectLiteralMemberNode[json.size()];
 		int i = 0;
 		for (Entry<String, JsonElement> entry : json.entrySet()) {
-			members[i] = new ZObjectLiteralMemberNode(parseJsonString(entry.getKey()), parseJsonElement(entry.getValue()));
+			members[i] = new ZObjectLiteralMemberNode(parseJsonString(entry.getKey()),
+					parseJsonElement(entry.getValue()));
 			i++;
 		}
 		return new ZObjectLiteralNode(members);
 	}
-	
+
 	public static ZListLiteralNode parseJsonArray(JsonArray json) {
 		ZNode[] nodes = new ZNode[json.size()];
 		for (int i = 0; i < nodes.length; i++) {
@@ -50,10 +52,10 @@ public class ZCanonicalJsonParser {
 		}
 		return new ZListLiteralNode(nodes);
 	}
-	
+
 	/**
-	 * A string represents a reference if it starts with a capital letter followed by a digit,
-	 * otherwise it represents a string literal.
+	 * A string represents a reference if it starts with a capital letter followed
+	 * by a digit, otherwise it represents a string literal.
 	 */
 	public static ZNode parseJsonString(String json) {
 		if (json.length() < 2) {

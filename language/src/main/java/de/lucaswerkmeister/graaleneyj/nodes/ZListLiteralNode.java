@@ -3,12 +3,14 @@ package de.lucaswerkmeister.graaleneyj.nodes;
 import com.oracle.truffle.api.CompilerAsserts;
 import com.oracle.truffle.api.frame.VirtualFrame;
 import com.oracle.truffle.api.nodes.ExplodeLoop;
+
 import de.lucaswerkmeister.graaleneyj.runtime.ZList;
 
 public class ZListLiteralNode extends ZNode {
-	
-	@Children private final ZNode[] nodes;
-	
+
+	@Children
+	private final ZNode[] nodes;
+
 	public ZListLiteralNode(ZNode[] nodes) {
 		this.nodes = nodes;
 	}
@@ -28,7 +30,7 @@ public class ZListLiteralNode extends ZNode {
 		}
 		return list;
 	}
-	
+
 	@Override
 	public Object execute(VirtualFrame virtualFrame) {
 		return executeZList(virtualFrame);
