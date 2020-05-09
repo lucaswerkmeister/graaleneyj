@@ -9,6 +9,7 @@ The `z` launcher script accepts a JSON value on standard input,
 tries to evaluate it, and prints the result.
 
 ```sh
+$ export JAVA_HOME=/path/to/java-11-graalvm/
 $ mvn package
 $ echo '"Hello, World!"' | ./z
 Hello, World!
