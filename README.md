@@ -33,7 +33,7 @@ Please note: This Python implementation is in the very early stages, and can run
 >>> import polyglot
 >>> print(polyglot.eval(language='z', string='"Hello, World!"'))
 Hello, World!
->>> polyglot.eval(string='Z13', language='z')
+>>> polyglot.eval(language='z', string='Z13')
 None
 ```
 
