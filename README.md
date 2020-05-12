@@ -20,6 +20,25 @@ de.lucaswerkmeister.graaleneyj.runtime.ZList@548a24a
 Evaluating JSON *objects* doesn’t really work yet.
 (Also, the path to the eneyj data – to resolve e. g. a reference to `Z1` – is currently hard-coded.)
 
+The `z` language can also be used together with other Graal languages,
+by running them with `--vm.Dtruffle.class.path.append=` pointing to `graaleneyj.jar`.
+For example, using [GraalPython][]:
+
+```sh
+$ graalpython --polyglot --jvm --vm.Dtruffle.class.path.append=language/target/graaleneyj.jar
+Python 3.7.4 (Wed Feb 19 23:23:40 CET 2020)
+[GraalVM CE, Java 11.0.6] on linux
+Type "help", "copyright", "credits" or "license" for more information.
+Please note: This Python implementation is in the very early stages, and can run little more than basic benchmarks at this point.
+>>> import polyglot
+>>> print(polyglot.eval(language='z', string='"Hello, World!"'))
+Hello, World!
+>>> polyglot.eval(string='Z13', language='z')
+None
+```
+
+I have also briefly, but successfully, tested the same flags with the FastR, TruffleRuby and GraalJS (Node.js) launchers.
+
 ## High-level overview
 
 [Truffle][] is an API for building language interpreters.
@@ -58,6 +77,7 @@ you agree to make your contribution available under this license.
 
 [GraalVM]: https://www.graalvm.org/
 [Truffle]: https://github.com/oracle/graal/tree/master/truffle#readme
+[GraalPython]: https://github.com/graalvm/graalpython#readme
 [`ZCanonicalJsonParser`]: language/src/main/java/de/lucaswerkmeister/graaleneyj/parser/ZCanonicalJsonParser.java
 [`ZListLiteralNode`]: language/src/main/java/de/lucaswerkmeister/graaleneyj/nodes/ZListLiteralNode.java
 [`ZList`]: language/src/main/java/de/lucaswerkmeister/graaleneyj/runtime/ZList.java
