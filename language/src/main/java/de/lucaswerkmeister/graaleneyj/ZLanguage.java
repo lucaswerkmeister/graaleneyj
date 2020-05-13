@@ -13,7 +13,6 @@ import de.lucaswerkmeister.graaleneyj.parser.ZCanonicalJsonParser;
 import de.lucaswerkmeister.graaleneyj.runtime.ZContext;
 import de.lucaswerkmeister.graaleneyj.runtime.ZList;
 import de.lucaswerkmeister.graaleneyj.runtime.ZObject;
-import de.lucaswerkmeister.graaleneyj.runtime.ZReference;
 
 // TODO language name? context policy?
 @TruffleLanguage.Registration(id = ZLanguage.ID, name = "Z language", contextPolicy = ContextPolicy.EXCLUSIVE)
@@ -43,7 +42,7 @@ public class ZLanguage extends TruffleLanguage<ZContext> {
 	@Override
 	protected boolean isObjectOfLanguage(Object object) {
 		// TODO stub implementation
-		return object instanceof ZList || object instanceof ZObject || object instanceof ZReference;
+		return object instanceof ZList || object instanceof ZObject;
 	}
 
 }
