@@ -18,7 +18,6 @@ de.lucaswerkmeister.graaleneyj.runtime.ZList@548a24a
 ```
 
 Evaluating JSON *objects* doesn’t really work yet.
-(Also, the path to the eneyj data – to resolve e. g. a reference to `Z1` – is currently hard-coded.)
 
 The `z` language can also be used together with other Graal languages,
 by running them with `--vm.Dtruffle.class.path.append=` pointing to `graaleneyj.jar`.

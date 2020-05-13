@@ -1,0 +1,3 @@
+[submodule "abstracttext"]
+	path = abstracttext
+	url = https://github.com/google/abstracttext.git

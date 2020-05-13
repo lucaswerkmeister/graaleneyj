@@ -52,7 +52,7 @@ public class ZReferenceLiteralNode extends ZNode {
 			return registry.get(id);
 		} else {
 			CompilerDirectives.transferToInterpreter();
-			try (FileReader file = new FileReader("/home/lucas/git/abstracttext/eneyj/data/" + id + ".json")) {
+			try (FileReader file = new FileReader("abstracttext/eneyj/data/" + id + ".json")) {
 				JsonElement element = new Gson().fromJson(file, JsonElement.class);
 				ZNode node = ZCanonicalJsonParser.parseJsonElement(element);
 				Object value = node.execute(virtualFrame);
