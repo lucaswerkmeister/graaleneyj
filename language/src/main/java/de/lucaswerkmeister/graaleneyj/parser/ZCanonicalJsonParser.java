@@ -38,8 +38,7 @@ public class ZCanonicalJsonParser {
 		ZObjectLiteralMemberNode[] members = new ZObjectLiteralMemberNode[json.size()];
 		int i = 0;
 		for (Entry<String, JsonElement> entry : json.entrySet()) {
-			members[i] = new ZObjectLiteralMemberNode(parseJsonString(entry.getKey()),
-					parseJsonElement(entry.getValue()));
+			members[i] = new ZObjectLiteralMemberNode(entry.getKey(), parseJsonElement(entry.getValue()));
 			i++;
 		}
 		return new ZObjectLiteralNode(members);
