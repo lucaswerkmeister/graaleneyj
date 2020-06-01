@@ -11,7 +11,8 @@ import de.lucaswerkmeister.graaleneyj.ZLanguage;
  */
 public final class ZRootNode extends RootNode {
 
-	private final ZNode node;
+	@Child
+	private ZNode node;
 
 	public ZRootNode(ZLanguage language, ZNode node) {
 		super(language);
