@@ -12,8 +12,14 @@ public class BuiltinTest extends ZTest {
 	}
 
 	@Test
-	public void testValueOfString() {
+	public void testValueOfStringLiteral() {
 		assertEquals("a string", eval("{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z36\", \"K1\": \"a string\"}").asString());
+	}
+
+	@Test
+	public void testValueOfStringObject() {
+		assertEquals("another string", eval("{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z36\", \"K1\": "
+				+ "{\"Z1K1\": \"Z6\", \"Z6K1\": \"another string\"}" + "}").asString());
 	}
 
 }
