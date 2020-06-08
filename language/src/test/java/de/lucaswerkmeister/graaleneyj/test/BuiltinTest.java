@@ -7,8 +7,13 @@ import org.junit.Test;
 public class BuiltinTest extends ZTest {
 
 	@Test
-	public void testValueOfProjectName() {
+	public void testValueOfProjectNameLocalKeys() {
 		assertEquals("eneyj", eval("{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z36\", \"K1\": \"Z28\"}").asString());
+	}
+
+	@Test
+	public void testValueOfProjectNameGlobalKeys() {
+		assertEquals("eneyj", eval("{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z36\", \"Z36K1\": \"Z28\"}").asString());
 	}
 
 	@Test

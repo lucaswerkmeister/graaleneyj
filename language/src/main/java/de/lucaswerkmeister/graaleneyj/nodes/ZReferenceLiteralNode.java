@@ -15,6 +15,10 @@ public class ZReferenceLiteralNode extends ZNode {
 		this.id = id;
 	}
 
+	public String getId() {
+		return id;
+	}
+
 	@Override
 	public boolean executeBoolean(VirtualFrame virtualFrame) throws UnexpectedResultException {
 		switch (id) {

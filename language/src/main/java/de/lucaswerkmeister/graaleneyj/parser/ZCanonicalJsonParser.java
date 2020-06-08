@@ -66,9 +66,14 @@ public class ZCanonicalJsonParser {
 	public static ZFunctionCallNode parseJsonObjectAsFunctionCall(JsonObject json) {
 		// TODO error handling, and check whether it’s okay to throw away all other keys
 		ZNode function = parseJsonElement(json.get(ZConstants.FUNCTIONCALL_FUNCTION));
+		String functionName = "";
+		if (function instanceof ZReferenceLiteralNode) {
+			functionName = ((ZReferenceLiteralNode) function).getId();
+		}
 		ArrayList<ZNode> arguments = new ArrayList<ZNode>();
-		for (int i = 1; json.has("K" + i); i++) {
-			arguments.add(parseJsonElement(json.get("K" + i)));
+		for (int i = 1; json.has("K" + i) || json.has(functionName + "K" + i); i++) {
+			// TODO complain if both "K" + i and functionName + "K" + i are set
+			arguments.add(parseJsonElement(json.has("K" + i) ? json.get("K" + i) : json.get(functionName + "K" + i)));
 		}
 		return new ZFunctionCallNode(function, arguments.toArray(new ZNode[arguments.size()]));
 	}
