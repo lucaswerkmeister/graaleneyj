@@ -10,6 +10,7 @@ public final class ZConstants {
 	public static final String FUNCTION = "Z8";
 	public static final String NIL = "Z13";
 	public static final String BUILTIN = "Z19";
+	public static final String IF = "Z31";
 	public static final String VALUE = "Z36";
 	public static final String TRUE = "Z54";
 	public static final String FALSE = "Z55";

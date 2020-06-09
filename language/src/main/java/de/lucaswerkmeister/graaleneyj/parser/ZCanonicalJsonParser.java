@@ -16,6 +16,7 @@ import de.lucaswerkmeister.graaleneyj.builtins.ZBuiltinNode;
 import de.lucaswerkmeister.graaleneyj.builtins.ZValueBuiltinFactory;
 import de.lucaswerkmeister.graaleneyj.nodes.ZFunctionCallNode;
 import de.lucaswerkmeister.graaleneyj.nodes.ZFunctionNode;
+import de.lucaswerkmeister.graaleneyj.nodes.ZIfNode;
 import de.lucaswerkmeister.graaleneyj.nodes.ZImplementationNode;
 import de.lucaswerkmeister.graaleneyj.nodes.ZListLiteralNode;
 import de.lucaswerkmeister.graaleneyj.nodes.ZNode;
@@ -63,7 +64,7 @@ public class ZCanonicalJsonParser {
 		return new ZObjectLiteralNode(members);
 	}
 
-	public static ZFunctionCallNode parseJsonObjectAsFunctionCall(JsonObject json) {
+	public static ZNode parseJsonObjectAsFunctionCall(JsonObject json) {
 		// TODO error handling, and check whether it’s okay to throw away all other keys
 		ZNode function = parseJsonElement(json.get(ZConstants.FUNCTIONCALL_FUNCTION));
 		String functionName = "";
@@ -74,6 +75,10 @@ public class ZCanonicalJsonParser {
 		for (int i = 1; json.has("K" + i) || json.has(functionName + "K" + i); i++) {
 			// TODO complain if both "K" + i and functionName + "K" + i are set
 			arguments.add(parseJsonElement(json.has("K" + i) ? json.get("K" + i) : json.get(functionName + "K" + i)));
+		}
+		if (ZConstants.IF.equals(functionName)) {
+			assert arguments.size() == 3;
+			return new ZIfNode(arguments.get(0), arguments.get(1), arguments.get(2));
 		}
 		return new ZFunctionCallNode(function, arguments.toArray(new ZNode[arguments.size()]));
 	}
