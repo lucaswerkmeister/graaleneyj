@@ -1,7 +1,7 @@
 package de.lucaswerkmeister.graaleneyj.runtime;
 
 import com.oracle.truffle.api.Assumption;
-import com.oracle.truffle.api.RootCallTarget;
+import com.oracle.truffle.api.CallTarget;
 import com.oracle.truffle.api.dsl.Cached;
 import com.oracle.truffle.api.dsl.Specialization;
 import com.oracle.truffle.api.interop.InteropLibrary;
@@ -30,7 +30,7 @@ public class ZFunction implements TruffleObject {
 		implementationIndexStable.invalidate();
 	}
 
-	public RootCallTarget getCallTarget() {
+	public CallTarget getCallTarget() {
 		return implementations[implementationIndex].getCallTarget();
 	}
 
@@ -48,7 +48,7 @@ public class ZFunction implements TruffleObject {
 		@Specialization(guards = "function.getCallTarget() == cachedTarget", assumptions = "callTargetStable")
 		protected static Object doDirect(ZFunction function, Object[] arguments,
 				@Cached("function.getCallTargetStable()") Assumption callTargetStable,
-				@Cached("function.getCallTarget()") RootCallTarget cachedTarget,
+				@Cached("function.getCallTarget()") CallTarget cachedTarget,
 				@Cached("create(cachedTarget)") DirectCallNode callNode) {
 			return callNode.call(arguments);
 		}

@@ -1,17 +1,17 @@
 package de.lucaswerkmeister.graaleneyj.runtime;
 
-import com.oracle.truffle.api.RootCallTarget;
+import com.oracle.truffle.api.CallTarget;
 import com.oracle.truffle.api.interop.TruffleObject;
 
 public class ZImplementation implements TruffleObject {
 
-	private final RootCallTarget callTarget;
+	private final CallTarget callTarget;
 
-	public ZImplementation(RootCallTarget callTarget) {
+	public ZImplementation(CallTarget callTarget) {
 		this.callTarget = callTarget;
 	}
 
-	public RootCallTarget getCallTarget() {
+	public CallTarget getCallTarget() {
 		return callTarget;
 	}
 
