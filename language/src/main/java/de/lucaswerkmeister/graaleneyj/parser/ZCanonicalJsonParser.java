@@ -7,8 +7,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
-import com.oracle.truffle.api.RootCallTarget;
-import com.oracle.truffle.api.Truffle;
 import com.oracle.truffle.api.dsl.NodeFactory;
 
 import de.lucaswerkmeister.graaleneyj.ZConstants;
@@ -17,6 +15,7 @@ import de.lucaswerkmeister.graaleneyj.builtins.ZValueBuiltinFactory;
 import de.lucaswerkmeister.graaleneyj.nodes.ZFunctionCallNode;
 import de.lucaswerkmeister.graaleneyj.nodes.ZFunctionNode;
 import de.lucaswerkmeister.graaleneyj.nodes.ZIfNode;
+import de.lucaswerkmeister.graaleneyj.nodes.ZImplementationBuiltinNode;
 import de.lucaswerkmeister.graaleneyj.nodes.ZImplementationNode;
 import de.lucaswerkmeister.graaleneyj.nodes.ZListLiteralNode;
 import de.lucaswerkmeister.graaleneyj.nodes.ZNode;
@@ -109,7 +108,7 @@ public class ZCanonicalJsonParser {
 		}
 	}
 
-	private static ZImplementationNode makeBuiltin(NodeFactory<? extends ZBuiltinNode> factory) {
+	private static ZImplementationBuiltinNode makeBuiltin(NodeFactory<? extends ZBuiltinNode> factory) {
 		int argumentCount = factory.getExecutionSignature().size();
 		ZNode[] argumentNodes = new ZNode[argumentCount];
 		for (int i = 0; i < argumentCount; i++) {
@@ -117,8 +116,7 @@ public class ZCanonicalJsonParser {
 		}
 		ZBuiltinNode builtinNode = factory.createNode((Object) argumentNodes);
 		ZRootNode rootNode = new ZRootNode(null, builtinNode); // TODO where does the language come from?
-		RootCallTarget callTarget = Truffle.getRuntime().createCallTarget(rootNode);
-		return new ZImplementationNode(callTarget);
+		return new ZImplementationBuiltinNode(rootNode);
 	}
 
 	public static ZListLiteralNode parseJsonArray(JsonArray json) {
