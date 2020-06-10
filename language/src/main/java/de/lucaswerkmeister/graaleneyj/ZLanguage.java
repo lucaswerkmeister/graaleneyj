@@ -23,7 +23,7 @@ public class ZLanguage extends TruffleLanguage<ZContext> {
 
 	@Override
 	protected ZContext createContext(Env env) {
-		return new ZContext();
+		return new ZContext(env);
 	}
 
 	@Override

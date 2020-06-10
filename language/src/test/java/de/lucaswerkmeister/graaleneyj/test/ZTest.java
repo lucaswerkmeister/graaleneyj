@@ -1,6 +1,7 @@
 package de.lucaswerkmeister.graaleneyj.test;
 
 import org.graalvm.polyglot.Context;
+import org.graalvm.polyglot.PolyglotAccess;
 import org.graalvm.polyglot.Source;
 import org.graalvm.polyglot.Value;
 import org.junit.After;
@@ -10,11 +11,11 @@ import de.lucaswerkmeister.graaleneyj.ZLanguage;
 
 public abstract class ZTest {
 
-	private Context context;
+	protected Context context;
 
 	@Before
 	public void setUp() {
-		context = Context.create("z");
+		context = Context.newBuilder().allowPolyglotAccess(PolyglotAccess.ALL).build();
 	}
 
 	@After

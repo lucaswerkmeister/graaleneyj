@@ -71,6 +71,11 @@
                         <include>**/*TestSuite.java</include>
                         <include>**/*Test.java</include>
                     </includes>
+                    <additionalClasspathElements>
+                        <additionalClasspathElement>${java.home}/languages/python/graalpython.jar</additionalClasspathElement>
+                        <additionalClasspathElement>${java.home}/languages/llvm/sulong.jar</additionalClasspathElement>
+                        <additionalClasspathElement>${java.home}/languages/llvm/sulong-api.jar</additionalClasspathElement>
+                    </additionalClasspathElements>
                     <argLine>-Dgraalvm.locatorDisabled=true ${test.argLine}</argLine>
                 </configuration>
             </plugin>
@@ -130,6 +135,12 @@
             <artifactId>truffle-tck</artifactId>
             <version>${graalvm.version}</version>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.graalvm.js</groupId>
+            <artifactId>js</artifactId>
+            <version>${graalvm.version}</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>junit</groupId>

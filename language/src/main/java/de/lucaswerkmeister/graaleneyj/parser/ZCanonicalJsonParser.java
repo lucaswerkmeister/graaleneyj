@@ -16,6 +16,7 @@ import de.lucaswerkmeister.graaleneyj.nodes.ZFunctionCallNode;
 import de.lucaswerkmeister.graaleneyj.nodes.ZFunctionNode;
 import de.lucaswerkmeister.graaleneyj.nodes.ZIfNode;
 import de.lucaswerkmeister.graaleneyj.nodes.ZImplementationBuiltinNode;
+import de.lucaswerkmeister.graaleneyj.nodes.ZImplementationCodeNode;
 import de.lucaswerkmeister.graaleneyj.nodes.ZImplementationNode;
 import de.lucaswerkmeister.graaleneyj.nodes.ZListLiteralNode;
 import de.lucaswerkmeister.graaleneyj.nodes.ZNode;
@@ -103,6 +104,10 @@ public class ZCanonicalJsonParser {
 			default:
 				throw new UnsupportedOperationException("Unknown builtin: " + builtin);
 			}
+		case ZConstants.CODE:
+			String language = implementation.get(ZConstants.CODE_LANGUAGE).getAsString();
+			String source = implementation.get(ZConstants.CODE_SOURCE).getAsString();
+			return new ZImplementationCodeNode(language, source);
 		default:
 			throw new UnsupportedOperationException("Unsupported implementation type: " + type);
 		}

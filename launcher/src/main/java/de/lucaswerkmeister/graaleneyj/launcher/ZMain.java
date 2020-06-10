@@ -5,14 +5,15 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 
 import org.graalvm.polyglot.Context;
+import org.graalvm.polyglot.PolyglotAccess;
 import org.graalvm.polyglot.PolyglotException;
 import org.graalvm.polyglot.Source;
 import org.graalvm.polyglot.Value;
 
 public final class ZMain {
-	
+
 	public static final String Z = "z"; // TODO name?
-	
+
 	public static void main(String[] args) throws IOException {
 		Source source;
 		switch (args.length) {
@@ -27,8 +28,8 @@ public final class ZMain {
 			System.exit(1);
 			return; // unreachable but compiler doesn’t know that and complains about source being uninitialized
 		}
-		
-		Context context = Context.newBuilder(Z).build();
+
+		Context context = Context.newBuilder().allowPolyglotAccess(PolyglotAccess.ALL).build();
 		try {
 			Value result = context.eval(source);
 			if (!result.isNull()) {
