@@ -3,15 +3,18 @@ package de.lucaswerkmeister.graaleneyj.nodes;
 import com.oracle.truffle.api.CallTarget;
 import com.oracle.truffle.api.CompilerDirectives;
 import com.oracle.truffle.api.CompilerDirectives.CompilationFinal;
+import com.oracle.truffle.api.Truffle;
 import com.oracle.truffle.api.source.Source;
 
 import de.lucaswerkmeister.graaleneyj.ZLanguage;
+import de.lucaswerkmeister.graaleneyj.runtime.UnusableImplementationException;
 import de.lucaswerkmeister.graaleneyj.runtime.ZContext;
 
 public class ZImplementationCodeNode extends ZImplementationNode {
 
 	private final String language;
 
+	/** {@code null} to indicate an unusable language. */
 	private final String source;
 
 	@CompilationFinal
@@ -29,10 +32,12 @@ public class ZImplementationCodeNode extends ZImplementationNode {
 			// TODO doesn’t actually work yet because GraalPython doesn’t support parse
 			// requests with argument names
 			this.language = "python";
-			this.source = source + "\nK0";
+			// this.source = source + "\nK0";
+			this.source = null;
 			break;
 		default:
-			throw new IllegalArgumentException("Unknown language: " + language);
+			this.language = language;
+			this.source = null;
 		}
 	}
 
@@ -40,9 +45,16 @@ public class ZImplementationCodeNode extends ZImplementationNode {
 	public CallTarget getCallTarget() {
 		if (callTarget == null) {
 			CompilerDirectives.transferToInterpreterAndInvalidate();
-			Source s = Source.newBuilder(language, source, "(code)").build(); // TODO (code) -> function name
-			ZContext c = lookupContextReference(ZLanguage.class).get(); // TODO @CachedContext?
-			callTarget = c.parse(s, "Z53K1", "Z53K2"); // TODO extremely obvious hard-coding lmao
+			if (source != null) {
+				Source s = Source.newBuilder(language, source, "(code)").build(); // TODO (code) -> function name
+				ZContext c = lookupContextReference(ZLanguage.class).get(); // TODO @CachedContext?
+				callTarget = c.parse(s, "Z53K1", "Z53K2"); // TODO extremely obvious hard-coding lmao
+			} else {
+				RuntimeException exception = new UnusableImplementationException("Unusable code language: " + language);
+				ZRootNode throwNode = new ZRootNode(null, // TODO where does the language come from?
+						new ZThrowConstantNode(exception));
+				callTarget = Truffle.getRuntime().createCallTarget(throwNode);
+			}
 		}
 		return callTarget;
 	}

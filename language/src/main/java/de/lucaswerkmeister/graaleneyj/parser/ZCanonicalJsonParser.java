@@ -26,6 +26,8 @@ import de.lucaswerkmeister.graaleneyj.nodes.ZReadArgumentNode;
 import de.lucaswerkmeister.graaleneyj.nodes.ZReferenceLiteralNode;
 import de.lucaswerkmeister.graaleneyj.nodes.ZRootNode;
 import de.lucaswerkmeister.graaleneyj.nodes.ZStringLiteralNode;
+import de.lucaswerkmeister.graaleneyj.nodes.ZThrowConstantNode;
+import de.lucaswerkmeister.graaleneyj.runtime.UnusableImplementationException;
 
 public class ZCanonicalJsonParser {
 
@@ -102,14 +104,17 @@ public class ZCanonicalJsonParser {
 			case ZConstants.VALUE:
 				return makeBuiltin(ZValueBuiltinFactory.getInstance());
 			default:
-				throw new UnsupportedOperationException("Unknown builtin: " + builtin);
+				return new ZImplementationBuiltinNode(new ZRootNode(null, // TODO where does the language come from?
+						new ZThrowConstantNode(new UnusableImplementationException("Unknown builtin: " + builtin))));
 			}
 		case ZConstants.CODE:
 			String language = implementation.get(ZConstants.CODE_LANGUAGE).getAsString();
 			String source = implementation.get(ZConstants.CODE_SOURCE).getAsString();
 			return new ZImplementationCodeNode(language, source);
 		default:
-			throw new UnsupportedOperationException("Unsupported implementation type: " + type);
+			return new ZImplementationBuiltinNode(new ZRootNode(null, // TODO where does the language come from?
+					new ZThrowConstantNode(
+							new UnusableImplementationException("Unsupported implementation type: " + type))));
 		}
 	}
 
