@@ -11,6 +11,7 @@ import com.oracle.truffle.api.dsl.NodeFactory;
 
 import de.lucaswerkmeister.graaleneyj.ZConstants;
 import de.lucaswerkmeister.graaleneyj.builtins.ZBuiltinNode;
+import de.lucaswerkmeister.graaleneyj.builtins.ZHeadBuiltinFactory;
 import de.lucaswerkmeister.graaleneyj.builtins.ZValueBuiltinFactory;
 import de.lucaswerkmeister.graaleneyj.nodes.ZFunctionCallNode;
 import de.lucaswerkmeister.graaleneyj.nodes.ZFunctionNode;
@@ -103,6 +104,8 @@ public class ZCanonicalJsonParser {
 			switch (builtin) {
 			case ZConstants.VALUE:
 				return makeBuiltin(ZValueBuiltinFactory.getInstance());
+			case ZConstants.HEAD:
+				return makeBuiltin(ZHeadBuiltinFactory.getInstance());
 			default:
 				return new ZImplementationBuiltinNode(new ZRootNode(null, // TODO where does the language come from?
 						new ZThrowConstantNode(new UnusableImplementationException("Unknown builtin: " + builtin))));

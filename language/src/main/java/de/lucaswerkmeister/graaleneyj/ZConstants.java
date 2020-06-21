@@ -15,6 +15,7 @@ public final class ZConstants {
 	public static final String VALUE = "Z36";
 	public static final String TRUE = "Z54";
 	public static final String FALSE = "Z55";
+	public static final String HEAD = "Z64";
 
 	public static final String STRING_STRING_VALUE = "Z6K1";
 	public static final String ZOBJECT_TYPE = "Z1K1";
