@@ -8,12 +8,14 @@ import java.util.Map;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.oracle.truffle.api.CompilerDirectives;
+import com.oracle.truffle.api.TruffleLanguage;
 import com.oracle.truffle.api.interop.ArityException;
 import com.oracle.truffle.api.interop.InteropLibrary;
 import com.oracle.truffle.api.interop.TruffleObject;
 import com.oracle.truffle.api.library.ExportLibrary;
 import com.oracle.truffle.api.library.ExportMessage;
 
+import de.lucaswerkmeister.graaleneyj.ZLanguage;
 import de.lucaswerkmeister.graaleneyj.nodes.ZNode;
 import de.lucaswerkmeister.graaleneyj.parser.ZCanonicalJsonParser;
 
@@ -64,6 +66,21 @@ public class ZReference implements TruffleObject {
 				throw new RuntimeException(e);
 			}
 		}
+	}
+
+	@ExportMessage
+	public final boolean hasLanguage() {
+		return true;
+	}
+
+	@ExportMessage
+	public final Class<? extends TruffleLanguage<?>> getLanguage() {
+		return ZLanguage.class;
+	}
+
+	@ExportMessage
+	public final String toDisplayString(boolean allowSideEffects) {
+		return id;
 	}
 
 }

@@ -6,6 +6,7 @@ import java.util.Collection;
 import com.oracle.truffle.api.Assumption;
 import com.oracle.truffle.api.CallTarget;
 import com.oracle.truffle.api.CompilerDirectives.TruffleBoundary;
+import com.oracle.truffle.api.TruffleLanguage;
 import com.oracle.truffle.api.dsl.Cached;
 import com.oracle.truffle.api.dsl.Specialization;
 import com.oracle.truffle.api.interop.ArityException;
@@ -18,6 +19,8 @@ import com.oracle.truffle.api.library.ExportMessage;
 import com.oracle.truffle.api.nodes.DirectCallNode;
 import com.oracle.truffle.api.nodes.IndirectCallNode;
 import com.oracle.truffle.api.utilities.CyclicAssumption;
+
+import de.lucaswerkmeister.graaleneyj.ZLanguage;
 
 @ExportLibrary(InteropLibrary.class)
 public class ZFunction implements TruffleObject {
@@ -107,6 +110,21 @@ public class ZFunction implements TruffleObject {
 				return function.handleUnusableImplementationException(e, arguments);
 			}
 		}
+	}
+
+	@ExportMessage
+	public final boolean hasLanguage() {
+		return true;
+	}
+
+	@ExportMessage
+	public final Class<? extends TruffleLanguage<?>> getLanguage() {
+		return ZLanguage.class;
+	}
+
+	@ExportMessage
+	public final String toDisplayString(boolean allowSideEffects) {
+		return "ZFunction"; // TODO use function name
 	}
 
 }

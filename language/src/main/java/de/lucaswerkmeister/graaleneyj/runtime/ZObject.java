@@ -2,10 +2,15 @@ package de.lucaswerkmeister.graaleneyj.runtime;
 
 import java.util.Map;
 
+import com.oracle.truffle.api.CompilerDirectives.TruffleBoundary;
+import com.oracle.truffle.api.TruffleLanguage;
 import com.oracle.truffle.api.interop.InteropLibrary;
 import com.oracle.truffle.api.interop.TruffleObject;
+import com.oracle.truffle.api.library.CachedLibrary;
 import com.oracle.truffle.api.library.ExportLibrary;
 import com.oracle.truffle.api.library.ExportMessage;
+
+import de.lucaswerkmeister.graaleneyj.ZLanguage;
 
 @ExportLibrary(InteropLibrary.class)
 public class ZObject implements TruffleObject {
@@ -55,5 +60,33 @@ public class ZObject implements TruffleObject {
 	}
 
 	// no write-related methods are exported, objects are immutable
+
+	@ExportMessage
+	public final boolean hasLanguage() {
+		return true;
+	}
+
+	@ExportMessage
+	public final Class<? extends TruffleLanguage<?>> getLanguage() {
+		return ZLanguage.class;
+	}
+
+	@ExportMessage
+	@TruffleBoundary
+	public final String toDisplayString(boolean allowSideEffects, @CachedLibrary(limit = "0") InteropLibrary interops) {
+		StringBuilder ret = new StringBuilder("{");
+		boolean first = true;
+		for (Map.Entry<String, Object> entry : members.entrySet()) {
+			if (first) {
+				first = false;
+			} else {
+				ret.append(", ");
+			}
+			ret.append('"').append(entry.getKey()).append("\": ");
+			ret.append(interops.toDisplayString(entry.getValue(), allowSideEffects));
+		}
+		ret.append("}");
+		return ret.toString();
+	}
 
 }

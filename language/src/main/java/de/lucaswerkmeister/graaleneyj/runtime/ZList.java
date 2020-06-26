@@ -1,10 +1,15 @@
 package de.lucaswerkmeister.graaleneyj.runtime;
 
+import com.oracle.truffle.api.CompilerDirectives.TruffleBoundary;
+import com.oracle.truffle.api.TruffleLanguage;
 import com.oracle.truffle.api.interop.InteropLibrary;
 import com.oracle.truffle.api.interop.InvalidArrayIndexException;
 import com.oracle.truffle.api.interop.TruffleObject;
+import com.oracle.truffle.api.library.CachedLibrary;
 import com.oracle.truffle.api.library.ExportLibrary;
 import com.oracle.truffle.api.library.ExportMessage;
+
+import de.lucaswerkmeister.graaleneyj.ZLanguage;
 
 /**
  * An object that behaves like a list in other languages: the Z10 list
@@ -63,6 +68,29 @@ public final class ZList implements TruffleObject {
 	@ExportMessage
 	public final boolean isArrayElementReadable(long index) {
 		return index >= 0 && index < getArraySize();
+	}
+
+	@ExportMessage
+	public final boolean hasLanguage() {
+		return true;
+	}
+
+	@ExportMessage
+	public final Class<? extends TruffleLanguage<?>> getLanguage() {
+		return ZLanguage.class;
+	}
+
+	@ExportMessage
+	@TruffleBoundary
+	public final String toDisplayString(boolean allowSideEffects, @CachedLibrary(limit = "0") InteropLibrary interops) {
+		if (this == NIL) {
+			return "[]";
+		} else if (tail == NIL) {
+			return "[" + interops.toDisplayString(head, allowSideEffects) + "]";
+		} else {
+			return "[" + interops.toDisplayString(head, allowSideEffects) + ", "
+					+ tail.toDisplayString(allowSideEffects, interops).substring(1);
+		}
 	}
 
 }
