@@ -11,6 +11,7 @@ public final class ZConstants {
 	public static final String NIL = "Z13";
 	public static final String CODE = "Z16";
 	public static final String BUILTIN = "Z19";
+	public static final String NOTHING = "Z23";
 	public static final String IF = "Z31";
 	public static final String VALUE = "Z36";
 	public static final String TRUE = "Z54";

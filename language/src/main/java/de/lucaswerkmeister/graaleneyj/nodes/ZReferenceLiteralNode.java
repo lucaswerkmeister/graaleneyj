@@ -5,6 +5,7 @@ import com.oracle.truffle.api.nodes.UnexpectedResultException;
 
 import de.lucaswerkmeister.graaleneyj.ZConstants;
 import de.lucaswerkmeister.graaleneyj.runtime.ZList;
+import de.lucaswerkmeister.graaleneyj.runtime.ZNothing;
 import de.lucaswerkmeister.graaleneyj.runtime.ZReference;
 
 public class ZReferenceLiteralNode extends ZNode {
@@ -40,6 +41,8 @@ public class ZReferenceLiteralNode extends ZNode {
 			return false;
 		case ZConstants.NIL:
 			return ZList.NIL;
+		case ZConstants.NOTHING:
+			return ZNothing.INSTANCE;
 		default:
 			return new ZReference(id);
 		}

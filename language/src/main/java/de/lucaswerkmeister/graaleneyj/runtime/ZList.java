@@ -8,15 +8,13 @@ import com.oracle.truffle.api.library.ExportMessage;
 
 /**
  * An object that behaves like a list in other languages: the Z10 list
- * constructor (with head and tail), or the Z13 nil value. For interop, the nil
- * value doubles as null.
+ * constructor (with head and tail), or the Z13 nil value.
  *
  * I originally tried having this as an abstract class, with subclasses for the
  * cons and nil case, but that crashed javac when the nil subclass had its own
  * export annotations (for behaving like null in interop). Combining both into
  * one class is how Mumbler did it, too.
  */
-// TODO what about Z23, nothing? should that be the null value instead, or in addition?
 @ExportLibrary(InteropLibrary.class)
 public final class ZList implements TruffleObject {
 
@@ -65,11 +63,6 @@ public final class ZList implements TruffleObject {
 	@ExportMessage
 	public final boolean isArrayElementReadable(long index) {
 		return index >= 0 && index < getArraySize();
-	}
-
-	@ExportMessage
-	public final boolean isNull() {
-		return this == NIL;
 	}
 
 }

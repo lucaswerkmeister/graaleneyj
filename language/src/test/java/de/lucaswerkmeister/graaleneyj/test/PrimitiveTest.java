@@ -10,8 +10,8 @@ import de.lucaswerkmeister.graaleneyj.ZConstants;
 public class PrimitiveTest extends ZTest {
 
 	@Test
-	public void testNil() {
-		assertTrue(eval("\"" + ZConstants.NIL + "\"").isNull());
+	public void testNothing() {
+		assertTrue(eval("\"" + ZConstants.NOTHING + "\"").isNull());
 	}
 
 	@Test
