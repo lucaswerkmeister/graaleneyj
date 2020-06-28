@@ -10,7 +10,7 @@ import com.oracle.truffle.api.nodes.NodeInfo;
 
 import de.lucaswerkmeister.graaleneyj.runtime.ZErrorException;
 
-@NodeInfo(shortName = "value")
+@NodeInfo(shortName = "head")
 public abstract class ZHeadBuiltin extends ZBuiltinNode {
 
 	// TODO more specializations
