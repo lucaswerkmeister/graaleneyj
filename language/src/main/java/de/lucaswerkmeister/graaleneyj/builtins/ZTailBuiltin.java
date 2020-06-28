@@ -20,6 +20,19 @@ import de.lucaswerkmeister.graaleneyj.runtime.ZList;
 public abstract class ZTailBuiltin extends ZBuiltinNode {
 
 	/**
+	 * Get the tail of a {@ZList} by returning its existing tail list.
+	 */
+	@Specialization
+	public ZList getTailOfZList(ZList list) {
+		if (list == ZList.NIL) {
+			TruffleObject error = null; // TODO load “list is nil” error
+			throw new ZErrorException(error, this);
+		} else {
+			return list.getTail();
+		}
+	}
+
+	/**
 	 * Get the tail of any array-like interop object by building a new
 	 * {@link ZList}, starting with nil and adding all the array elements from the
 	 * back save the first one.
