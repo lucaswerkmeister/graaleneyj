@@ -43,6 +43,16 @@ public final class ZList implements TruffleObject {
 		this.length = 1 + tail.length;
 	}
 
+	public Object getHead() {
+		assert this != NIL;
+		return head;
+	}
+
+	public ZList getTail() {
+		assert this != NIL;
+		return tail;
+	}
+
 	@ExportMessage
 	public final boolean hasArrayElements() {
 		return true;
