@@ -50,4 +50,68 @@ public class BuiltinTest extends ZTest {
 		}
 	}
 
+	@Test
+	public void testTailOfSingleElementList() {
+		assertEquals("[]", eval("{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z65\", \"K1\": [\"A\"]}").toString());
+	}
+
+	@Test
+	public void testTailOfTwoElementList() {
+		assertEquals("[B]", eval("{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z65\", \"K1\": [\"A\", \"B\"]}").toString());
+	}
+
+	@Test
+	public void testTailOfThreeElementList() {
+		assertEquals("[B, C]", eval("{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z65\", \"K1\": [\"A\", \"B\", \"C\"]}").toString());
+	}
+
+	@Test
+	public void testTailOfFourElementList() {
+		assertEquals("[B, C, D]",
+				eval("{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z65\", \"K1\": [\"A\", \"B\", \"C\", \"D\"]}").toString());
+	}
+
+	@Test
+	public void testTailOfNil() {
+		try {
+			eval("{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z66\", \"K1\": []}");
+			throw new IllegalStateException("Should have thrown an exception");
+		} catch (PolyglotException e) {
+			assertTrue(e.isGuestException());
+			// TODO test e.getGuestObject()
+		}
+	}
+
+	@Test
+	public void testTailOfSingleElementArray() {
+		assertEquals("[]", eval("Z65").execute().execute((Object) new String[] { "A" }).toString());
+	}
+
+	@Test
+	public void testTailOfTwoElementArray() {
+		assertEquals("[B]", eval("Z65").execute().execute((Object) new String[] { "A", "B" }).toString());
+	}
+
+	@Test
+	public void testTailOfThreeElementArray() {
+		assertEquals("[B, C]", eval("Z65").execute().execute((Object) new String[] { "A", "B", "C" }).toString());
+	}
+
+	@Test
+	public void testTailOfFourElementArray() {
+		assertEquals("[B, C, D]",
+				eval("Z65").execute().execute((Object) new String[] { "A", "B", "C", "D" }).toString());
+	}
+
+	@Test
+	public void testTailOfEmptyArray() {
+		try {
+			eval("Z65").execute().execute((Object) new String[0]).toString();
+			throw new IllegalStateException("Should have thrown an exception");
+		} catch (PolyglotException e) {
+			assertTrue(e.isGuestException());
+			// TODO test e.getGuestObject()
+		}
+	}
+
 }

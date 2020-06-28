@@ -1,6 +1,7 @@
 package de.lucaswerkmeister.graaleneyj.test;
 
 import org.graalvm.polyglot.Context;
+import org.graalvm.polyglot.HostAccess;
 import org.graalvm.polyglot.PolyglotAccess;
 import org.graalvm.polyglot.Source;
 import org.graalvm.polyglot.Value;
@@ -15,7 +16,12 @@ public abstract class ZTest {
 
 	@Before
 	public void setUp() {
-		context = Context.newBuilder().allowPolyglotAccess(PolyglotAccess.ALL).build();
+		context = Context.newBuilder() //
+				.allowPolyglotAccess(PolyglotAccess.ALL) // for CodeJsTest, CodePythonTest
+				.allowHostAccess(HostAccess.newBuilder() //
+						.allowArrayAccess(true) // for BuiltinTest
+						.build())
+				.build();
 	}
 
 	@After
