@@ -15,9 +15,9 @@ public abstract class ZHeadBuiltin extends ZBuiltinNode {
 
 	// TODO more specializations
 	@Specialization(limit = "3")
-	public Object getHead(Object value, @CachedLibrary("value") InteropLibrary interops) {
+	public Object getHead(Object list, @CachedLibrary("list") InteropLibrary lists) {
 		try {
-			return interops.readArrayElement(value, 0);
+			return lists.readArrayElement(list, 0);
 		} catch (UnsupportedMessageException e) {
 			throw new IllegalArgumentException(e); // TODO throw right error
 		} catch (InvalidArrayIndexException e) {
