@@ -40,7 +40,7 @@ public class BuiltinTest extends ZTest {
 	}
 
 	@Test
-	public void testHeadOfNil() throws Throwable {
+	public void testHeadOfNil() {
 		try {
 			eval("{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z64\", \"K1\": []}");
 			throw new IllegalStateException("Should have thrown an exception");
