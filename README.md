@@ -1,7 +1,6 @@
 # GraalEneyj
 
-**EXTREMELY** early work in progress.
-Hoping to maybe make a [GraalVM][] implementation of [eneyj][].
+An **early work in progress** [GraalVM][] implementation of [eneyj][].
 
 ## What’s ready so far
 
@@ -13,11 +12,15 @@ $ export JAVA_HOME=/path/to/java-11-graalvm/
 $ mvn package
 $ echo '"Hello, World!"' | ./z
 Hello, World!
-$ echo '["Hello, World!"]' | ./z
-de.lucaswerkmeister.graaleneyj.runtime.ZList@548a24a
+$ echo '{"Z1K1": "Z7", "Z7K1": "Z36", "K1": "Z28"}' | ./z
+eneyj
 ```
 
-Evaluating JSON *objects* doesn’t really work yet.
+There is rudimentary support for evaluating references and calling certain functions.
+(For example, the last command above corresponds to the function call `value(project_name)`,
+i. e. load the `project_name` object and read its value.)
+Since this README isn’t updated with every commit,
+a few more things may be supported by the time you read this, too.
 
 The `z` language can also be used together with other Graal languages,
 by running them with `--vm.Dtruffle.class.path.append=` pointing to `graaleneyj.jar`.
