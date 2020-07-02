@@ -23,6 +23,7 @@ public final class ZConstants {
 	public static final String ZOBJECT_ID = "Z1K2";
 	public static final String STRING_STRING_VALUE = "Z6K1";
 	public static final String FUNCTIONCALL_FUNCTION = "Z7K1";
+	public static final String FUNCTION_ARGUMENTS = "Z8K1";
 	public static final String FUNCTION_IMPLEMENTATIONS = "Z8K4";
 	public static final String IMPLEMENTATION_IMPLEMENTATION = "Z14K1";
 	public static final String CODE_LANGUAGE = "Z16K1";

@@ -13,7 +13,8 @@ public class ZImplementationBuiltinNode extends ZImplementationNode {
 	@CompilationFinal
 	private CallTarget callTarget = null;
 
-	public ZImplementationBuiltinNode(ZRootNode rootNode) {
+	public ZImplementationBuiltinNode(ZRootNode rootNode, String functionId) {
+		super(functionId);
 		this.rootNode = rootNode;
 	}
 

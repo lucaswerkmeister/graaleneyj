@@ -13,9 +13,11 @@ import de.lucaswerkmeister.graaleneyj.ZLanguage;
 public class ZImplementation implements TruffleObject {
 
 	private final CallTarget callTarget;
+	private final String functionId;
 
-	public ZImplementation(CallTarget callTarget) {
+	public ZImplementation(CallTarget callTarget, String functionId) {
 		this.callTarget = callTarget;
+		this.functionId = functionId;
 	}
 
 	public CallTarget getCallTarget() {
@@ -34,7 +36,7 @@ public class ZImplementation implements TruffleObject {
 
 	@ExportMessage
 	public final String toDisplayString(boolean allowSideEffects) {
-		return "ZImplementation"; // TODO use function name, possibly implementation type?
+		return functionId + " implementation"; // TODO include implementation type?
 	}
 
 }

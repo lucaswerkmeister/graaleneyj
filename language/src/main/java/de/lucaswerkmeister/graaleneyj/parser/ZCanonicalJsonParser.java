@@ -88,15 +88,23 @@ public class ZCanonicalJsonParser {
 	}
 
 	public static ZFunctionNode parseJsonObjectAsFunction(JsonObject json) {
+		String functionId = json.get(ZConstants.ZOBJECT_ID).getAsString();
+		JsonArray arguments = json.getAsJsonArray(ZConstants.FUNCTION_ARGUMENTS);
+		String[] argumentNames = new String[arguments.size()];
+		for (int i = 0; i < argumentNames.length; i++) {
+			argumentNames[i] = arguments.get(i).getAsJsonObject().get(ZConstants.ZOBJECT_ID).getAsString();
+		}
 		JsonArray implementationJsons = json.getAsJsonArray(ZConstants.FUNCTION_IMPLEMENTATIONS);
 		ZImplementationNode[] implementationNodes = new ZImplementationNode[implementationJsons.size()];
 		for (int i = 0; i < implementationNodes.length; i++) {
-			implementationNodes[i] = parseJsonObjectAsImplementation(implementationJsons.get(i).getAsJsonObject());
+			implementationNodes[i] = parseJsonObjectAsImplementation(implementationJsons.get(i).getAsJsonObject(),
+					functionId, argumentNames);
 		}
-		return new ZFunctionNode(implementationNodes);
+		return new ZFunctionNode(implementationNodes, functionId);
 	}
 
-	public static ZImplementationNode parseJsonObjectAsImplementation(JsonObject json) {
+	public static ZImplementationNode parseJsonObjectAsImplementation(JsonObject json, String functionId,
+			String[] argumentNames) {
 		JsonObject implementation = json.getAsJsonObject(ZConstants.IMPLEMENTATION_IMPLEMENTATION);
 		String type = implementation.get(ZConstants.ZOBJECT_TYPE).getAsString();
 		switch (type) {
@@ -104,27 +112,30 @@ public class ZCanonicalJsonParser {
 			String builtin = implementation.get(ZConstants.ZOBJECT_ID).getAsString();
 			switch (builtin) {
 			case ZConstants.VALUE:
-				return makeBuiltin(ZValueBuiltinFactory.getInstance());
+				return makeBuiltin(ZValueBuiltinFactory.getInstance(), functionId);
 			case ZConstants.HEAD:
-				return makeBuiltin(ZHeadBuiltinFactory.getInstance());
+				return makeBuiltin(ZHeadBuiltinFactory.getInstance(), functionId);
 			case ZConstants.TAIL:
-				return makeBuiltin(ZTailBuiltinFactory.getInstance());
+				return makeBuiltin(ZTailBuiltinFactory.getInstance(), functionId);
 			default:
 				return new ZImplementationBuiltinNode(new ZRootNode(null, // TODO where does the language come from?
-						new ZThrowConstantNode(new UnusableImplementationException("Unknown builtin: " + builtin))));
+						new ZThrowConstantNode(new UnusableImplementationException("Unknown builtin: " + builtin))),
+						functionId);
 			}
 		case ZConstants.CODE:
 			String language = implementation.get(ZConstants.CODE_LANGUAGE).getAsString();
 			String source = implementation.get(ZConstants.CODE_SOURCE).getAsString();
-			return new ZImplementationCodeNode(language, source);
+			return new ZImplementationCodeNode(language, source, functionId, argumentNames);
 		default:
 			return new ZImplementationBuiltinNode(new ZRootNode(null, // TODO where does the language come from?
 					new ZThrowConstantNode(
-							new UnusableImplementationException("Unsupported implementation type: " + type))));
+							new UnusableImplementationException("Unsupported implementation type: " + type))),
+					functionId);
 		}
 	}
 
-	private static ZImplementationBuiltinNode makeBuiltin(NodeFactory<? extends ZBuiltinNode> factory) {
+	private static ZImplementationBuiltinNode makeBuiltin(NodeFactory<? extends ZBuiltinNode> factory,
+			String functionId) {
 		int argumentCount = factory.getExecutionSignature().size();
 		ZNode[] argumentNodes = new ZNode[argumentCount];
 		for (int i = 0; i < argumentCount; i++) {
@@ -132,7 +143,7 @@ public class ZCanonicalJsonParser {
 		}
 		ZBuiltinNode builtinNode = factory.createNode((Object) argumentNodes);
 		ZRootNode rootNode = new ZRootNode(null, builtinNode); // TODO where does the language come from?
-		return new ZImplementationBuiltinNode(rootNode);
+		return new ZImplementationBuiltinNode(rootNode, functionId);
 	}
 
 	public static ZListLiteralNode parseJsonArray(JsonArray json) {

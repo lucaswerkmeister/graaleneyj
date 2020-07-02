@@ -26,13 +26,16 @@ import de.lucaswerkmeister.graaleneyj.ZLanguage;
 public class ZFunction implements TruffleObject {
 
 	private final ZImplementation[] implementations;
+	private final String id;
 	private int implementationIndex = 0;
 	private Collection<Integer> unusableImplementations = null;
 	private final CyclicAssumption implementationIndexStable;
 
-	public ZFunction(ZImplementation[] implementations) {
+	public ZFunction(ZImplementation[] implementations, String id) {
+		assert id != null;
 		this.implementations = implementations;
-		implementationIndexStable = new CyclicAssumption("TODO function name goes here");
+		this.id = id;
+		implementationIndexStable = new CyclicAssumption("ZFunction " + id);
 	}
 
 	public void setImplementationIndex(int index) {
@@ -124,7 +127,7 @@ public class ZFunction implements TruffleObject {
 
 	@ExportMessage
 	public final String toDisplayString(boolean allowSideEffects) {
-		return "ZFunction"; // TODO use function name
+		return id;
 	}
 
 }

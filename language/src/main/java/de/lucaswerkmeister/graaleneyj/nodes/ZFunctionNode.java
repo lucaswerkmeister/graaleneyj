@@ -11,9 +11,11 @@ public class ZFunctionNode extends ZNode {
 
 	@Children
 	private final ZImplementationNode[] implementations;
+	private final String id;
 
-	public ZFunctionNode(ZImplementationNode implementations[]) {
+	public ZFunctionNode(ZImplementationNode implementations[], String id) {
 		this.implementations = implementations;
+		this.id = id;
 	}
 
 	@Override
@@ -24,7 +26,7 @@ public class ZFunctionNode extends ZNode {
 		for (int i = 0; i < implementations.length; i++) {
 			impls[i] = (ZImplementation) implementations[i].execute(virtualFrame);
 		}
-		return new ZFunction(impls);
+		return new ZFunction(impls, id);
 	}
 
 }

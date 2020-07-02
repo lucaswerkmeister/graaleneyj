@@ -17,10 +17,15 @@ public class ZImplementationCodeNode extends ZImplementationNode {
 	/** {@code null} to indicate an unusable language. */
 	private final String source;
 
+	private final String functionId;
+
+	private final String[] argumentNames;
+
 	@CompilationFinal
 	private CallTarget callTarget = null;
 
-	public ZImplementationCodeNode(String language, String source) {
+	public ZImplementationCodeNode(String language, String source, String functionId, String[] argumentNames) {
+		super(functionId);
 		switch (language) {
 		case "javascript":
 			// TODO functions can have side-effects by accessing and modifying properties of
@@ -39,6 +44,8 @@ public class ZImplementationCodeNode extends ZImplementationNode {
 			this.language = language;
 			this.source = null;
 		}
+		this.functionId = functionId;
+		this.argumentNames = argumentNames;
 	}
 
 	@Override
@@ -46,9 +53,9 @@ public class ZImplementationCodeNode extends ZImplementationNode {
 		if (callTarget == null) {
 			CompilerDirectives.transferToInterpreterAndInvalidate();
 			if (source != null) {
-				Source s = Source.newBuilder(language, source, "(code)").build(); // TODO (code) -> function name
+				Source s = Source.newBuilder(language, source, functionId).build();
 				ZContext c = lookupContextReference(ZLanguage.class).get(); // TODO @CachedContext?
-				callTarget = c.parse(s, "Z53K1", "Z53K2"); // TODO extremely obvious hard-coding lmao
+				callTarget = c.parse(s, argumentNames);
 			} else {
 				RuntimeException exception = new UnusableImplementationException("Unusable code language: " + language);
 				ZRootNode throwNode = new ZRootNode(null, // TODO where does the language come from?
