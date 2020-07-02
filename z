@@ -3,5 +3,6 @@
 exec \
     "${JAVA_HOME:?not set, must be set}/bin/java" \
     -Dtruffle.class.path.append=language/target/graaleneyj.jar \
+    -Dorg.graalvm.language.z.home="$PWD" \
     -cp launcher/target/launcher-0.0.1-SNAPSHOT.jar \
     de.lucaswerkmeister.graaleneyj.launcher.ZMain

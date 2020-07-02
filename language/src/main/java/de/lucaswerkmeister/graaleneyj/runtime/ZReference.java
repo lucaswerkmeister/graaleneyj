@@ -1,12 +1,10 @@
 package de.lucaswerkmeister.graaleneyj.runtime;
 
-import java.io.FileReader;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonElement;
+import com.oracle.truffle.api.CallTarget;
 import com.oracle.truffle.api.CompilerDirectives;
 import com.oracle.truffle.api.TruffleLanguage;
 import com.oracle.truffle.api.interop.ArityException;
@@ -14,10 +12,9 @@ import com.oracle.truffle.api.interop.InteropLibrary;
 import com.oracle.truffle.api.interop.TruffleObject;
 import com.oracle.truffle.api.library.ExportLibrary;
 import com.oracle.truffle.api.library.ExportMessage;
+import com.oracle.truffle.api.source.Source;
 
 import de.lucaswerkmeister.graaleneyj.ZLanguage;
-import de.lucaswerkmeister.graaleneyj.nodes.ZNode;
-import de.lucaswerkmeister.graaleneyj.parser.ZCanonicalJsonParser;
 
 /**
  * An unevaluated reference, exposed to other languages as a 0-adic function;
@@ -27,10 +24,12 @@ import de.lucaswerkmeister.graaleneyj.parser.ZCanonicalJsonParser;
 public class ZReference implements TruffleObject {
 
 	private final String id;
+	private final ZContext context;
 	private static final Map<String, Object> registry = new HashMap<>();
 
-	public ZReference(String id) {
+	public ZReference(String id, ZContext context) {
 		this.id = id;
+		this.context = context;
 	}
 
 	public String getId() {
@@ -56,14 +55,15 @@ public class ZReference implements TruffleObject {
 			return registry.get(id);
 		} else {
 			CompilerDirectives.transferToInterpreter();
-			try (FileReader file = new FileReader("abstracttext/eneyj/data/" + id + ".json")) {
-				JsonElement element = new Gson().fromJson(file, JsonElement.class);
-				ZNode node = ZCanonicalJsonParser.parseJsonElement(element);
-				Object value = node.execute(null); // TODO where do we get a virtualFrame from?
+			Source source;
+			try {
+				source = Source.newBuilder(ZLanguage.ID, context.getTruffleFile(id)).build();
+				CallTarget callTarget = context.parse(source);
+				Object value = callTarget.call();
 				registry.put(id, value);
 				return value;
 			} catch (IOException e) {
-				throw new RuntimeException(e);
+				throw new RuntimeException(e); // TODO better error handling
 			}
 		}
 	}
