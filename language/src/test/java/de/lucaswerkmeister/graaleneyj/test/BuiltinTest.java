@@ -1,9 +1,11 @@
 package de.lucaswerkmeister.graaleneyj.test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import org.graalvm.polyglot.PolyglotException;
+import org.graalvm.polyglot.Value;
 import org.junit.Test;
 
 public class BuiltinTest extends ZTest {
@@ -39,6 +41,24 @@ public class BuiltinTest extends ZTest {
 		assertEquals(true,
 				eval("{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z36\", \"K1\": " + "{\"Z1K1\": \"Z50\", \"Z50K1\": \"Z54\"}" + "}")
 						.asBoolean());
+	}
+
+	@Test
+	public void testValueOfPairWithoutId() {
+		Value result = eval(
+				"{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z36\", \"K1\": {\"Z1K1\": \"Z2\", \"Z2K1\": \"first\", \"Z2K2\": \"second\"}}");
+		assertEquals("first", result.getMember("Z2K1").asString());
+		assertEquals("second", result.getMember("Z2K2").asString());
+		assertFalse(result.hasMember("Z1K2"));
+	}
+
+	@Test
+	public void testValueOfPairWithId() {
+		Value result = eval(
+				"{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z36\", \"K1\": {\"Z1K1\": \"Z2\", \"Z1K2\": \"Z0\", \"Z2K1\": \"first\", \"Z2K2\": \"second\"}}");
+		assertEquals("first", result.getMember("Z2K1").asString());
+		assertEquals("second", result.getMember("Z2K2").asString());
+		assertFalse(result.hasMember("Z1K2"));
 	}
 
 	@Test

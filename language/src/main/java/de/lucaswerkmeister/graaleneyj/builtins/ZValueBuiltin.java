@@ -1,5 +1,8 @@
 package de.lucaswerkmeister.graaleneyj.builtins;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import com.oracle.truffle.api.dsl.Specialization;
 import com.oracle.truffle.api.nodes.NodeInfo;
 
@@ -25,9 +28,18 @@ public abstract class ZValueBuiltin extends ZBuiltinNode {
 			case ZConstants.BOOLEAN:
 				return zobject.readMember(ZConstants.BOOLEAN_IDENTITY);
 			}
+
+			String[] memberNames = zobject.getMembers(false);
+			Map<String, Object> members = new HashMap<>(memberNames.length);
+			for (String memberName : memberNames) {
+				if (!memberName.startsWith("Z1K") || memberName.equals(ZConstants.ZOBJECT_TYPE)) {
+					members.put(memberName, zobject.readMember(memberName));
+				}
+			}
+			return new ZObject(members);
 		}
 
-		return object; // TODO rest of the fucking owl
+		return object;
 	}
 
 }
