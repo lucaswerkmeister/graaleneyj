@@ -30,6 +30,18 @@ public class BuiltinTest extends ZTest {
 	}
 
 	@Test
+	public void testValueOfBooleanLiteral() {
+		assertEquals(true, eval("{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z36\", \"K1\": \"Z54\"}").asBoolean());
+	}
+
+	@Test
+	public void testValueOfBooleanObject() {
+		assertEquals(true,
+				eval("{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z36\", \"K1\": " + "{\"Z1K1\": \"Z50\", \"Z50K1\": \"Z54\"}" + "}")
+						.asBoolean());
+	}
+
+	@Test
 	public void testHeadOfSingleElementList() {
 		assertEquals("A", eval("{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z64\", \"K1\": [\"A\"]}").asString());
 	}

@@ -22,6 +22,8 @@ public abstract class ZValueBuiltin extends ZBuiltinNode {
 			switch (type) {
 			case ZConstants.STRING:
 				return zobject.readMember(ZConstants.STRING_STRING_VALUE);
+			case ZConstants.BOOLEAN:
+				return zobject.readMember(ZConstants.BOOLEAN_IDENTITY);
 			}
 		}
 
