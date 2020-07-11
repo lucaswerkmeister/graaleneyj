@@ -27,6 +27,7 @@ import de.lucaswerkmeister.graaleneyj.nodes.ZObjectLiteralNode;
 import de.lucaswerkmeister.graaleneyj.nodes.ZObjectLiteralNode.ZObjectLiteralMemberNode;
 import de.lucaswerkmeister.graaleneyj.nodes.ZReadArgumentNode;
 import de.lucaswerkmeister.graaleneyj.nodes.ZReferenceLiteralNode;
+import de.lucaswerkmeister.graaleneyj.nodes.ZReferenceLiteralNodeGen;
 import de.lucaswerkmeister.graaleneyj.nodes.ZRootNode;
 import de.lucaswerkmeister.graaleneyj.nodes.ZStringLiteralNode;
 import de.lucaswerkmeister.graaleneyj.nodes.ZThrowConstantNode;
@@ -185,7 +186,7 @@ public class ZCanonicalJsonParser {
 		if (!Character.isDigit(json.charAt(1))) {
 			return new ZStringLiteralNode(json);
 		}
-		return new ZReferenceLiteralNode(json);
+		return ZReferenceLiteralNodeGen.create(json);
 	}
 
 }

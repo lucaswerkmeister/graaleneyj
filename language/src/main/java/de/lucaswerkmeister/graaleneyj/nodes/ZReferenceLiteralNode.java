@@ -1,15 +1,18 @@
 package de.lucaswerkmeister.graaleneyj.nodes;
 
+import com.oracle.truffle.api.dsl.CachedContext;
+import com.oracle.truffle.api.dsl.Specialization;
 import com.oracle.truffle.api.frame.VirtualFrame;
 import com.oracle.truffle.api.nodes.UnexpectedResultException;
 
 import de.lucaswerkmeister.graaleneyj.ZConstants;
 import de.lucaswerkmeister.graaleneyj.ZLanguage;
+import de.lucaswerkmeister.graaleneyj.runtime.ZContext;
 import de.lucaswerkmeister.graaleneyj.runtime.ZList;
 import de.lucaswerkmeister.graaleneyj.runtime.ZNothing;
 import de.lucaswerkmeister.graaleneyj.runtime.ZReference;
 
-public class ZReferenceLiteralNode extends ZNode {
+public abstract class ZReferenceLiteralNode extends ZNode {
 
 	private final String id;
 
@@ -33,8 +36,8 @@ public class ZReferenceLiteralNode extends ZNode {
 		}
 	}
 
-	@Override
-	public Object execute(VirtualFrame virtualFrame) {
+	@Specialization
+	public Object executeGeneric(VirtualFrame virtualFrame, @CachedContext(ZLanguage.class) ZContext context) {
 		switch (id) {
 		case ZConstants.TRUE:
 			return true;
@@ -45,7 +48,7 @@ public class ZReferenceLiteralNode extends ZNode {
 		case ZConstants.NOTHING:
 			return ZNothing.INSTANCE;
 		default:
-			return new ZReference(id, lookupContextReference(ZLanguage.class).get()); // TODO @CachedContext?
+			return new ZReference(id, context);
 		}
 	}
 
