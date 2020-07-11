@@ -34,8 +34,9 @@ public abstract class ZValueBuiltin extends ZBuiltinNode {
 
 				Set<String> memberNames = zobject.getMemberNames();
 				Map<String, Object> members = new HashMap<>(memberNames.size());
+				members.put(ZConstants.ZOBJECT_TYPE, type);
 				for (String memberName : memberNames) {
-					if (!memberName.startsWith("Z1K") || memberName.equals(ZConstants.ZOBJECT_TYPE)) {
+					if (!memberName.startsWith("Z1K")) {
 						members.put(memberName, zobject.readMember(memberName));
 					}
 				}
