@@ -19,6 +19,7 @@ import de.lucaswerkmeister.graaleneyj.nodes.ZFunctionNode;
 import de.lucaswerkmeister.graaleneyj.nodes.ZIfNode;
 import de.lucaswerkmeister.graaleneyj.nodes.ZImplementationBuiltinNode;
 import de.lucaswerkmeister.graaleneyj.nodes.ZImplementationCodeNode;
+import de.lucaswerkmeister.graaleneyj.nodes.ZImplementationFunctioncallNode;
 import de.lucaswerkmeister.graaleneyj.nodes.ZImplementationNode;
 import de.lucaswerkmeister.graaleneyj.nodes.ZListLiteralNode;
 import de.lucaswerkmeister.graaleneyj.nodes.ZNode;
@@ -58,6 +59,8 @@ public class ZCanonicalJsonParser {
 			return parseJsonObjectAsFunctionCall(json);
 		case ZConstants.FUNCTION:
 			return parseJsonObjectAsFunction(json);
+		case ZConstants.ARGUMENTREFERENCE:
+			return parseJsonObjectAsArgumentReference(json);
 		}
 		ZObjectLiteralMemberNode[] members = new ZObjectLiteralMemberNode[json.size()];
 		int i = 0;
@@ -108,6 +111,10 @@ public class ZCanonicalJsonParser {
 		JsonObject implementation = json.getAsJsonObject(ZConstants.IMPLEMENTATION_IMPLEMENTATION);
 		String type = implementation.get(ZConstants.ZOBJECT_TYPE).getAsString();
 		switch (type) {
+		case ZConstants.FUNCTIONCALL:
+			ZNode node = parseJsonObjectAsFunctionCall(implementation);
+			ZRootNode rootNode = new ZRootNode(null, node); // TODO where does the language come from?
+			return new ZImplementationFunctioncallNode(rootNode, functionId);
 		case ZConstants.BUILTIN:
 			String builtin = implementation.get(ZConstants.ZOBJECT_ID).getAsString();
 			switch (builtin) {
@@ -144,6 +151,13 @@ public class ZCanonicalJsonParser {
 		ZBuiltinNode builtinNode = factory.createNode((Object) argumentNodes);
 		ZRootNode rootNode = new ZRootNode(null, builtinNode); // TODO where does the language come from?
 		return new ZImplementationBuiltinNode(rootNode, functionId);
+	}
+
+	public static ZReadArgumentNode parseJsonObjectAsArgumentReference(JsonObject json) {
+		// TODO is it safe to assume that ZwhateverKi is always the (i-1)th argument?
+		String reference = json.get(ZConstants.ARGUMENTREFERENCE_REFERENCE).getAsString();
+		int index = Integer.parseInt(reference.substring(reference.indexOf('K') + 1));
+		return new ZReadArgumentNode(index - 1);
 	}
 
 	public static ZListLiteralNode parseJsonArray(JsonArray json) {
