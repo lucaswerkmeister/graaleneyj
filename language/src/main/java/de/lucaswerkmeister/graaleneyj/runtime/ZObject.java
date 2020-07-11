@@ -9,6 +9,7 @@ import com.oracle.truffle.api.TruffleLanguage;
 import com.oracle.truffle.api.interop.InteropLibrary;
 import com.oracle.truffle.api.interop.InvalidArrayIndexException;
 import com.oracle.truffle.api.interop.TruffleObject;
+import com.oracle.truffle.api.interop.UnknownIdentifierException;
 import com.oracle.truffle.api.library.CachedLibrary;
 import com.oracle.truffle.api.library.ExportLibrary;
 import com.oracle.truffle.api.library.ExportMessage;
@@ -63,8 +64,12 @@ public class ZObject implements TruffleObject {
 	 * {@link ZObject} members are read by key ID.
 	 */
 	@ExportMessage
-	public Object readMember(String member) {
-		return members.get(member);
+	public Object readMember(String member) throws UnknownIdentifierException {
+		Object value = members.get(member);
+		if (value != null) {
+			return value;
+		}
+		throw UnknownIdentifierException.create(member);
 	}
 
 	// no write-related methods are exported, objects are immutable

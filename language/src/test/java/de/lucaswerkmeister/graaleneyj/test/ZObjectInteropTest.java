@@ -1,6 +1,7 @@
 package de.lucaswerkmeister.graaleneyj.test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Set;
@@ -24,6 +25,11 @@ public class ZObjectInteropTest extends ZTest {
 	@Test
 	public void testReadMember() {
 		assertEquals("Z1", eval("{\"Z1K1\": \"Z1\"}").getMember("Z1K1").toString());
+	}
+
+	@Test
+	public void testReadMember_missing() {
+		assertNull(eval("{\"Z1K1\": \"Z1\"}").getMember("Z1K2"));
 	}
 
 }
