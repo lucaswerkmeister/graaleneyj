@@ -1,13 +1,18 @@
 package de.lucaswerkmeister.graaleneyj.runtime;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import com.oracle.truffle.api.CallTarget;
 import com.oracle.truffle.api.TruffleFile;
 import com.oracle.truffle.api.TruffleLanguage.Env;
 import com.oracle.truffle.api.source.Source;
 
-public final class ZContext { // TODO find out what things we need from the context
+public final class ZContext {
 
 	private final Env env;
+
+	private final Map<String, Object> objects = new HashMap<>();
 
 	public ZContext(Env env) {
 		this.env = env;
@@ -19,6 +24,19 @@ public final class ZContext { // TODO find out what things we need from the cont
 
 	public CallTarget parse(Source source, String... argumentNames) {
 		return env.parsePublic(source, argumentNames);
+	}
+
+	public boolean hasObject(String zid) {
+		return objects.containsKey(zid);
+	}
+
+	public Object getObject(String zid) {
+		return objects.get(zid);
+	}
+
+	public void putObject(String zid, Object object) {
+		assert !hasObject(zid);
+		objects.put(zid, object);
 	}
 
 }

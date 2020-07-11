@@ -1,8 +1,6 @@
 package de.lucaswerkmeister.graaleneyj.runtime;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 import com.oracle.truffle.api.CallTarget;
 import com.oracle.truffle.api.CompilerDirectives;
@@ -25,7 +23,6 @@ public class ZReference implements TruffleObject {
 
 	private final String id;
 	private final ZContext context;
-	private static final Map<String, Object> registry = new HashMap<>();
 
 	public ZReference(String id, ZContext context) {
 		this.id = id;
@@ -50,9 +47,8 @@ public class ZReference implements TruffleObject {
 	}
 
 	public Object evaluate() {
-		// TODO for now, global scope is all we have
-		if (registry.containsKey(id)) {
-			return registry.get(id);
+		if (context.hasObject(id)) {
+			return context.getObject(id);
 		} else {
 			CompilerDirectives.transferToInterpreter();
 			Source source;
@@ -60,7 +56,7 @@ public class ZReference implements TruffleObject {
 				source = Source.newBuilder(ZLanguage.ID, context.getTruffleFile(id)).build();
 				CallTarget callTarget = context.parse(source);
 				Object value = callTarget.call();
-				registry.put(id, value);
+				context.putObject(id, value);
 				return value;
 			} catch (IOException e) {
 				throw new RuntimeException(e); // TODO better error handling
