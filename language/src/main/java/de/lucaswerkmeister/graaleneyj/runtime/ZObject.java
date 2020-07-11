@@ -1,10 +1,13 @@
 package de.lucaswerkmeister.graaleneyj.runtime;
 
 import java.util.Map;
+import java.util.Set;
 
+import com.oracle.truffle.api.CompilerDirectives;
 import com.oracle.truffle.api.CompilerDirectives.TruffleBoundary;
 import com.oracle.truffle.api.TruffleLanguage;
 import com.oracle.truffle.api.interop.InteropLibrary;
+import com.oracle.truffle.api.interop.InvalidArrayIndexException;
 import com.oracle.truffle.api.interop.TruffleObject;
 import com.oracle.truffle.api.library.CachedLibrary;
 import com.oracle.truffle.api.library.ExportLibrary;
@@ -19,6 +22,13 @@ public class ZObject implements TruffleObject {
 
 	public ZObject(Map<String, Object> members) {
 		this.members = Map.copyOf(members);
+	}
+
+	/**
+	 * For internal use only.
+	 */
+	public Set<String> getMemberNames() {
+		return members.keySet();
 	}
 
 	/**
@@ -37,10 +47,8 @@ public class ZObject implements TruffleObject {
 	 * @param booleanInternal Ignored, we have no internal keys.
 	 */
 	@ExportMessage
-	public String[] getMembers(boolean includeInternal) {
-		// TODO apparently the below call ends up calling methods that must not be part
-		// of compilation
-		return members.keySet().toArray(new String[members.size()]);
+	public ZObjectKeys getMembers(boolean includeInternal) {
+		return new ZObjectKeys(members.keySet().toArray(new String[members.size()]));
 	}
 
 	/**
@@ -87,6 +95,56 @@ public class ZObject implements TruffleObject {
 		}
 		ret.append("}");
 		return ret.toString();
+	}
+
+	@ExportLibrary(InteropLibrary.class)
+	static final class ZObjectKeys implements TruffleObject {
+
+		final String[] keys;
+
+		public ZObjectKeys(String[] keys) {
+			this.keys = keys;
+		}
+
+		@ExportMessage
+		public boolean hasArrayElements() {
+			return true;
+		}
+
+		@ExportMessage
+		public boolean isArrayElementReadable(long index) {
+			return 0 <= index && index < keys.length;
+		}
+
+		@ExportMessage
+		public long getArraySize() {
+			return keys.length;
+		}
+
+		@ExportMessage
+		public String readArrayElement(long index) throws InvalidArrayIndexException {
+			if (!isArrayElementReadable(index)) {
+				CompilerDirectives.transferToInterpreter();
+				throw InvalidArrayIndexException.create(index);
+			}
+			return keys[(int) index];
+		}
+
+		@ExportMessage
+		public boolean hasLanguage() {
+			return true;
+		}
+
+		@ExportMessage
+		public Class<? extends TruffleLanguage<?>> getLanguage() {
+			return ZLanguage.class;
+		}
+
+		@ExportMessage
+		public final String toDisplayString(boolean allowSideEffects) {
+			return "ZObjectKeys";
+		}
+
 	}
 
 }
