@@ -46,6 +46,7 @@ public class ZReference implements TruffleObject {
 		return evaluate();
 	}
 
+	// TODO probably turn this into some @Specializations
 	public Object evaluate() {
 		if (context.hasObject(id)) {
 			return context.getObject(id);
