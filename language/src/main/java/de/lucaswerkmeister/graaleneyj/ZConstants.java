@@ -14,6 +14,7 @@ public final class ZConstants {
 	public static final String BUILTIN = "Z19";
 	public static final String NOTHING = "Z23";
 	public static final String IF = "Z31";
+	public static final String SAME = "Z33";
 	public static final String VALUE = "Z36";
 	public static final String BOOLEAN = "Z50";
 	public static final String TRUE = "Z54";

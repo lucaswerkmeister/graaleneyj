@@ -12,6 +12,7 @@ import com.oracle.truffle.api.dsl.NodeFactory;
 import de.lucaswerkmeister.graaleneyj.ZConstants;
 import de.lucaswerkmeister.graaleneyj.builtins.ZBuiltinNode;
 import de.lucaswerkmeister.graaleneyj.builtins.ZHeadBuiltinFactory;
+import de.lucaswerkmeister.graaleneyj.builtins.ZSameBuiltinFactory;
 import de.lucaswerkmeister.graaleneyj.builtins.ZTailBuiltinFactory;
 import de.lucaswerkmeister.graaleneyj.builtins.ZValueBuiltinFactory;
 import de.lucaswerkmeister.graaleneyj.nodes.ZFunctionCallNode;
@@ -119,6 +120,8 @@ public class ZCanonicalJsonParser {
 		case ZConstants.BUILTIN:
 			String builtin = implementation.get(ZConstants.ZOBJECT_ID).getAsString();
 			switch (builtin) {
+			case ZConstants.SAME:
+				return makeBuiltin(ZSameBuiltinFactory.getInstance(), functionId, ZValueBuiltinFactory.getInstance());
 			case ZConstants.VALUE:
 				return makeBuiltin(ZValueBuiltinFactory.getInstance(), functionId);
 			case ZConstants.HEAD:
@@ -144,10 +147,34 @@ public class ZCanonicalJsonParser {
 
 	private static ZImplementationBuiltinNode makeBuiltin(NodeFactory<? extends ZBuiltinNode> factory,
 			String functionId) {
+		return makeBuiltin(factory, functionId, null);
+	}
+
+	/**
+	 * Create a builtin-based implementation node for the given function using the
+	 * given factory, optionally wrapping each argument in a different builtin.
+	 *
+	 * @param factory
+	 * @param functionId
+	 * @param wrapArgumentsFactory Wrap each argument of the outer builtin with a
+	 *                             call to this builtin, which must accept a single
+	 *                             argument. Used, for instance, by the Z33/same
+	 *                             builtin to wrap each argument in a call to the
+	 *                             Z36/value builtin.
+	 * @return
+	 */
+	private static ZImplementationBuiltinNode makeBuiltin(NodeFactory<? extends ZBuiltinNode> factory,
+			String functionId, NodeFactory<? extends ZBuiltinNode> wrapArgumentsFactory) {
 		int argumentCount = factory.getExecutionSignature().size();
 		ZNode[] argumentNodes = new ZNode[argumentCount];
 		for (int i = 0; i < argumentCount; i++) {
-			argumentNodes[i] = new ZReadArgumentNode(i);
+			ZNode argumentNode;
+			if (wrapArgumentsFactory != null) {
+				argumentNode = wrapArgumentsFactory.createNode((Object) new ZNode[] { new ZReadArgumentNode(i) });
+			} else {
+				argumentNode = new ZReadArgumentNode(i);
+			}
+			argumentNodes[i] = argumentNode;
 		}
 		ZBuiltinNode builtinNode = factory.createNode((Object) argumentNodes);
 		ZRootNode rootNode = new ZRootNode(null, builtinNode); // TODO where does the language come from?

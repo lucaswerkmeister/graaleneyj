@@ -80,4 +80,9 @@ public class ZReference implements TruffleObject {
 		return id;
 	}
 
+	@Override
+	public boolean equals(Object obj) {
+		return obj instanceof ZReference && id.equals(((ZReference) obj).id);
+	}
+
 }

@@ -148,4 +148,94 @@ public class BuiltinTest extends ZTest {
 		}
 	}
 
+	@Test
+	public void testSameTrueTrue() {
+		assertEquals(true, eval("{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z33\", \"K1\": \"Z54\", \"K2\": \"Z54\"}").asBoolean());
+	}
+
+	@Test
+	public void testSameTrueFalse() {
+		assertEquals(false,
+				eval("{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z33\", \"K1\": \"Z54\", \"K2\": \"Z55\"}").asBoolean());
+	}
+
+	@Test
+	public void testSameTrueString() {
+		assertEquals(false,
+				eval("{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z33\", \"K1\": \"Z54\", \"K2\": \"true\"}").asBoolean());
+	}
+
+	@Test
+	public void testSameTrueObjectTrue() {
+		assertEquals(true, eval("{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z33\", \"K1\": \"Z54\", \"K2\": "
+				+ "{\"Z1K1\": \"Z50\", \"Z50K1\": \"Z54\"}}").asBoolean());
+	}
+
+	@Test
+	public void testSameSameString() {
+		assertEquals(true, eval("{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z33\", \"K1\": \"s\", \"K2\": \"s\"}").asBoolean());
+	}
+
+	@Test
+	public void testSameDifferentStrings() {
+		assertEquals(false, eval("{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z33\", \"K1\": \"s\", \"K2\": \"t\"}").asBoolean());
+	}
+
+	@Test
+	public void testSameProjectnameEneyj() {
+		assertEquals(true,
+				eval("{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z33\", \"K1\": \"Z28\", \"K2\": \"eneyj\"}").asBoolean());
+	}
+
+	@Test
+	public void testSameSameObject() {
+		assertEquals(true,
+				eval("{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z33\", \"K1\": {\"Z1K1\": \"Z1\"}, \"K2\": {\"Z1K1\": \"Z1\"}}")
+						.asBoolean());
+	}
+
+	@Test
+	public void testSameSameObjectButWithId() {
+		assertEquals(true, eval("{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z33\", \"K1\": {\"Z1K1\": \"Z1\"}, "
+				+ "\"K2\": {\"Z1K1\": \"Z1\", \"Z1K2\": \"Z10000\"}}").asBoolean());
+	}
+
+	@Test
+	public void testSameDifferentObjects() {
+		assertEquals(false,
+				eval("{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z33\", \"K1\": {\"Z1K1\": \"Z10000\", \"Z10000K1\": \"a\"}, "
+						+ "\"K2\": {\"Z1K1\": \"Z10000\", \"Z10000K1\": \"b\"}}").asBoolean());
+	}
+
+	@Test
+	public void testSameNilNil() {
+		assertEquals(true, eval("{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z33\", \"K1\": [], \"K2\": []}").asBoolean());
+	}
+
+	@Test
+	public void testSameNilEmptyString() {
+		assertEquals(false, eval("{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z33\", \"K1\": [], \"K2\": \"\"}").asBoolean());
+	}
+
+	@Test
+	public void testSameNilNonemptyList() {
+		assertEquals(false, eval("{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z33\", \"K1\": [], \"K2\": [\"\"]}").asBoolean());
+	}
+
+	@Test
+	public void testSameSameNonemptyList() {
+		assertEquals(true, eval("{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z33\", \"K1\": [\"\"], \"K2\": [\"\"]}").asBoolean());
+	}
+
+	@Test
+	public void testSameHeadHead() {
+		assertEquals(true, eval("{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z33\", \"K1\": \"Z64\", \"K2\": \"Z64\"}").asBoolean());
+	}
+
+	@Test
+	public void testSameHeadTail() {
+		assertEquals(false,
+				eval("{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z33\", \"K1\": \"Z64\", \"K2\": \"Z65\"}").asBoolean());
+	}
+
 }

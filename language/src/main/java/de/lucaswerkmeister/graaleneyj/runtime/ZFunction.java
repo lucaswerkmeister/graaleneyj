@@ -130,4 +130,8 @@ public class ZFunction implements TruffleObject {
 		return id;
 	}
 
+	public boolean equals(Object obj) {
+		return obj instanceof ZFunction && id.equals(((ZFunction) obj).id);
+	}
+
 }

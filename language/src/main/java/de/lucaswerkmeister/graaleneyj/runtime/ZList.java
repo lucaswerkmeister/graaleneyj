@@ -103,4 +103,16 @@ public final class ZList implements TruffleObject {
 		}
 	}
 
+	@Override
+	public boolean equals(Object obj) {
+		if (!(obj instanceof ZList)) {
+			return false;
+		}
+		if (this == NIL || obj == NIL) {
+			return this == obj;
+		}
+		ZList list = (ZList) obj;
+		return length == list.length && head.equals(list.head) && tail.equals(list.tail);
+	}
+
 }

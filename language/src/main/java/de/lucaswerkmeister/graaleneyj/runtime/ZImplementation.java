@@ -39,4 +39,9 @@ public class ZImplementation implements TruffleObject {
 		return functionId + " implementation"; // TODO include implementation type?
 	}
 
+	@Override
+	public boolean equals(Object obj) {
+		return obj instanceof ZImplementation && functionId.equals(((ZImplementation) obj).functionId);
+	}
+
 }

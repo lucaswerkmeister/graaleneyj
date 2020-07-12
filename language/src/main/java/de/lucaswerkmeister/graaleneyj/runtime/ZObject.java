@@ -102,6 +102,15 @@ public class ZObject implements TruffleObject {
 		return ret.toString();
 	}
 
+	@Override
+	public boolean equals(Object obj) {
+		if (!(obj instanceof ZObject)) {
+			return false;
+		}
+		ZObject zobj = (ZObject) obj;
+		return members.equals(zobj.members);
+	}
+
 	@ExportLibrary(InteropLibrary.class)
 	static final class ZObjectKeys implements TruffleObject {
 
