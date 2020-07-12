@@ -8,6 +8,8 @@ import org.graalvm.polyglot.PolyglotException;
 import org.graalvm.polyglot.Value;
 import org.junit.Test;
 
+import de.lucaswerkmeister.graaleneyj.ZConstants;
+
 public class BuiltinTest extends ZTest {
 
 	@Test
@@ -78,7 +80,7 @@ public class BuiltinTest extends ZTest {
 			throw new IllegalStateException("Should have thrown an exception");
 		} catch (PolyglotException e) {
 			assertTrue(e.isGuestException());
-			// TODO test e.getGuestObject()
+			assertEquals(ZConstants.LISTISNIL, e.getGuestObject().getMember("Z1K2").toString());
 		}
 	}
 
@@ -106,11 +108,11 @@ public class BuiltinTest extends ZTest {
 	@Test
 	public void testTailOfNil() {
 		try {
-			eval("{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z66\", \"K1\": []}");
+			eval("{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z65\", \"K1\": []}");
 			throw new IllegalStateException("Should have thrown an exception");
 		} catch (PolyglotException e) {
 			assertTrue(e.isGuestException());
-			// TODO test e.getGuestObject()
+			assertEquals(ZConstants.LISTISNIL, e.getGuestObject().getMember("Z1K2").toString());
 		}
 	}
 
@@ -142,7 +144,7 @@ public class BuiltinTest extends ZTest {
 			throw new IllegalStateException("Should have thrown an exception");
 		} catch (PolyglotException e) {
 			assertTrue(e.isGuestException());
-			// TODO test e.getGuestObject()
+			assertEquals(ZConstants.LISTISNIL, e.getGuestObject().getMember("Z1K2").toString());
 		}
 	}
 

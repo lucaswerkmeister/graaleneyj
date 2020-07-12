@@ -1,13 +1,16 @@
 package de.lucaswerkmeister.graaleneyj.builtins;
 
+import com.oracle.truffle.api.dsl.CachedContext;
 import com.oracle.truffle.api.dsl.Specialization;
 import com.oracle.truffle.api.interop.InteropLibrary;
 import com.oracle.truffle.api.interop.InvalidArrayIndexException;
-import com.oracle.truffle.api.interop.TruffleObject;
 import com.oracle.truffle.api.interop.UnsupportedMessageException;
 import com.oracle.truffle.api.library.CachedLibrary;
 import com.oracle.truffle.api.nodes.NodeInfo;
 
+import de.lucaswerkmeister.graaleneyj.ZConstants;
+import de.lucaswerkmeister.graaleneyj.ZLanguage;
+import de.lucaswerkmeister.graaleneyj.runtime.ZContext;
 import de.lucaswerkmeister.graaleneyj.runtime.ZErrorException;
 import de.lucaswerkmeister.graaleneyj.runtime.ZList;
 
@@ -23,10 +26,9 @@ public abstract class ZTailBuiltin extends ZBuiltinNode {
 	 * Get the tail of a {@ZList} by returning its existing tail list.
 	 */
 	@Specialization
-	public ZList getTailOfZList(ZList list) {
+	public ZList getTailOfZList(ZList list, @CachedContext(ZLanguage.class) ZContext context) {
 		if (list == ZList.NIL) {
-			TruffleObject error = null; // TODO load “list is nil” error
-			throw new ZErrorException(error, this);
+			throw new ZErrorException(context.loadError(ZConstants.LISTISNIL), this);
 		} else {
 			return list.getTail();
 		}
@@ -38,12 +40,12 @@ public abstract class ZTailBuiltin extends ZBuiltinNode {
 	 * back save the first one.
 	 */
 	@Specialization(limit = "3")
-	public ZList getTail(Object list, @CachedLibrary("list") InteropLibrary lists) {
+	public ZList getTail(Object list, @CachedLibrary("list") InteropLibrary lists,
+			@CachedContext(ZLanguage.class) ZContext context) {
 		try {
 			long i = lists.getArraySize(list) - 1;
 			if (i < 0) {
-				TruffleObject error = null; // TODO load “list is nil” error
-				throw new ZErrorException(error, this);
+				throw new ZErrorException(context.loadError(ZConstants.LISTISNIL), this);
 			}
 			ZList ret = ZList.NIL;
 			while (i > 0) {

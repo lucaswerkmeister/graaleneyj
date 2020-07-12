@@ -20,6 +20,7 @@ public final class ZConstants {
 	public static final String FALSE = "Z55";
 	public static final String HEAD = "Z64";
 	public static final String TAIL = "Z65";
+	public static final String LISTISNIL = "Z441";
 
 	public static final String ZOBJECT_TYPE = "Z1K1";
 	public static final String ZOBJECT_ID = "Z1K2";

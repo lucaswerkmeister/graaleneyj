@@ -6,6 +6,7 @@ import java.util.Map;
 import com.oracle.truffle.api.CallTarget;
 import com.oracle.truffle.api.TruffleFile;
 import com.oracle.truffle.api.TruffleLanguage.Env;
+import com.oracle.truffle.api.interop.TruffleObject;
 import com.oracle.truffle.api.source.Source;
 
 public final class ZContext {
@@ -37,6 +38,18 @@ public final class ZContext {
 	public void putObject(String zid, Object object) {
 		assert !hasObject(zid);
 		objects.put(zid, object);
+	}
+
+	public TruffleObject loadError(String zid) {
+		Object error;
+		if (hasObject(zid)) {
+			error = getObject(zid);
+		} else {
+			ZReference errorReference = new ZReference(zid, this);
+			error = errorReference.evaluate();
+		}
+		assert error instanceof TruffleObject;
+		return (TruffleObject) error;
 	}
 
 }
