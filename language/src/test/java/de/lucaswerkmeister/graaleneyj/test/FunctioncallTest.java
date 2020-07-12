@@ -29,4 +29,20 @@ public class FunctioncallTest extends ZTest {
 				eval("{\"Z1K1\": \"Z7\", \"Z7K1\": " + booleanIdentityFunction() + ", \"K1\": \"Z55\"}").asBoolean());
 	}
 
+	@Test
+	public void testIsNilOfNil() {
+		assertEquals(true, eval("{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z66\", \"K1\": []}").asBoolean());
+	}
+
+	@Test
+	public void testIsNilOfNonemptyList() {
+		assertEquals(false, eval("{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z66\", \"K1\": [\"\"]}").asBoolean());
+	}
+
+	@Test
+	public void testIsNilOfNothing() {
+		// TODO eventually this should throw an error instead of returning false
+		assertEquals(false, eval("{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z66\", \"K1\": \"Z23\"}").asBoolean());
+	}
+
 }
