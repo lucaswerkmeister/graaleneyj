@@ -40,6 +40,14 @@
                                             <overWrite>true</overWrite>
                                             <destFileName>truffle-api.jar</destFileName>
                                         </artifactItem>
+                                        <artifactItem>
+                                            <groupId>org.graalvm.sdk</groupId>
+                                            <artifactId>polyglot-tck</artifactId>
+                                            <version>${graalvm.version}</version>
+                                            <type>jar</type>
+                                            <overWrite>true</overWrite>
+                                            <destFileName>truffle-tck.jar</destFileName>
+                                        </artifactItem>
                                     </artifactItems>
                                     <outputDirectory>${jar.dir}</outputDirectory>
                                 </configuration>
