@@ -64,6 +64,14 @@ given Truffle implementations of JavaScript and Python, for example,
 it should be possible to call JavaScript and Python implementations of Z-functions
 with little to no performance cost.
 
+## IDE setup
+
+Follow the [SimpleLanguage IDE setup instructions][]. Then:
+
+1. Ensure that annotation processing is enabled. (In Eclipse, it’s in the project properties under Java Compiler > Annotation Processing.)
+2. Add `truffle-dsl-processor.jar` as an annotation processor JAR. (In Eclipse, that’s in the project properties under Java Compiler > Annotation Processing > Factory Path. `truffle-dsl-processor.jar` should be in `$JAVA_HOME/lib/truffle/truffle-dsl-processor.jar`.)
+3. Ensure that the project is not built using a GraalVM JRE, or else there’ll be duplicate errors because Truffle is built-in and also from Maven. (In Eclipse, that’s in the project properties under Java Build Path > Libraries > Modulepath > Java System Library.)
+
 ## Attribution
 
 This is loosely based on [SimpleLanguage][], especially the `pom.xml` files.
@@ -84,4 +92,5 @@ you agree to make your contribution available under this license.
 [`ZListLiteralNode`]: language/src/main/java/de/lucaswerkmeister/graaleneyj/nodes/ZListLiteralNode.java
 [`ZList`]: language/src/main/java/de/lucaswerkmeister/graaleneyj/runtime/ZList.java
 [eneyj]: https://github.com/google/abstracttext/tree/master/eneyj#readme
+[SimpleLanguage IDE setup instructions]: https://www.graalvm.org/docs/graalvm-as-a-platform/implement-language/#ide-setup
 [SimpleLanguage]: https://github.com/graalvm/simplelanguage#readme
