@@ -19,7 +19,7 @@ public class ZTCKLanguageProvider implements LanguageProvider {
 
     @Override
     public Value createIdentityFunction(Context context) {
-        return context.eval(ID, "{\"Z1K1\": \"Z8\", \"Z1K2\": \"\", \"Z8K1\": [{\"Z1K2\": \"K1\"}], \"Z8K4\": [{\"Z1K1\": \"Z14\", \"Z14K1\": {\"Z1K1\": \"Z16\", \"Z16K1\": \"javascript\", \"Z16K2\": \"K0=K1\"}}]}");
+        return context.eval(ID, "{\"Z1K1\": \"Z8\", \"Z1K2\": \"\", \"Z8K1\": [{\"Z1K2\": \"K1\"}], \"Z8K4\": [{\"Z1K1\": \"Z14\", \"Z14K1\": {\"Z1K1\": \"Z7\", \"Z7K1\": \"Z31\", \"K1\": \"Z54\", \"K2\": {\"Z1K1\": \"Z18\", \"Z18K1\": \"K1\"}, \"K3\": {\"Z1K1\": \"Z18\", \"Z18K1\": \"K1\"}}}]}");
     }
 
     @Override

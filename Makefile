@@ -17,4 +17,4 @@ z-tck.jar: tck/src/de/lucaswerkmeister/graaleneyj/tck/ZTCKLanguageProvider.class
 	jar cfM $@ -C tck/src de/lucaswerkmeister/graaleneyj/tck/ZTCKLanguageProvider.class -C tck/src/ META-INF/services/org.graalvm.polyglot.tck.LanguageProvider
 
 check-tck: z-tck.jar language/target/graaleneyj.jar
-	python ~/git/graal/truffle/mx.truffle/tck.py -v -g "$(JAVA_HOME)" -cp $<:language/target/jars/truffle-tck.jar:"$(GRAAL_HOME)/truffle/mxbuild/dists/jdk1.8/truffle-tck-tests.jar":"$(GRAAL_HOME)/sdk/mxbuild/dists/jdk11/graal-sdk.jar" -lp language/target/graaleneyj.jar
+	python ~/git/graal/truffle/mx.truffle/tck.py -v -g "$(JAVA_HOME)" -cp $<:language/target/jars/truffle-api.jar:language/target/jars/truffle-tck.jar:"$(GRAAL_HOME)/truffle/mxbuild/dists/jdk1.8/truffle-tck-tests.jar":"$(GRAAL_HOME)/truffle/mxbuild/dists/jdk1.8/truffle-tck-instrumentation.jar":"$(GRAAL_HOME)/sdk/mxbuild/dists/jdk11/graal-sdk.jar":language/target/graaleneyj.jar -lp language/target/graaleneyj.jar
