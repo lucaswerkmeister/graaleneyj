@@ -5,7 +5,7 @@ import java.io.IOException;
 import com.oracle.truffle.api.CallTarget;
 import com.oracle.truffle.api.CompilerDirectives;
 import com.oracle.truffle.api.TruffleLanguage;
-import com.oracle.truffle.api.dsl.Fallback;
+import com.oracle.truffle.api.dsl.Cached;
 import com.oracle.truffle.api.dsl.Specialization;
 import com.oracle.truffle.api.interop.ArityException;
 import com.oracle.truffle.api.interop.InteropLibrary;
@@ -48,10 +48,16 @@ public class ZReference implements TruffleObject {
 			throw ArityException.create(0, arguments.length);
 		}
 
-		// TODO it would be nice to use @Cached for the result if the context has the
-		// object, but I couldn’t make that work :(
+		// TODO The cachedId guard *might* be unnecessary; try removing it when we have
+		// a lot more tests :)
+		@Specialization(guards = { "arguments.length == 0", "reference.id.equals(cachedId)" })
+		protected static Object cached(ZReference reference, Object[] arguments,
+				@Cached("reference.id") String cachedId,
+				@Cached(value = "generic(reference, arguments)", allowUncached = true) Object result) {
+			return result;
+		}
 
-		@Fallback
+		@Specialization(guards = { "arguments.length == 0" })
 		protected static Object generic(ZReference reference, Object[] arguments) {
 			if (reference.context.hasObject(reference.id)) {
 				return reference.context.getObject(reference.id);
