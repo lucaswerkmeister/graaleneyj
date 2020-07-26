@@ -8,8 +8,6 @@ import com.oracle.truffle.api.interop.UnsupportedMessageException;
 import com.oracle.truffle.api.interop.UnsupportedTypeException;
 import com.oracle.truffle.api.nodes.ExplodeLoop;
 
-import de.lucaswerkmeister.graaleneyj.runtime.ZReference;
-
 public class ZFunctionCallNode extends ZNode {
 
 	@Child
@@ -20,6 +18,9 @@ public class ZFunctionCallNode extends ZNode {
 
 	@Child
 	private InteropLibrary library;
+
+	@Child
+	private ZEvaluateReferenceNode evaluateReference = ZEvaluateReferenceNodeGen.create();
 
 	public ZFunctionCallNode(ZNode function, ZNode[] arguments) {
 		this.function = function;
@@ -32,9 +33,7 @@ public class ZFunctionCallNode extends ZNode {
 	@Override
 	public Object execute(VirtualFrame virtualFrame) {
 		Object function = this.function.execute(virtualFrame);
-		while (function instanceof ZReference) {
-			function = ((ZReference) function).evaluate();
-		}
+		function = evaluateReference.execute(function);
 
 		CompilerAsserts.compilationConstant(this.arguments.length);
 		Object[] arguments = new Object[this.arguments.length];

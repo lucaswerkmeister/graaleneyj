@@ -9,17 +9,20 @@ import com.oracle.truffle.api.interop.UnknownIdentifierException;
 import com.oracle.truffle.api.nodes.NodeInfo;
 
 import de.lucaswerkmeister.graaleneyj.ZConstants;
+import de.lucaswerkmeister.graaleneyj.nodes.ZEvaluateReferenceNode;
+import de.lucaswerkmeister.graaleneyj.nodes.ZEvaluateReferenceNodeGen;
 import de.lucaswerkmeister.graaleneyj.runtime.ZObject;
 import de.lucaswerkmeister.graaleneyj.runtime.ZReference;
 
 @NodeInfo(shortName = "value")
 public abstract class ZValueBuiltin extends ZBuiltinNode {
 
+	@Child
+	private ZEvaluateReferenceNode evaluateReference = ZEvaluateReferenceNodeGen.create();
+
 	@Specialization
 	public Object getValue(Object object) {
-		while (object instanceof ZReference) {
-			object = ((ZReference) object).evaluate();
-		}
+		object = evaluateReference.execute(object);
 
 		if (object instanceof ZObject) {
 			try {
