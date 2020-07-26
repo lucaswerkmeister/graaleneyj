@@ -1,8 +1,6 @@
 package de.lucaswerkmeister.graaleneyj.nodes;
 
 import com.oracle.truffle.api.CallTarget;
-import com.oracle.truffle.api.CompilerDirectives;
-import com.oracle.truffle.api.CompilerDirectives.CompilationFinal;
 import com.oracle.truffle.api.Truffle;
 import com.oracle.truffle.api.source.Source;
 
@@ -20,9 +18,6 @@ public class ZImplementationCodeNode extends ZImplementationNode {
 	private final String functionId;
 
 	private final String[] argumentNames;
-
-	@CompilationFinal
-	private CallTarget callTarget = null;
 
 	public ZImplementationCodeNode(String language, String source, String functionId, String[] argumentNames) {
 		super(functionId);
@@ -49,21 +44,17 @@ public class ZImplementationCodeNode extends ZImplementationNode {
 	}
 
 	@Override
-	public CallTarget getCallTarget() {
-		if (callTarget == null) {
-			CompilerDirectives.transferToInterpreterAndInvalidate();
-			if (source != null) {
-				Source s = Source.newBuilder(language, source, functionId).build();
-				ZContext c = lookupContextReference(ZLanguage.class).get(); // TODO @CachedContext?
-				callTarget = c.parse(s, argumentNames);
-			} else {
-				RuntimeException exception = new UnusableImplementationException("Unusable code language: " + language);
-				ZRootNode throwNode = new ZRootNode(null, // TODO where does the language come from?
-						new ZThrowConstantNode(exception));
-				callTarget = Truffle.getRuntime().createCallTarget(throwNode);
-			}
+	public CallTarget makeCallTarget() {
+		if (source != null) {
+			Source s = Source.newBuilder(language, source, functionId).build();
+			ZContext c = lookupContextReference(ZLanguage.class).get(); // TODO @CachedContext?
+			return c.parse(s, argumentNames);
+		} else {
+			RuntimeException exception = new UnusableImplementationException("Unusable code language: " + language);
+			ZRootNode throwNode = new ZRootNode(null, // TODO where does the language come from?
+					new ZThrowConstantNode(exception));
+			return Truffle.getRuntime().createCallTarget(throwNode);
 		}
-		return callTarget;
 	}
 
 }
