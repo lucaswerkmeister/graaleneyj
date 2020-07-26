@@ -32,11 +32,13 @@ public final class ZContext {
 	}
 
 	public Object getObject(String zid) {
+		assert hasObject(zid);
 		return objects.get(zid);
 	}
 
 	public void putObject(String zid, Object object) {
 		assert !hasObject(zid);
+		assert object != null;
 		objects.put(zid, object);
 	}
 
