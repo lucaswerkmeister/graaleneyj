@@ -6,7 +6,11 @@ import java.util.Map;
 import com.oracle.truffle.api.CallTarget;
 import com.oracle.truffle.api.TruffleFile;
 import com.oracle.truffle.api.TruffleLanguage.Env;
+import com.oracle.truffle.api.interop.ArityException;
+import com.oracle.truffle.api.interop.InteropLibrary;
 import com.oracle.truffle.api.interop.TruffleObject;
+import com.oracle.truffle.api.interop.UnsupportedMessageException;
+import com.oracle.truffle.api.interop.UnsupportedTypeException;
 import com.oracle.truffle.api.source.Source;
 
 public final class ZContext {
@@ -48,7 +52,11 @@ public final class ZContext {
 			error = getObject(zid);
 		} else {
 			ZReference errorReference = new ZReference(zid, this);
-			error = errorReference.evaluate();
+			try {
+				error = InteropLibrary.getFactory().getUncached().execute(errorReference);
+			} catch (UnsupportedTypeException | ArityException | UnsupportedMessageException e) {
+				throw new RuntimeException(e);
+			}
 		}
 		assert error instanceof TruffleObject;
 		return (TruffleObject) error;

@@ -5,6 +5,8 @@ import java.io.IOException;
 import com.oracle.truffle.api.CallTarget;
 import com.oracle.truffle.api.CompilerDirectives;
 import com.oracle.truffle.api.TruffleLanguage;
+import com.oracle.truffle.api.dsl.Fallback;
+import com.oracle.truffle.api.dsl.Specialization;
 import com.oracle.truffle.api.interop.ArityException;
 import com.oracle.truffle.api.interop.InteropLibrary;
 import com.oracle.truffle.api.interop.TruffleObject;
@@ -21,8 +23,8 @@ import de.lucaswerkmeister.graaleneyj.ZLanguage;
 @ExportLibrary(InteropLibrary.class)
 public class ZReference implements TruffleObject {
 
-	private final String id;
-	private final ZContext context;
+	protected final String id;
+	protected final ZContext context;
 
 	public ZReference(String id, ZContext context) {
 		this.id = id;
@@ -39,25 +41,29 @@ public class ZReference implements TruffleObject {
 	}
 
 	@ExportMessage
-	public Object execute(Object... arguments) throws ArityException {
-		if (arguments.length > 0) {
+	public abstract static class Execute {
+
+		@Specialization(guards = { "arguments.length > 0" })
+		protected static Object wrongArity(ZReference reference, Object[] arguments) throws ArityException {
 			throw ArityException.create(0, arguments.length);
 		}
-		return evaluate();
-	}
 
-	// TODO probably turn this into some @Specializations
-	public Object evaluate() {
-		if (context.hasObject(id)) {
-			return context.getObject(id);
-		} else {
-			CompilerDirectives.transferToInterpreter();
+		// TODO it would be nice to use @Cached for the result if the context has the
+		// object, but I couldn’t make that work :(
+
+		@Fallback
+		protected static Object generic(ZReference reference, Object[] arguments) {
+			if (reference.context.hasObject(reference.id)) {
+				return reference.context.getObject(reference.id);
+			}
+
+			CompilerDirectives.transferToInterpreterAndInvalidate();
 			Source source;
 			try {
-				source = Source.newBuilder(ZLanguage.ID, context.getTruffleFile(id)).build();
-				CallTarget callTarget = context.parse(source);
+				source = Source.newBuilder(ZLanguage.ID, reference.context.getTruffleFile(reference.id)).build();
+				CallTarget callTarget = reference.context.parse(source);
 				Object value = callTarget.call();
-				context.putObject(id, value);
+				reference.context.putObject(reference.id, value);
 				return value;
 			} catch (IOException e) {
 				throw new RuntimeException(e); // TODO better error handling
