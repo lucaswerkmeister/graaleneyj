@@ -70,7 +70,6 @@ public class ZFunction implements TruffleObject {
 	private Object handleUnusableImplementationException(UnusableImplementationException unusable, Object[] arguments) {
 		markCurrentImplementationUnusable();
 		try {
-			// TODO is this the right way to “resume” execution?
 			return InteropLibrary.getFactory().getUncached().execute(this, arguments);
 		} catch (UnsupportedTypeException | ArityException | UnsupportedMessageException e) {
 			// TODO
