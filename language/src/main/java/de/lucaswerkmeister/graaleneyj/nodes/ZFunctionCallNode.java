@@ -25,7 +25,6 @@ public class ZFunctionCallNode extends ZNode {
 	public ZFunctionCallNode(ZNode function, ZNode[] arguments) {
 		this.function = function;
 		this.arguments = arguments;
-		// TODO copy+paste from SimpleLanguage that I don’t understand
 		this.library = InteropLibrary.getFactory().createDispatched(3);
 	}
 
