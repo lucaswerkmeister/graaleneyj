@@ -93,7 +93,7 @@ public class ZFunction implements TruffleObject {
 
 	@ExportMessage
 	public abstract static class Execute {
-		@Specialization(guards = "function.getCallTarget() == cachedTarget", assumptions = "callTargetStable")
+		@Specialization(assumptions = "callTargetStable")
 		protected static Object doDirect(ZFunction function, Object[] arguments,
 				@Cached("function.getCallTargetStable()") Assumption callTargetStable,
 				@Cached("function.getCallTarget()") CallTarget cachedTarget,
