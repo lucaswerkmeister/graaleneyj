@@ -42,12 +42,6 @@ public class ZReference implements TruffleObject {
 
 	@ExportMessage
 	public abstract static class Execute {
-
-		@Specialization(guards = { "arguments.length > 0" })
-		protected static Object wrongArity(ZReference reference, Object[] arguments) throws ArityException {
-			throw ArityException.create(0, arguments.length);
-		}
-
 		// TODO The cachedId guard *might* be unnecessary; try removing it when we have
 		// a lot more tests :)
 		@Specialization(guards = { "arguments.length == 0", "reference.id.equals(cachedId)" })
@@ -74,6 +68,11 @@ public class ZReference implements TruffleObject {
 			} catch (IOException e) {
 				throw new RuntimeException(e); // TODO better error handling
 			}
+		}
+
+		@Specialization(guards = { "arguments.length > 0" })
+		protected static Object wrongArity(ZReference reference, Object[] arguments) throws ArityException {
+			throw ArityException.create(0, arguments.length);
 		}
 	}
 
