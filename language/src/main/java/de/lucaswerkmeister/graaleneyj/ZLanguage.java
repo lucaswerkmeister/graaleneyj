@@ -19,6 +19,8 @@ public class ZLanguage extends TruffleLanguage<ZContext> {
 
 	public static final String ID = "z"; // TODO name?
 
+	private final ZCanonicalJsonParser parser = new ZCanonicalJsonParser(this);
+
 	@Override
 	protected ZContext createContext(Env env) {
 		return new ZContext(env);
@@ -32,7 +34,7 @@ public class ZLanguage extends TruffleLanguage<ZContext> {
 			throw new UnsupportedOperationException("Can’t parse with arguments yet");
 		}
 		JsonElement element = new Gson().fromJson(request.getSource().getReader(), JsonElement.class);
-		ZNode node = ZCanonicalJsonParser.parseJsonElement(element);
+		ZNode node = parser.parseJsonElement(element);
 		ZRootNode rootNode = new ZRootNode(this, node);
 		return Truffle.getRuntime().createCallTarget(rootNode);
 	}
