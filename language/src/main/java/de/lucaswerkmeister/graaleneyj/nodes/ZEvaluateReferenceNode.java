@@ -1,5 +1,6 @@
 package de.lucaswerkmeister.graaleneyj.nodes;
 
+import com.oracle.truffle.api.dsl.Cached;
 import com.oracle.truffle.api.dsl.Fallback;
 import com.oracle.truffle.api.dsl.Specialization;
 import com.oracle.truffle.api.nodes.Node;
@@ -13,7 +14,13 @@ public abstract class ZEvaluateReferenceNode extends Node {
 
 	public abstract Object execute(Object value);
 
-	@Specialization
+	@Specialization(guards = { "value.equals(cachedValue)" }, limit = "1")
+	public Object doReferenceCached(ZReference value, @Cached("value") ZReference cachedValue,
+			@Cached("doReference(value)") Object cachedResult) {
+		return cachedResult;
+	}
+
+	@Specialization(replaces = "doReferenceCached")
 	public Object doReference(ZReference value) {
 		Object resolved = value;
 		do {
