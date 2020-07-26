@@ -33,4 +33,12 @@ public class ControlFlowTest extends ZTest {
 				+ ", \"K2\": \"then\", \"K3\": \"else\"}").asString());
 	}
 
+	@Test
+	public void testIfCalledIndirectly() {
+		String ifFunction = "{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z36\", \"K1\": \"Z31\"}";
+		assertEquals("then", eval(
+				"{\"Z1K1\": \"Z7\", \"Z7K1\": " + ifFunction + ", \"K1\": \"Z54\", \"K2\": \"then\", \"K3\": \"else\"}")
+						.asString());
+	}
+
 }

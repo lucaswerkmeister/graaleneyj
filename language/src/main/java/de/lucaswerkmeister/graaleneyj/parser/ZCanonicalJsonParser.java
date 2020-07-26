@@ -10,7 +10,6 @@ import com.google.gson.JsonPrimitive;
 import com.oracle.truffle.api.dsl.NodeFactory;
 
 import de.lucaswerkmeister.graaleneyj.ZConstants;
-import de.lucaswerkmeister.graaleneyj.builtins.ZBuiltinNode;
 import de.lucaswerkmeister.graaleneyj.builtins.ZHeadBuiltinFactory;
 import de.lucaswerkmeister.graaleneyj.builtins.ZSameBuiltinFactory;
 import de.lucaswerkmeister.graaleneyj.builtins.ZTailBuiltinFactory;
@@ -18,6 +17,7 @@ import de.lucaswerkmeister.graaleneyj.builtins.ZValueBuiltinFactory;
 import de.lucaswerkmeister.graaleneyj.nodes.ZFunctionCallNode;
 import de.lucaswerkmeister.graaleneyj.nodes.ZFunctionNode;
 import de.lucaswerkmeister.graaleneyj.nodes.ZIfNode;
+import de.lucaswerkmeister.graaleneyj.nodes.ZIfNodeFactory;
 import de.lucaswerkmeister.graaleneyj.nodes.ZImplementationBuiltinNode;
 import de.lucaswerkmeister.graaleneyj.nodes.ZImplementationCodeNode;
 import de.lucaswerkmeister.graaleneyj.nodes.ZImplementationFunctioncallNode;
@@ -120,6 +120,10 @@ public class ZCanonicalJsonParser {
 		case ZConstants.BUILTIN:
 			String builtin = implementation.get(ZConstants.ZOBJECT_ID).getAsString();
 			switch (builtin) {
+			case ZConstants.IF:
+				// note: parseJsonObjectAsFunctionCall usually parses “if” calls specially, this
+				// builtin implementation is used when “if” is called indirectly
+				return makeBuiltin(ZIfNodeFactory.getInstance(), functionId);
 			case ZConstants.SAME:
 				return makeBuiltin(ZSameBuiltinFactory.getInstance(), functionId, ZValueBuiltinFactory.getInstance());
 			case ZConstants.VALUE:
@@ -145,8 +149,7 @@ public class ZCanonicalJsonParser {
 		}
 	}
 
-	private static ZImplementationBuiltinNode makeBuiltin(NodeFactory<? extends ZBuiltinNode> factory,
-			String functionId) {
+	private static ZImplementationBuiltinNode makeBuiltin(NodeFactory<? extends ZNode> factory, String functionId) {
 		return makeBuiltin(factory, functionId, null);
 	}
 
@@ -163,8 +166,8 @@ public class ZCanonicalJsonParser {
 	 *                             Z36/value builtin.
 	 * @return
 	 */
-	private static ZImplementationBuiltinNode makeBuiltin(NodeFactory<? extends ZBuiltinNode> factory,
-			String functionId, NodeFactory<? extends ZBuiltinNode> wrapArgumentsFactory) {
+	private static ZImplementationBuiltinNode makeBuiltin(NodeFactory<? extends ZNode> factory, String functionId,
+			NodeFactory<? extends ZNode> wrapArgumentsFactory) {
 		int argumentCount = factory.getExecutionSignature().size();
 		ZNode[] argumentNodes = new ZNode[argumentCount];
 		for (int i = 0; i < argumentCount; i++) {
@@ -176,7 +179,7 @@ public class ZCanonicalJsonParser {
 			}
 			argumentNodes[i] = argumentNode;
 		}
-		ZBuiltinNode builtinNode = factory.createNode((Object) argumentNodes);
+		ZNode builtinNode = factory.createNode((Object) argumentNodes);
 		ZRootNode rootNode = new ZRootNode(null, builtinNode); // TODO where does the language come from?
 		return new ZImplementationBuiltinNode(rootNode, functionId);
 	}
