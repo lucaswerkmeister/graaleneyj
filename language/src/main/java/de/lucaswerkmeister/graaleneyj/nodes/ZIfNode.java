@@ -1,5 +1,6 @@
 package de.lucaswerkmeister.graaleneyj.nodes;
 
+import com.oracle.truffle.api.CompilerDirectives.CompilationFinal;
 import com.oracle.truffle.api.frame.VirtualFrame;
 import com.oracle.truffle.api.nodes.UnexpectedResultException;
 import com.oracle.truffle.api.profiles.ConditionProfile;
@@ -24,12 +25,20 @@ public class ZIfNode extends ZNode {
 	@Child
 	private ZNode alternative;
 
-	private final ConditionProfile profile = ConditionProfile.createCountingProfile();
+	@CompilationFinal
+	private ConditionProfile profile = ConditionProfile.createCountingProfile();
 
 	public ZIfNode(ZNode condition, ZNode consequent, ZNode alternative) {
 		this.condition = condition;
 		this.consequent = consequent;
 		this.alternative = alternative;
+	}
+
+	@Override
+	public ZIfNode copy() {
+		ZIfNode zIfNode = (ZIfNode) super.copy();
+		zIfNode.profile = ConditionProfile.createCountingProfile();
+		return zIfNode;
 	}
 
 	@Override
