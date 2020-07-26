@@ -25,7 +25,7 @@ public abstract class ZSameBuiltin extends ZBuiltinNode {
 		return left == right;
 	}
 
-	@Specialization
+	@Specialization(replaces = "sameBoolean")
 	public boolean same(Object left, Object right) {
 		return left.equals(right);
 	}
