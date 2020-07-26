@@ -147,12 +147,12 @@ public class ZCanonicalJsonParser {
 						functionId);
 			}
 		case ZConstants.CODE:
-			String language = implementation.get(ZConstants.CODE_LANGUAGE).getAsString();
+			String sourceLanguage = implementation.get(ZConstants.CODE_LANGUAGE).getAsString();
 			String source = implementation.get(ZConstants.CODE_SOURCE).getAsString();
-			return new ZImplementationCodeNode(language, source, functionId, argumentNames);
+			return new ZImplementationCodeNode(language, sourceLanguage, source, functionId, argumentNames);
 		default:
 			return new ZImplementationBuiltinNode(
-					new ZRootNode(this.language,
+					new ZRootNode(language,
 							new ZThrowConstantNode(
 									new UnusableImplementationException("Unsupported implementation type: " + type))),
 					functionId);

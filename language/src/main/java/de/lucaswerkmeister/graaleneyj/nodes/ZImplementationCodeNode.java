@@ -10,7 +10,9 @@ import de.lucaswerkmeister.graaleneyj.runtime.ZContext;
 
 public class ZImplementationCodeNode extends ZImplementationNode {
 
-	private final String language;
+	private final ZLanguage zLanguage;
+
+	private final String sourceLanguage;
 
 	/** {@code null} to indicate an unusable language. */
 	private final String source;
@@ -19,24 +21,26 @@ public class ZImplementationCodeNode extends ZImplementationNode {
 
 	private final String[] argumentNames;
 
-	public ZImplementationCodeNode(String language, String source, String functionId, String[] argumentNames) {
+	public ZImplementationCodeNode(ZLanguage zLanguage, String sourceLanguage, String source, String functionId,
+			String[] argumentNames) {
 		super(functionId);
-		switch (language) {
+		this.zLanguage = zLanguage;
+		switch (sourceLanguage) {
 		case "javascript":
 			// TODO functions can have side-effects by accessing and modifying properties of
 			// the globalThis :(
-			this.language = "js";
+			this.sourceLanguage = "js";
 			this.source = "let K0;\n" + source + "\nreturn K0;";
 			break;
 		case "python":
 			// TODO doesn’t actually work yet because GraalPython doesn’t support parse
 			// requests with argument names
-			this.language = "python";
+			this.sourceLanguage = "python";
 			// this.source = source + "\nK0";
 			this.source = null;
 			break;
 		default:
-			this.language = language;
+			this.sourceLanguage = sourceLanguage;
 			this.source = null;
 		}
 		this.functionId = functionId;
@@ -46,13 +50,13 @@ public class ZImplementationCodeNode extends ZImplementationNode {
 	@Override
 	public CallTarget makeCallTarget() {
 		if (source != null) {
-			Source s = Source.newBuilder(language, source, functionId).build();
+			Source s = Source.newBuilder(sourceLanguage, source, functionId).build();
 			ZContext c = lookupContextReference(ZLanguage.class).get(); // TODO @CachedContext?
 			return c.parse(s, argumentNames);
 		} else {
-			RuntimeException exception = new UnusableImplementationException("Unusable code language: " + language);
-			ZRootNode throwNode = new ZRootNode(null, // TODO where does the language come from?
-					new ZThrowConstantNode(exception));
+			RuntimeException exception = new UnusableImplementationException(
+					"Unusable code language: " + sourceLanguage);
+			ZRootNode throwNode = new ZRootNode(zLanguage, new ZThrowConstantNode(exception));
 			return Truffle.getRuntime().createCallTarget(throwNode);
 		}
 	}
