@@ -51,7 +51,7 @@ public class ZImplementationCodeNode extends ZImplementationNode {
 	public CallTarget makeCallTarget() {
 		if (source != null) {
 			Source s = Source.newBuilder(sourceLanguage, source, functionId).build();
-			ZContext c = lookupContextReference(ZLanguage.class).get(); // TODO @CachedContext?
+			ZContext c = lookupContextReference(ZLanguage.class).get();
 			return c.parse(s, argumentNames);
 		} else {
 			RuntimeException exception = new UnusableImplementationException(
