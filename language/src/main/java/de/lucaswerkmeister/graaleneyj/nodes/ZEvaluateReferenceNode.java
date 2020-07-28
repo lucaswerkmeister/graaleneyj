@@ -30,7 +30,7 @@ public abstract class ZEvaluateReferenceNode extends Node {
 		Object resolved = value;
 		do {
 			try {
-				resolved = values.execute(value);
+				resolved = values.execute(resolved);
 			} catch (UnsupportedTypeException | ArityException | UnsupportedMessageException e) {
 				throw new RuntimeException(e);
 			}
