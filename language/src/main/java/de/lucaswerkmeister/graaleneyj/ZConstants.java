@@ -8,6 +8,7 @@ public final class ZConstants {
 	public static final String STRING = "Z6";
 	public static final String FUNCTIONCALL = "Z7";
 	public static final String FUNCTION = "Z8";
+	public static final String REFERENCE = "Z9";
 	public static final String NIL = "Z13";
 	public static final String CODE = "Z16";
 	public static final String ARGUMENTREFERENCE = "Z18";
@@ -29,6 +30,7 @@ public final class ZConstants {
 	public static final String FUNCTIONCALL_FUNCTION = "Z7K1";
 	public static final String FUNCTION_ARGUMENTS = "Z8K1";
 	public static final String FUNCTION_IMPLEMENTATIONS = "Z8K4";
+	public static final String REFERENCE_ID = "Z9K1";
 	public static final String IMPLEMENTATION_IMPLEMENTATION = "Z14K1";
 	public static final String CODE_LANGUAGE = "Z16K1";
 	public static final String CODE_SOURCE = "Z16K2";

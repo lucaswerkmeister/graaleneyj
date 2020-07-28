@@ -68,6 +68,8 @@ public class ZCanonicalJsonParser {
 			return parseJsonObjectAsFunctionCall(json);
 		case ZConstants.FUNCTION:
 			return parseJsonObjectAsFunction(json);
+		case ZConstants.REFERENCE:
+			return parseJsonObjectAsReference(json);
 		case ZConstants.ARGUMENTREFERENCE:
 			return parseJsonObjectAsArgumentReference(json);
 		}
@@ -192,6 +194,12 @@ public class ZCanonicalJsonParser {
 		ZNode builtinNode = factory.createNode((Object) argumentNodes);
 		ZRootNode rootNode = new ZRootNode(language, builtinNode);
 		return new ZImplementationBuiltinNode(rootNode, functionId);
+	}
+
+	public ZReferenceLiteralNode parseJsonObjectAsReference(JsonObject json) {
+		// TODO error handling, and check whether it’s okay to throw away all other keys
+		String id = json.get(ZConstants.REFERENCE_ID).getAsString();
+		return ZReferenceLiteralNodeGen.create(id);
 	}
 
 	public ZReadArgumentNode parseJsonObjectAsArgumentReference(JsonObject json) {
