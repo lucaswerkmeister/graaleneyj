@@ -45,4 +45,14 @@ public class FunctioncallTest extends ZTest {
 		assertEquals(false, eval("{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z66\", \"K1\": \"Z23\"}").asBoolean());
 	}
 
+	@Test
+	public void testNegateOfTrue() {
+		assertEquals(false, eval("{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z56\", \"K1\": \"Z54\"}").asBoolean());
+	}
+
+	@Test
+	public void testNegateOfFalse() {
+		assertEquals(true, eval("{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z56\", \"K1\": \"Z55\"}").asBoolean());
+	}
+
 }
