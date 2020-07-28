@@ -1,7 +1,8 @@
 package de.lucaswerkmeister.graaleneyj.parser;
 
-import java.util.ArrayList;
 import java.util.Map.Entry;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -82,23 +83,43 @@ public class ZCanonicalJsonParser {
 		return new ZObjectLiteralNode(members);
 	}
 
+	/**
+	 * Parse a JSON object as a function call. Arguments may use global keys (named
+	 * arguments) or local keys (positional arguments); additionally, the function
+	 * being called may be a reference to another function, and the global keys
+	 * might not use the function as the prefix (e. g. the function could be
+	 * Z104/if_boolean but the arguments would be Z31K1, Z31K2, Z31K3). We cope with
+	 * this by collecting all keys except Z1K* and Z7K* and asserting that they
+	 * share the same prefix and are contiguous.
+	 */
 	public ZNode parseJsonObjectAsFunctionCall(JsonObject json) {
-		// TODO error handling, and check whether it’s okay to throw away all other keys
 		ZNode function = parseJsonElement(json.get(ZConstants.FUNCTIONCALL_FUNCTION));
-		String functionName = "";
-		if (function instanceof ZReferenceLiteralNode) {
-			functionName = ((ZReferenceLiteralNode) function).getId();
+		SortedMap<Integer, ZNode> arguments = new TreeMap<>();
+		String prefix = null;
+		for (String key : json.keySet()) {
+			if (key.startsWith(ZConstants.ZOBJECT + "K") || key.startsWith(ZConstants.FUNCTIONCALL + "K")) {
+				continue;
+			}
+			int kIndex = key.indexOf('K');
+			if (prefix == null) {
+				prefix = key.substring(0, kIndex);
+			} else if (!prefix.equals(key.substring(0, kIndex))) {
+				throw new IllegalArgumentException("Function call key " + key + " does not share prefix " + prefix
+						+ " with other function call keys");
+			}
+			arguments.put(Integer.parseInt(key.substring(kIndex + 1)), parseJsonElement(json.get(key)));
 		}
-		ArrayList<ZNode> arguments = new ArrayList<ZNode>();
-		for (int i = 1; json.has("K" + i) || json.has(functionName + "K" + i); i++) {
-			// TODO complain if both "K" + i and functionName + "K" + i are set
-			arguments.add(parseJsonElement(json.has("K" + i) ? json.get("K" + i) : json.get(functionName + "K" + i)));
+		if (arguments.firstKey() != 1 || arguments.lastKey() != arguments.size()) {
+			throw new IllegalArgumentException("Function call keys are not contiguous: " + arguments.keySet());
 		}
-		if (ZConstants.IF.equals(functionName)) {
-			assert arguments.size() == 3;
-			return new ZIfNode(arguments.get(0), arguments.get(1), arguments.get(2));
+		if (function instanceof ZReferenceLiteralNode
+				&& ZConstants.IF.equals(((ZReferenceLiteralNode) function).getId())) {
+			if (arguments.size() != 3) {
+				throw new IllegalArgumentException("Call to if with " + arguments.size() + " ≠ 3 arguments");
+			}
+			return new ZIfNode(arguments.get(1), arguments.get(2), arguments.get(3));
 		}
-		return new ZFunctionCallNode(function, arguments.toArray(new ZNode[arguments.size()]));
+		return new ZFunctionCallNode(function, arguments.values().toArray(new ZNode[arguments.size()]));
 	}
 
 	public ZFunctionNode parseJsonObjectAsFunction(JsonObject json) {

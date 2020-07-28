@@ -5,6 +5,7 @@ package de.lucaswerkmeister.graaleneyj;
  */
 public final class ZConstants {
 
+	public static final String ZOBJECT = "Z1";
 	public static final String STRING = "Z6";
 	public static final String FUNCTIONCALL = "Z7";
 	public static final String FUNCTION = "Z8";
