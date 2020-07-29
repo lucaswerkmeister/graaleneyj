@@ -33,6 +33,11 @@ public abstract class ZValueBuiltin extends ZBuiltinNode {
 					return zobject.readMember(ZConstants.STRING_STRING_VALUE);
 				case ZConstants.BOOLEAN:
 					return zobject.readMember(ZConstants.BOOLEAN_IDENTITY);
+				case ZConstants.CHARACTER:
+					// code adapted from ZCharacterLiteralNode
+					String character = (String) zobject.readMember(ZConstants.CHARACTER_CHARACTER);
+					assert character.codePointCount(0, character.length()) == 1;
+					return character.codePointAt(0);
 				}
 
 				Set<String> memberNames = zobject.getMemberNames();

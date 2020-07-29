@@ -5,7 +5,17 @@ import com.oracle.truffle.api.dsl.TypeSystem;
 import de.lucaswerkmeister.graaleneyj.runtime.ZList;
 import de.lucaswerkmeister.graaleneyj.runtime.ZObject;
 
-@TypeSystem({ boolean.class, String.class, ZList.class, ZObject.class })
+@TypeSystem({
+		// Z50/boolean (Z54/true and Z55/false)
+		boolean.class,
+		// Z60/character (int, not char, to fully represent Unicode code points)
+		int.class,
+		// Z6/string
+		String.class,
+		// Z10/list
+		ZList.class,
+		// Z1/zobject (not sure if this needs to be in the type system at all)
+		ZObject.class })
 public abstract class ZTypes {
 
 // Commented out because there currently is no such thing as a ZNil type

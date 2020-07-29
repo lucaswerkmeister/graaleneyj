@@ -21,6 +21,8 @@ public final class ZConstants {
 	public static final String BOOLEAN = "Z50";
 	public static final String TRUE = "Z54";
 	public static final String FALSE = "Z55";
+	public static final String CHARACTER = "Z60";
+	public static final String CHARACTERTOSTRING = "Z61";
 	public static final String HEAD = "Z64";
 	public static final String TAIL = "Z65";
 	public static final String LISTISNIL = "Z441";
@@ -37,6 +39,7 @@ public final class ZConstants {
 	public static final String CODE_SOURCE = "Z16K2";
 	public static final String ARGUMENTREFERENCE_REFERENCE = "Z18K1";
 	public static final String BOOLEAN_IDENTITY = "Z50K1";
+	public static final String CHARACTER_CHARACTER = "Z60K1";
 
 	private ZConstants() {
 		// disable instantiation, this is just a container for constants

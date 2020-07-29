@@ -64,6 +64,33 @@ public class BuiltinTest extends ZTest {
 	}
 
 	@Test
+	public void testValueOfCharacterAWithoutId() {
+		String characterAWithoutId = "{\"Z1K1\": \"Z60\", \"Z60K1\": \"A\"}";
+		assertEquals((int) 'A',
+				eval("{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z36\", \"K1\": " + characterAWithoutId + "}").asInt());
+	}
+
+	@Test
+	public void testValueOfCharacterAWithId() {
+		// TODO this is actually parsed as a character literal (the ID is thrown away),
+		// so this isn’t testing the “value of zobject is character” path at all;
+		// make the parser parse this as an object instead
+		String characterAWithoutId = "{\"Z1K1\": \"Z60\", \"Z1K2\": \"Z0\", \"Z60K1\": \"A\"}";
+		assertEquals((int) 'A',
+				eval("{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z36\", \"K1\": " + characterAWithoutId + "}").asInt());
+	}
+
+	@Test
+	public void testValueOfCharacterThinkingFaceWithId() {
+		// TODO this is actually parsed as a character literal (the ID is thrown away),
+		// so this isn’t testing the “value of zobject is character” path at all;
+		// make the parser parse this as an object instead
+		String characterThinkingFaceWithoutId = "{\"Z1K1\": \"Z60\", \"Z1K2\": \"Z0\", \"Z60K1\": \"🤔\"}";
+		assertEquals("🤔".codePointAt(0),
+				eval("{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z36\", \"K1\": " + characterThinkingFaceWithoutId + "}").asInt());
+	}
+
+	@Test
 	public void testHeadOfSingleElementList() {
 		assertEquals("A", eval("{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z64\", \"K1\": [\"A\"]}").asString());
 	}
@@ -236,6 +263,30 @@ public class BuiltinTest extends ZTest {
 	public void testSameHeadTail() {
 		assertEquals(false,
 				eval("{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z33\", \"K1\": \"Z64\", \"K2\": \"Z65\"}").asBoolean());
+	}
+
+	@Test
+	public void testCharacterToStringOfA() {
+		assertEquals("A", eval("{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z61\", \"K1\": {\"Z1K1\": \"Z60\", \"Z60K1\": \"A\"}}")
+				.asString());
+	}
+
+	@Test
+	public void testCharacterToStringOfAe() {
+		assertEquals("Ä", eval("{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z61\", \"K1\": {\"Z1K1\": \"Z60\", \"Z60K1\": \"Ä\"}}")
+				.asString());
+	}
+
+	@Test
+	public void testCharacterToStringOfAlpha() {
+		assertEquals("α", eval("{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z61\", \"K1\": {\"Z1K1\": \"Z60\", \"Z60K1\": \"α\"}}")
+				.asString());
+	}
+
+	@Test
+	public void testCharacterToStringOfThinkingFace() {
+		assertEquals("🤔", eval("{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z61\", \"K1\": {\"Z1K1\": \"Z60\", \"Z60K1\": \"🤔\"}}")
+				.asString());
 	}
 
 }

@@ -19,6 +19,10 @@ public abstract class ZNode extends Node {
 		return ZTypesGen.expectBoolean(execute(virtualFrame));
 	}
 
+	public int executeCharacter(VirtualFrame virtualFrame) throws UnexpectedResultException {
+		return ZTypesGen.expectInteger(execute(virtualFrame));
+	}
+
 	public String executeString(VirtualFrame virtualFrame) throws UnexpectedResultException {
 		return ZTypesGen.expectString(execute(virtualFrame));
 	}

@@ -58,8 +58,9 @@ public class ZFunction implements TruffleObject {
 				return;
 			}
 		}
-		// TODO what happens if no usable implementations remain?
-		// (for now we keep the unusable implementation, so it will run again and again)
+		throw new UnusableImplementationException("No usable implementation left: " + id);
+		// TODO mark unusable functions more efficiently, this way the same index will
+		// be added to unusableImplementations again and again
 	}
 
 	/**

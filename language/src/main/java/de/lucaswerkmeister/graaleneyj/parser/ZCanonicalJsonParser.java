@@ -12,10 +12,12 @@ import com.oracle.truffle.api.dsl.NodeFactory;
 
 import de.lucaswerkmeister.graaleneyj.ZConstants;
 import de.lucaswerkmeister.graaleneyj.ZLanguage;
+import de.lucaswerkmeister.graaleneyj.builtins.ZCharacterToStringBuiltinFactory;
 import de.lucaswerkmeister.graaleneyj.builtins.ZHeadBuiltinFactory;
 import de.lucaswerkmeister.graaleneyj.builtins.ZSameBuiltinFactory;
 import de.lucaswerkmeister.graaleneyj.builtins.ZTailBuiltinFactory;
 import de.lucaswerkmeister.graaleneyj.builtins.ZValueBuiltinFactory;
+import de.lucaswerkmeister.graaleneyj.nodes.ZCharacterLiteralNode;
 import de.lucaswerkmeister.graaleneyj.nodes.ZFunctionCallNode;
 import de.lucaswerkmeister.graaleneyj.nodes.ZFunctionNode;
 import de.lucaswerkmeister.graaleneyj.nodes.ZIfNode;
@@ -73,6 +75,8 @@ public class ZCanonicalJsonParser {
 			return parseJsonObjectAsReference(json);
 		case ZConstants.ARGUMENTREFERENCE:
 			return parseJsonObjectAsArgumentReference(json);
+		case ZConstants.CHARACTER:
+			return parseJsonObjectAsCharacter(json);
 		}
 		ZObjectLiteralMemberNode[] members = new ZObjectLiteralMemberNode[json.size()];
 		int i = 0;
@@ -158,6 +162,8 @@ public class ZCanonicalJsonParser {
 				return makeBuiltin(ZSameBuiltinFactory.getInstance(), functionId, ZValueBuiltinFactory.getInstance());
 			case ZConstants.VALUE:
 				return makeBuiltin(ZValueBuiltinFactory.getInstance(), functionId);
+			case ZConstants.CHARACTERTOSTRING:
+				return makeBuiltin(ZCharacterToStringBuiltinFactory.getInstance(), functionId);
 			case ZConstants.HEAD:
 				return makeBuiltin(ZHeadBuiltinFactory.getInstance(), functionId);
 			case ZConstants.TAIL:
@@ -228,6 +234,10 @@ public class ZCanonicalJsonParser {
 		String reference = json.get(ZConstants.ARGUMENTREFERENCE_REFERENCE).getAsString();
 		int index = Integer.parseInt(reference.substring(reference.indexOf('K') + 1));
 		return new ZReadArgumentNode(index - 1);
+	}
+
+	public ZCharacterLiteralNode parseJsonObjectAsCharacter(JsonObject json) {
+		return new ZCharacterLiteralNode(json.get(ZConstants.CHARACTER_CHARACTER).getAsString());
 	}
 
 	public ZListLiteralNode parseJsonArray(JsonArray json) {
