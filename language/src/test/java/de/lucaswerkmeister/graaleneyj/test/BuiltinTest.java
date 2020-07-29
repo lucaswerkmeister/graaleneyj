@@ -289,4 +289,25 @@ public class BuiltinTest extends ZTest {
 				.asString());
 	}
 
+	@Test
+	public void testStringToCharacterlistOfEmptyString() {
+		assertEquals("[]", eval("{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z62\", \"K1\": \"\"}").toString());
+	}
+
+	@Test
+	public void testStringToCharacterlistOfSingleCharacterString() {
+		// TODO characters probably should not stringify to their decimal codepoint?
+		assertEquals("[65]", eval("{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z62\", \"K1\": \"A\"}").toString());
+	}
+
+	@Test
+	public void testStringToCharacterlistOfTwoCharacterString() {
+		assertEquals("[65, 66]", eval("{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z62\", \"K1\": \"AB\"}").toString());
+	}
+
+	@Test
+	public void testStringToCharacterlistOfNonBmpString() {
+		assertEquals("[129395, 127881]", eval("{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z62\", \"K1\": \"🥳🎉\"}").toString());
+	}
+
 }

@@ -23,6 +23,7 @@ public final class ZConstants {
 	public static final String FALSE = "Z55";
 	public static final String CHARACTER = "Z60";
 	public static final String CHARACTERTOSTRING = "Z61";
+	public static final String STRINGTOCHARACTERLIST = "Z62";
 	public static final String HEAD = "Z64";
 	public static final String TAIL = "Z65";
 	public static final String LISTISNIL = "Z441";
