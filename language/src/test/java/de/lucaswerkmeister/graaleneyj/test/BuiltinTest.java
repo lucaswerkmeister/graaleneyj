@@ -72,9 +72,6 @@ public class BuiltinTest extends ZTest {
 
 	@Test
 	public void testValueOfCharacterAWithId() {
-		// TODO this is actually parsed as a character literal (the ID is thrown away),
-		// so this isn’t testing the “value of zobject is character” path at all;
-		// make the parser parse this as an object instead
 		String characterAWithoutId = "{\"Z1K1\": \"Z60\", \"Z1K2\": \"Z0\", \"Z60K1\": \"A\"}";
 		assertEquals("A",
 				eval("{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z36\", \"K1\": " + characterAWithoutId + "}").asString());
@@ -82,9 +79,6 @@ public class BuiltinTest extends ZTest {
 
 	@Test
 	public void testValueOfCharacterThinkingFaceWithId() {
-		// TODO this is actually parsed as a character literal (the ID is thrown away),
-		// so this isn’t testing the “value of zobject is character” path at all;
-		// make the parser parse this as an object instead
 		String characterThinkingFaceWithoutId = "{\"Z1K1\": \"Z60\", \"Z1K2\": \"Z0\", \"Z60K1\": \"🤔\"}";
 		assertEquals("🤔", eval("{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z36\", \"K1\": " + characterThinkingFaceWithoutId + "}")
 				.asString());

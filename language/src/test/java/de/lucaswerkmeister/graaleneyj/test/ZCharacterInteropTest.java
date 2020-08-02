@@ -34,6 +34,12 @@ public class ZCharacterInteropTest extends ZTest {
 	}
 
 	@Test
+	public void testReadMember_id() {
+		assertEquals("Z0",
+				eval("{\"Z1K1\": \"Z60\", \"Z1K2\": \"Z0\", \"Z60K1\": \"a\"}").getMember("Z1K2").toString());
+	}
+
+	@Test
 	public void testReadMember_missing() {
 		assertNull(eval("{\"Z1K1\": \"Z60\", \"Z60K1\": \"a\"}").getMember("Z1K2"));
 	}

@@ -1,5 +1,7 @@
 package de.lucaswerkmeister.graaleneyj.runtime;
 
+import java.util.Map;
+
 import com.oracle.truffle.api.CompilerDirectives;
 import com.oracle.truffle.api.TruffleLanguage;
 import com.oracle.truffle.api.interop.InteropLibrary;
@@ -20,13 +22,17 @@ import de.lucaswerkmeister.graaleneyj.ZLanguage;
 public class ZCharacter implements TruffleObject {
 
 	private final int codepoint;
+	private final Map<String, Object> extraMembers;
 
-	public ZCharacter(int codepoint) {
+	public ZCharacter(int codepoint, Map<String, Object> extraMembers) {
+		assert !extraMembers.containsKey(ZConstants.ZOBJECT_TYPE);
+		assert !extraMembers.containsKey(ZConstants.CHARACTER_CHARACTER);
 		this.codepoint = codepoint;
+		this.extraMembers = Map.copyOf(extraMembers);
 	}
 
 	public static ZCharacter cast(int codepoint) {
-		return new ZCharacter(codepoint);
+		return new ZCharacter(codepoint, Map.of());
 	}
 
 	@ExportMessage
@@ -46,14 +52,13 @@ public class ZCharacter implements TruffleObject {
 
 	@ExportMessage
 	public final ZCharacterKeys getMembers(boolean includeInternal) {
-		// TODO custom members
-		return new ZCharacterKeys(new String[0]);
+		return new ZCharacterKeys(extraMembers.keySet().toArray(new String[extraMembers.size()]));
 	}
 
 	@ExportMessage
 	public final boolean isMemberReadable(String member) {
-		// TODO custom members
-		return ZConstants.ZOBJECT_TYPE.equals(member) || ZConstants.CHARACTER_CHARACTER.equals(member);
+		return ZConstants.ZOBJECT_TYPE.equals(member) || ZConstants.CHARACTER_CHARACTER.equals(member)
+				|| extraMembers.containsKey(member);
 	}
 
 	@ExportMessage
@@ -64,8 +69,11 @@ public class ZCharacter implements TruffleObject {
 		case ZConstants.CHARACTER_CHARACTER:
 			return asString();
 		}
-		// TODO custom members
-		throw UnknownIdentifierException.create(member);
+		if (extraMembers.containsKey(member)) {
+			return extraMembers.get(member);
+		} else {
+			throw UnknownIdentifierException.create(member);
+		}
 	}
 
 	@ExportMessage

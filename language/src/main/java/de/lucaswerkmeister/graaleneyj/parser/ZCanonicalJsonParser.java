@@ -19,6 +19,7 @@ import de.lucaswerkmeister.graaleneyj.builtins.ZStringToCharacterlistFactory;
 import de.lucaswerkmeister.graaleneyj.builtins.ZTailBuiltinFactory;
 import de.lucaswerkmeister.graaleneyj.builtins.ZValueBuiltinFactory;
 import de.lucaswerkmeister.graaleneyj.nodes.ZCharacterLiteralNode;
+import de.lucaswerkmeister.graaleneyj.nodes.ZCharacterLiteralNode.ZCharacterLiteralMemberNode;
 import de.lucaswerkmeister.graaleneyj.nodes.ZFunctionCallNode;
 import de.lucaswerkmeister.graaleneyj.nodes.ZFunctionNode;
 import de.lucaswerkmeister.graaleneyj.nodes.ZIfNode;
@@ -240,7 +241,17 @@ public class ZCanonicalJsonParser {
 	}
 
 	public ZCharacterLiteralNode parseJsonObjectAsCharacter(JsonObject json) {
-		return new ZCharacterLiteralNode(json.get(ZConstants.CHARACTER_CHARACTER).getAsString());
+		ZCharacterLiteralMemberNode[] extraMembers = new ZCharacterLiteralMemberNode[json.size() - 2];
+		int i = 0;
+		for (Entry<String, JsonElement> entry : json.entrySet()) {
+			if (ZConstants.ZOBJECT_TYPE.equals(entry.getKey())
+					|| ZConstants.CHARACTER_CHARACTER.equals(entry.getKey())) {
+				continue;
+			}
+			extraMembers[i] = new ZCharacterLiteralMemberNode(entry.getKey(), parseJsonElement(entry.getValue()));
+			i++;
+		}
+		return new ZCharacterLiteralNode(json.get(ZConstants.CHARACTER_CHARACTER).getAsString(), extraMembers);
 	}
 
 	public ZListLiteralNode parseJsonArray(JsonArray json) {
