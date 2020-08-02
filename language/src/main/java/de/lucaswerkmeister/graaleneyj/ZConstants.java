@@ -6,6 +6,7 @@ package de.lucaswerkmeister.graaleneyj;
 public final class ZConstants {
 
 	public static final String ZOBJECT = "Z1";
+	public static final String PAIR = "Z2";
 	public static final String STRING = "Z6";
 	public static final String FUNCTIONCALL = "Z7";
 	public static final String FUNCTION = "Z8";
@@ -18,6 +19,7 @@ public final class ZConstants {
 	public static final String IF = "Z31";
 	public static final String SAME = "Z33";
 	public static final String VALUE = "Z36";
+	public static final String REIFY = "Z37";
 	public static final String BOOLEAN = "Z50";
 	public static final String TRUE = "Z54";
 	public static final String FALSE = "Z55";
@@ -30,6 +32,8 @@ public final class ZConstants {
 
 	public static final String ZOBJECT_TYPE = "Z1K1";
 	public static final String ZOBJECT_ID = "Z1K2";
+	public static final String PAIR_FIRST = "Z2K1";
+	public static final String PAIR_SECOND = "Z2K2";
 	public static final String STRING_STRING_VALUE = "Z6K1";
 	public static final String FUNCTIONCALL_FUNCTION = "Z7K1";
 	public static final String FUNCTION_ARGUMENTS = "Z8K1";

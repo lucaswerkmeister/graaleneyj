@@ -14,6 +14,7 @@ import de.lucaswerkmeister.graaleneyj.ZConstants;
 import de.lucaswerkmeister.graaleneyj.ZLanguage;
 import de.lucaswerkmeister.graaleneyj.builtins.ZCharacterToStringBuiltinFactory;
 import de.lucaswerkmeister.graaleneyj.builtins.ZHeadBuiltinFactory;
+import de.lucaswerkmeister.graaleneyj.builtins.ZReifyBuiltinFactory;
 import de.lucaswerkmeister.graaleneyj.builtins.ZSameBuiltinFactory;
 import de.lucaswerkmeister.graaleneyj.builtins.ZStringToCharacterlistFactory;
 import de.lucaswerkmeister.graaleneyj.builtins.ZTailBuiltinFactory;
@@ -164,6 +165,8 @@ public class ZCanonicalJsonParser {
 				return makeBuiltin(ZSameBuiltinFactory.getInstance(), functionId, ZValueBuiltinFactory.getInstance());
 			case ZConstants.VALUE:
 				return makeBuiltin(ZValueBuiltinFactory.getInstance(), functionId);
+			case ZConstants.REIFY:
+				return makeBuiltin(ZReifyBuiltinFactory.getInstance(), functionId);
 			case ZConstants.CHARACTERTOSTRING:
 				return makeBuiltin(ZCharacterToStringBuiltinFactory.getInstance(), functionId);
 			case ZConstants.STRINGTOCHARACTERLIST:

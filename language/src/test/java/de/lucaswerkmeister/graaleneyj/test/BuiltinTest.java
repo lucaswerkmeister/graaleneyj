@@ -3,6 +3,7 @@ package de.lucaswerkmeister.graaleneyj.test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import org.graalvm.polyglot.PolyglotException;
 import org.graalvm.polyglot.Value;
@@ -259,28 +260,36 @@ public class BuiltinTest extends ZTest {
 				eval("{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z33\", \"K1\": \"Z64\", \"K2\": \"Z65\"}").asBoolean());
 	}
 
+	/**
+	 * A version of Z61/character_to_string with only the builtin implementation.
+	 */
+	private String characterToStringWithOnlyBuiltinImplementation() {
+		return "{\"Z1K1\": \"Z8\", \"Z1K2\": \"Z61\", \"Z8K1\": [{\"Z1K2\": \"Z61K1\"}], "
+				+ "\"Z8K4\": [{\"Z1K1\": \"Z14\", \"Z14K1\": {\"Z1K1\": \"Z19\", \"Z1K2\": \"Z61\"}}]}";
+	}
+
 	@Test
 	public void testCharacterToStringOfA() {
-		assertEquals("A", eval("{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z61\", \"K1\": {\"Z1K1\": \"Z60\", \"Z60K1\": \"A\"}}")
-				.asString());
+		assertEquals("A", eval("{\"Z1K1\": \"Z7\", \"Z7K1\": " + characterToStringWithOnlyBuiltinImplementation()
+				+ ", \"K1\": {\"Z1K1\": \"Z60\", \"Z60K1\": \"A\"}}").asString());
 	}
 
 	@Test
 	public void testCharacterToStringOfAe() {
-		assertEquals("Ä", eval("{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z61\", \"K1\": {\"Z1K1\": \"Z60\", \"Z60K1\": \"Ä\"}}")
-				.asString());
+		assertEquals("Ä", eval("{\"Z1K1\": \"Z7\", \"Z7K1\": " + characterToStringWithOnlyBuiltinImplementation()
+				+ ", \"K1\": {\"Z1K1\": \"Z60\", \"Z60K1\": \"Ä\"}}").asString());
 	}
 
 	@Test
 	public void testCharacterToStringOfAlpha() {
-		assertEquals("α", eval("{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z61\", \"K1\": {\"Z1K1\": \"Z60\", \"Z60K1\": \"α\"}}")
-				.asString());
+		assertEquals("α", eval("{\"Z1K1\": \"Z7\", \"Z7K1\": " + characterToStringWithOnlyBuiltinImplementation()
+				+ ", \"K1\": {\"Z1K1\": \"Z60\", \"Z60K1\": \"α\"}}").asString());
 	}
 
 	@Test
 	public void testCharacterToStringOfThinkingFace() {
-		assertEquals("🤔", eval("{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z61\", \"K1\": {\"Z1K1\": \"Z60\", \"Z60K1\": \"🤔\"}}")
-				.asString());
+		assertEquals("🤔", eval("{\"Z1K1\": \"Z7\", \"Z7K1\": " + characterToStringWithOnlyBuiltinImplementation()
+				+ ", \"K1\": {\"Z1K1\": \"Z60\", \"Z60K1\": \"🤔\"}}").asString());
 	}
 
 	@Test
@@ -301,6 +310,150 @@ public class BuiltinTest extends ZTest {
 	@Test
 	public void testStringToCharacterlistOfNonBmpString() {
 		assertEquals("[🥳, 🎉]", eval("{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z62\", \"K1\": \"🥳🎉\"}").toString());
+	}
+
+	// Z37/reify tests; note that Z37/reify does not guarantee any result order,
+	// which makes the assertions a bit cumbersome
+
+	@Test
+	public void testReifyObject() {
+		Value result = eval("{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z37\", \"K1\": {\"Z1K1\": \"Z1\", \"Z1K2\": \"Z0\"}}");
+		assertTrue(result.hasArrayElements());
+		assertEquals(2, result.getArraySize());
+		Value first = result.getArrayElement(0);
+		Value second = result.getArrayElement(1);
+		if (first.getMember("Z2K1").asString().equals("Z1K2")) {
+			Value swap = second;
+			second = first;
+			first = swap;
+		}
+		assertEquals("Z1K1", first.getMember("Z2K1").asString());
+		assertEquals("Z1", first.getMember("Z2K2").toString());
+		assertEquals("Z1K2", second.getMember("Z2K1").asString());
+		assertEquals("Z0", second.getMember("Z2K2").toString());
+	}
+
+	@Test
+	public void testReifyCharacterWithoutId() {
+		Value result = eval("{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z37\", \"K1\": {\"Z1K1\": \"Z60\", \"Z60K1\": \"a\"}}");
+		assertTrue(result.hasArrayElements());
+		assertEquals(2, result.getArraySize());
+		Value first = result.getArrayElement(0);
+		Value second = result.getArrayElement(1);
+		if (first.getMember("Z2K1").asString().equals("Z60K1")) {
+			Value swap = second;
+			second = first;
+			first = swap;
+		}
+		assertEquals("Z1K1", first.getMember("Z2K1").asString());
+		assertEquals("Z60", first.getMember("Z2K2").toString());
+		assertEquals("Z60K1", second.getMember("Z2K1").asString());
+		assertEquals("a", second.getMember("Z2K2").asString());
+	}
+
+	@Test
+	public void testReifyCharacterWithId() {
+		Value result = eval(
+				"{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z37\", \"K1\": {\"Z1K1\": \"Z60\", \"Z1K2\": \"Z0\", \"Z60K1\": \"a\"}}");
+		assertTrue(result.hasArrayElements());
+		assertEquals(3, result.getArraySize());
+		boolean sawType = false, sawId = false, sawCharacter = false;
+		for (int i = 0; i < 3; i++) {
+			Value value = result.getArrayElement(i);
+			switch (value.getMember("Z2K1").asString()) {
+			case "Z1K1":
+				assertFalse(sawType);
+				sawType = true;
+				assertEquals("Z60", value.getMember("Z2K2").toString());
+				break;
+			case "Z1K2":
+				assertFalse(sawId);
+				sawId = true;
+				assertEquals("Z0", value.getMember("Z2K2").toString());
+				break;
+			case "Z60K1":
+				assertFalse(sawCharacter);
+				sawCharacter = true;
+				assertEquals("a", value.getMember("Z2K2").asString());
+				break;
+			default:
+				fail();
+			}
+		}
+		assertTrue(sawType);
+		assertTrue(sawId);
+		assertTrue(sawCharacter);
+	}
+
+	@Test
+	public void testReifyStringLiteral() {
+		Value result = eval("{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z37\", \"K1\": \"a string\"}");
+		assertTrue(result.hasArrayElements());
+		assertEquals(2, result.getArraySize());
+		Value first = result.getArrayElement(0);
+		Value second = result.getArrayElement(1);
+		if (first.getMember("Z2K1").asString().equals("Z6K1")) {
+			Value swap = second;
+			second = first;
+			first = swap;
+		}
+		assertEquals("Z1K1", first.getMember("Z2K1").asString());
+		assertEquals("Z6", first.getMember("Z2K2").toString());
+		assertEquals("Z6K1", second.getMember("Z2K1").asString());
+		assertEquals("a string", second.getMember("Z2K2").asString());
+	}
+
+	@Test
+	public void testReifyStringWithoutId() {
+		Value result = eval(
+				"{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z37\", \"K1\": {\"Z1K1\": \"Z6\", \"Z6K1\": \"a string\"}}");
+		assertTrue(result.hasArrayElements());
+		assertEquals(2, result.getArraySize());
+		Value first = result.getArrayElement(0);
+		Value second = result.getArrayElement(1);
+		if (first.getMember("Z2K1").asString().equals("Z6K1")) {
+			Value swap = second;
+			second = first;
+			first = swap;
+		}
+		assertEquals("Z1K1", first.getMember("Z2K1").asString());
+		assertEquals("Z6", first.getMember("Z2K2").toString());
+		assertEquals("Z6K1", second.getMember("Z2K1").asString());
+		assertEquals("a string", second.getMember("Z2K2").asString());
+	}
+
+	@Test
+	public void testReifyStringWithId() {
+		Value result = eval(
+				"{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z37\", \"K1\": {\"Z1K1\": \"Z6\", \"Z1K2\": \"Z0\", \"Z6K1\": \"a string\"}}");
+		assertTrue(result.hasArrayElements());
+		assertEquals(3, result.getArraySize());
+		boolean sawType = false, sawId = false, sawString = false;
+		for (int i = 0; i < 3; i++) {
+			Value value = result.getArrayElement(i);
+			switch (value.getMember("Z2K1").asString()) {
+			case "Z1K1":
+				assertFalse(sawType);
+				sawType = true;
+				assertEquals("Z6", value.getMember("Z2K2").toString());
+				break;
+			case "Z1K2":
+				assertFalse(sawId);
+				sawId = true;
+				assertEquals("Z0", value.getMember("Z2K2").toString());
+				break;
+			case "Z6K1":
+				assertFalse(sawString);
+				sawString = true;
+				assertEquals("a string", value.getMember("Z2K2").asString());
+				break;
+			default:
+				fail();
+			}
+		}
+		assertTrue(sawType);
+		assertTrue(sawId);
+		assertTrue(sawString);
 	}
 
 }
