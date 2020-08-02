@@ -21,7 +21,7 @@ public class ZCharacterLiteralNode extends ZNode {
 
 	@Override
 	public Object execute(VirtualFrame virtualFrame) {
-		return new ZCharacter(executeCharacter(virtualFrame));
+		return ZCharacter.cast(executeCharacter(virtualFrame));
 	}
 
 }

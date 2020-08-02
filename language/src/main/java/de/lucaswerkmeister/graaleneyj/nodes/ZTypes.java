@@ -46,7 +46,7 @@ public abstract class ZTypes {
 
 	@ImplicitCast
 	public static ZCharacter intToZCharacter(int character) {
-		return new ZCharacter(character);
+		return ZCharacter.cast(character);
 	}
 
 }

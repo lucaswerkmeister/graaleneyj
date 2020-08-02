@@ -21,6 +21,10 @@ public class ZCharacter implements TruffleObject {
 		this.codepoint = codepoint;
 	}
 
+	public static ZCharacter cast(int codepoint) {
+		return new ZCharacter(codepoint);
+	}
+
 	@ExportMessage
 	public final boolean isString() {
 		return true;

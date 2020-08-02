@@ -14,7 +14,7 @@ public abstract class ZStringToCharacterlist extends ZBuiltinNode {
 		ZList ret = ZList.NIL;
 		for (int i = s.length(); i > 0;) {
 			int character = s.codePointBefore(i);
-			ret = new ZList(new ZCharacter(character), ret);
+			ret = new ZList(ZCharacter.cast(character), ret);
 			i -= Character.isBmpCodePoint(character) ? 1 : 2;
 		}
 		return ret;
