@@ -66,8 +66,8 @@ public class BuiltinTest extends ZTest {
 	@Test
 	public void testValueOfCharacterAWithoutId() {
 		String characterAWithoutId = "{\"Z1K1\": \"Z60\", \"Z60K1\": \"A\"}";
-		assertEquals((int) 'A',
-				eval("{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z36\", \"K1\": " + characterAWithoutId + "}").asInt());
+		assertEquals("A",
+				eval("{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z36\", \"K1\": " + characterAWithoutId + "}").asString());
 	}
 
 	@Test
@@ -76,8 +76,8 @@ public class BuiltinTest extends ZTest {
 		// so this isn’t testing the “value of zobject is character” path at all;
 		// make the parser parse this as an object instead
 		String characterAWithoutId = "{\"Z1K1\": \"Z60\", \"Z1K2\": \"Z0\", \"Z60K1\": \"A\"}";
-		assertEquals((int) 'A',
-				eval("{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z36\", \"K1\": " + characterAWithoutId + "}").asInt());
+		assertEquals("A",
+				eval("{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z36\", \"K1\": " + characterAWithoutId + "}").asString());
 	}
 
 	@Test
@@ -86,8 +86,8 @@ public class BuiltinTest extends ZTest {
 		// so this isn’t testing the “value of zobject is character” path at all;
 		// make the parser parse this as an object instead
 		String characterThinkingFaceWithoutId = "{\"Z1K1\": \"Z60\", \"Z1K2\": \"Z0\", \"Z60K1\": \"🤔\"}";
-		assertEquals("🤔".codePointAt(0),
-				eval("{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z36\", \"K1\": " + characterThinkingFaceWithoutId + "}").asInt());
+		assertEquals("🤔", eval("{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z36\", \"K1\": " + characterThinkingFaceWithoutId + "}")
+				.asString());
 	}
 
 	@Test
@@ -296,18 +296,17 @@ public class BuiltinTest extends ZTest {
 
 	@Test
 	public void testStringToCharacterlistOfSingleCharacterString() {
-		// TODO characters probably should not stringify to their decimal codepoint?
-		assertEquals("[65]", eval("{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z62\", \"K1\": \"A\"}").toString());
+		assertEquals("[A]", eval("{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z62\", \"K1\": \"A\"}").toString());
 	}
 
 	@Test
 	public void testStringToCharacterlistOfTwoCharacterString() {
-		assertEquals("[65, 66]", eval("{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z62\", \"K1\": \"AB\"}").toString());
+		assertEquals("[A, B]", eval("{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z62\", \"K1\": \"AB\"}").toString());
 	}
 
 	@Test
 	public void testStringToCharacterlistOfNonBmpString() {
-		assertEquals("[129395, 127881]", eval("{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z62\", \"K1\": \"🥳🎉\"}").toString());
+		assertEquals("[🥳, 🎉]", eval("{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z62\", \"K1\": \"🥳🎉\"}").toString());
 	}
 
 }

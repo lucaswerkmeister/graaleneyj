@@ -2,6 +2,8 @@ package de.lucaswerkmeister.graaleneyj.nodes;
 
 import com.oracle.truffle.api.frame.VirtualFrame;
 
+import de.lucaswerkmeister.graaleneyj.runtime.ZCharacter;
+
 public class ZCharacterLiteralNode extends ZNode {
 
 	private final String character;
@@ -19,7 +21,7 @@ public class ZCharacterLiteralNode extends ZNode {
 
 	@Override
 	public Object execute(VirtualFrame virtualFrame) {
-		return executeCharacter(virtualFrame);
+		return new ZCharacter(executeCharacter(virtualFrame));
 	}
 
 }

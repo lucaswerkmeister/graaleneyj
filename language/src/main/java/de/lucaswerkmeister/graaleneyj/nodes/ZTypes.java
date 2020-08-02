@@ -1,7 +1,9 @@
 package de.lucaswerkmeister.graaleneyj.nodes;
 
+import com.oracle.truffle.api.dsl.ImplicitCast;
 import com.oracle.truffle.api.dsl.TypeSystem;
 
+import de.lucaswerkmeister.graaleneyj.runtime.ZCharacter;
 import de.lucaswerkmeister.graaleneyj.runtime.ZList;
 import de.lucaswerkmeister.graaleneyj.runtime.ZObject;
 
@@ -14,6 +16,8 @@ import de.lucaswerkmeister.graaleneyj.runtime.ZObject;
 		String.class,
 		// Z10/list
 		ZList.class,
+		// Z60/character, boxed
+		ZCharacter.class,
 		// Z1/zobject (not sure if this needs to be in the type system at all)
 		ZObject.class })
 public abstract class ZTypes {
@@ -39,5 +43,10 @@ public abstract class ZTypes {
 //		assert isZNil(value);
 //		return ZNil.SINGLETON;
 //	}
+
+	@ImplicitCast
+	public static ZCharacter intToZCharacter(int character) {
+		return new ZCharacter(character);
+	}
 
 }
