@@ -6,7 +6,7 @@ import com.oracle.truffle.api.nodes.NodeInfo;
 /**
  * The Z33/same builtin, implemented using {@link Object#equals(Object) equals}.
  * (Most of the real “implementation” is therefore in the equals implementations
- * of our runtime objects.
+ * of our runtime objects.)
  *
  * The builtin is supposed to call the Z36/value builtin on its arguments before
  * comparing them. This node does not do that – instead, the parser instantiates
