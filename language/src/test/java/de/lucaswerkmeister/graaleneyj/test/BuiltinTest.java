@@ -459,4 +459,164 @@ public class BuiltinTest extends ZTest {
 		assertTrue(sawString);
 	}
 
+	@Test
+	public void testReifyPairOfStrings() {
+		Value result = eval(
+				"{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z37\", \"K1\": {\"Z1K1\": \"Z2\", \"Z2K1\": \"first\", \"Z2K2\": \"second\"}}");
+		assertTrue(result.hasArrayElements());
+		assertEquals(3, result.getArraySize());
+		boolean sawType = false, sawFirst = false, sawSecond = false;
+		for (int i = 0; i < 3; i++) {
+			Value value = result.getArrayElement(i);
+			switch (value.getMember("Z2K1").asString()) {
+			case "Z1K1":
+				assertFalse(sawType);
+				sawType = true;
+				assertEquals("Z2", value.getMember("Z2K2").toString());
+				break;
+			case "Z2K1":
+				assertFalse(sawFirst);
+				sawFirst = true;
+				assertEquals("first", value.getMember("Z2K2").asString());
+				break;
+			case "Z2K2":
+				assertFalse(sawSecond);
+				sawSecond = true;
+				assertEquals("second", value.getMember("Z2K2").asString());
+				break;
+			default:
+				fail();
+			}
+		}
+		assertTrue(sawType);
+		assertTrue(sawFirst);
+		assertTrue(sawSecond);
+	}
+
+	@Test
+	public void testReifyPairOfReferences() {
+		Value result = eval(
+				"{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z37\", \"K1\": {\"Z1K1\": \"Z2\", \"Z2K1\": \"Z2\", \"Z2K2\": \"Z10\"}}");
+		assertTrue(result.hasArrayElements());
+		assertEquals(3, result.getArraySize());
+		boolean sawType = false, sawFirst = false, sawSecond = false;
+		for (int i = 0; i < 3; i++) {
+			Value value = result.getArrayElement(i);
+			switch (value.getMember("Z2K1").asString()) {
+			case "Z1K1":
+				assertFalse(sawType);
+				sawType = true;
+				assertEquals("Z2", value.getMember("Z2K2").toString());
+				break;
+			case "Z2K1":
+				assertFalse(sawFirst);
+				sawFirst = true;
+				assertEquals("Z2", value.getMember("Z2K2").toString());
+				break;
+			case "Z2K2":
+				assertFalse(sawSecond);
+				sawSecond = true;
+				assertEquals("Z10", value.getMember("Z2K2").toString());
+				break;
+			default:
+				fail();
+			}
+		}
+		assertTrue(sawType);
+		assertTrue(sawFirst);
+		assertTrue(sawSecond);
+	}
+
+	@Test
+	public void testReifyPairOfPairs() {
+		String pairOfStrings = "{\"Z1K1\": \"Z2\", \"Z2K1\": \"first\", \"Z2K2\": \"second\"}";
+		String pairOfReferences = "{\"Z1K1\": \"Z2\", \"Z2K1\": \"Z2\", \"Z2K2\": \"Z10\"}";
+		Value result = eval("{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z37\", \"K1\": {\"Z1K1\": \"Z2\", \"Z2K1\": "
+				+ pairOfStrings + ", \"Z2K2\": " + pairOfReferences + "}}");
+		assertTrue(result.hasArrayElements());
+		assertEquals(3, result.getArraySize());
+		boolean sawType = false, sawFirst = false, sawSecond = false;
+		boolean sawFirstType = false, sawFirstFirst = false, sawFirstSecond = false;
+		boolean sawSecondType = false, sawSecondFirst = false, sawSecondSecond = false;
+		for (int i = 0; i < 3; i++) {
+			Value value = result.getArrayElement(i);
+			switch (value.getMember("Z2K1").asString()) {
+			case "Z1K1":
+				assertFalse(sawType);
+				sawType = true;
+				assertEquals("Z2", value.getMember("Z2K2").toString());
+				break;
+			case "Z2K1":
+				assertFalse(sawFirst);
+				sawFirst = true;
+				Value first = value.getMember("Z2K2");
+				assertTrue(first.hasArrayElements());
+				assertEquals(3, first.getArraySize());
+				for (int j = 0; j < 3; j++) {
+					Value inner = first.getArrayElement(j);
+					switch (inner.getMember("Z2K1").asString()) {
+					case "Z1K1":
+						assertFalse(sawFirstType);
+						sawFirstType = true;
+						assertEquals("Z2", inner.getMember("Z2K2").toString());
+						break;
+					case "Z2K1":
+						assertFalse(sawFirstFirst);
+						sawFirstFirst = true;
+						assertEquals("first", inner.getMember("Z2K2").asString());
+						break;
+					case "Z2K2":
+						assertFalse(sawFirstSecond);
+						sawFirstSecond = true;
+						assertEquals("second", inner.getMember("Z2K2").asString());
+						break;
+					default:
+						fail();
+					}
+				}
+				assertTrue(sawFirstType);
+				assertTrue(sawFirstFirst);
+				assertTrue(sawFirstSecond);
+				break;
+			case "Z2K2":
+				assertFalse(sawSecond);
+				sawSecond = true;
+				Value second = value.getMember("Z2K2");
+				assertTrue(second.hasArrayElements());
+				assertEquals(3, second.getArraySize());
+				for (int j = 0; j < 3; j++) {
+					Value inner = second.getArrayElement(j);
+					switch (inner.getMember("Z2K1").asString()) {
+					case "Z1K1":
+						assertFalse(sawSecondType);
+						sawSecondType = true;
+						assertEquals("Z2", inner.getMember("Z2K2").toString());
+						break;
+					case "Z2K1":
+						assertFalse(sawSecondFirst);
+						sawSecondFirst = true;
+						assertEquals("Z2", inner.getMember("Z2K2").toString());
+						break;
+					case "Z2K2":
+						assertFalse(sawSecondSecond);
+						sawSecondSecond = true;
+						assertEquals("Z10", inner.getMember("Z2K2").toString());
+						break;
+					default:
+						fail();
+					}
+				}
+				assertTrue(sawSecondType);
+				assertTrue(sawSecondFirst);
+				assertTrue(sawSecondSecond);
+				break;
+			default:
+				fail();
+			}
+		}
+		assertTrue(sawType);
+		assertTrue(sawFirst);
+		assertTrue(sawSecond);
+	}
+
 }
