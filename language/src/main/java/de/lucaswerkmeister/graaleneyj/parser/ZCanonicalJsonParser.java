@@ -4,10 +4,6 @@ import java.util.Map.Entry;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonPrimitive;
 import com.oracle.truffle.api.dsl.NodeFactory;
 
 import de.lucaswerkmeister.graaleneyj.ZConstants;
@@ -58,15 +54,10 @@ public class ZCanonicalJsonParser {
 		if (json instanceof JsonArray) {
 			return parseJsonArray((JsonArray) json);
 		}
-		if (json instanceof JsonPrimitive) {
-			JsonPrimitive primitive = (JsonPrimitive) json;
-			if (primitive.isString()) {
-				return parseJsonString(primitive.getAsString());
-			} else {
-				throw new IllegalArgumentException("JSON literal must be string");
-			}
+		if (json instanceof JsonString) {
+			return parseJsonString(((JsonString) json).getString());
 		}
-		throw new IllegalStateException("JSON element was neither object nor array nor primitive");
+		throw new IllegalStateException("JSON element was neither object nor array nor string");
 	}
 
 	public ZNode parseJsonObject(JsonObject json) {
