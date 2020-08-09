@@ -12,6 +12,7 @@ import com.oracle.truffle.api.dsl.NodeFactory;
 
 import de.lucaswerkmeister.graaleneyj.ZConstants;
 import de.lucaswerkmeister.graaleneyj.ZLanguage;
+import de.lucaswerkmeister.graaleneyj.builtins.ZAbstractBuiltinFactory;
 import de.lucaswerkmeister.graaleneyj.builtins.ZCharacterToStringBuiltinFactory;
 import de.lucaswerkmeister.graaleneyj.builtins.ZHeadBuiltinFactory;
 import de.lucaswerkmeister.graaleneyj.builtins.ZReifyBuiltinFactory;
@@ -188,6 +189,8 @@ public class ZCanonicalJsonParser {
 				return makeBuiltin(ZValueBuiltinFactory.getInstance(), functionId);
 			case ZConstants.REIFY:
 				return makeBuiltin(ZReifyBuiltinFactory.getInstance(), functionId);
+			case ZConstants.ABSTRACT:
+				return makeBuiltin(ZAbstractBuiltinFactory.getInstance(), functionId);
 			case ZConstants.CHARACTERTOSTRING:
 				return makeBuiltin(ZCharacterToStringBuiltinFactory.getInstance(), functionId);
 			case ZConstants.STRINGTOCHARACTERLIST:

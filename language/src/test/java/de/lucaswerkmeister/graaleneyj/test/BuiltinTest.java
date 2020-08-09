@@ -549,4 +549,72 @@ public class BuiltinTest extends ZTest {
 						(secondSecond) -> assertEquals("Z10", secondSecond.toString())));
 	}
 
+	@Test
+	public void testAbstractObject() {
+		String typePair = "{\"Z1K1\": \"Z2\", \"Z2K1\": {\"Z1K1\": \"Z6\", \"Z6K1\": \"Z1K1\"}, \"Z2K2\": \"Z1\"}";
+		String idPair = "{\"Z1K1\": \"Z2\", \"Z2K1\": {\"Z1K1\": \"Z6\", \"Z6K1\": \"Z1K2\"}, \"Z2K2\": \"Z0\"}";
+		Value result = eval("{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z38\", \"K1\": [" + typePair + ", " + idPair + "]}");
+		assertTrue(result.hasMembers());
+		assertEquals(2, result.getMemberKeys().size());
+		assertEquals("Z1", result.getMember("Z1K1").toString());
+		assertEquals("Z0", result.getMember("Z1K2").toString());
+	}
+
+	@Test
+	public void testAbstractCharacter() {
+		String typePair = "{\"Z1K1\": \"Z2\", \"Z2K1\": {\"Z1K1\": \"Z6\", \"Z6K1\": \"Z1K1\"}, \"Z2K2\": \"Z60\"}";
+		String characterPair = "{\"Z1K1\": \"Z2\", \"Z2K1\": {\"Z1K1\": \"Z6\", \"Z6K1\": \"Z60K1\"}, \"Z2K2\": \"a\"}";
+		Value result = eval("{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z38\", \"K1\": [" + typePair + ", " + characterPair + "]}");
+		assertTrue(result.hasMembers());
+		assertEquals(2, result.getMemberKeys().size());
+		assertEquals("Z60", result.getMember("Z1K1").toString());
+		assertEquals("a", result.getMember("Z60K1").asString());
+		assertTrue(result.isString());
+		assertEquals("a", result.asString());
+	}
+
+	@Test
+	public void testAbstractCharacterWithId() {
+		String typePair = "{\"Z1K1\": \"Z2\", \"Z2K1\": {\"Z1K1\": \"Z6\", \"Z6K1\": \"Z1K1\"}, \"Z2K2\": \"Z60\"}";
+		String idPair = "{\"Z1K1\": \"Z2\", \"Z2K1\": {\"Z1K1\": \"Z6\", \"Z6K1\": \"Z1K2\"}, \"Z2K2\": \"Z0\"}";
+		String characterPair = "{\"Z1K1\": \"Z2\", \"Z2K1\": {\"Z1K1\": \"Z6\", \"Z6K1\": \"Z60K1\"}, \"Z2K2\": \"a\"}";
+		String pairs = "[" + typePair + ", " + idPair + ", " + characterPair + "]";
+		Value result = eval("{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z38\", \"K1\": " + pairs + "}");
+		assertTrue(result.hasMembers());
+		assertEquals(3, result.getMemberKeys().size());
+		assertEquals("Z60", result.getMember("Z1K1").toString());
+		assertEquals("Z0", result.getMember("Z1K2").toString());
+		assertEquals("a", result.getMember("Z60K1").asString());
+		assertTrue(result.isString());
+		assertEquals("a", result.asString());
+	}
+
+	@Test
+	public void testAbstractString() {
+		String typePair = "{\"Z1K1\": \"Z2\", \"Z2K1\": {\"Z1K1\": \"Z6\", \"Z6K1\": \"Z1K1\"}, \"Z2K2\": \"Z6\"}";
+		String stringPair = "{\"Z1K1\": \"Z2\", \"Z2K1\": {\"Z1K1\": \"Z6\", \"Z6K1\": \"Z6K1\"}, \"Z2K2\": \"abc\"}";
+		Value result = eval("{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z38\", \"K1\": [" + typePair + ", " + stringPair + "]}");
+		assertTrue(result.isString());
+		assertEquals("abc", result.asString());
+	}
+
+	@Test
+	public void testAbstractStringWithId() {
+		String typePair = "{\"Z1K1\": \"Z2\", \"Z2K1\": {\"Z1K1\": \"Z6\", \"Z6K1\": \"Z1K1\"}, \"Z2K2\": \"Z6\"}";
+		String idPair = "{\"Z1K1\": \"Z2\", \"Z2K1\": {\"Z1K1\": \"Z6\", \"Z6K1\": \"Z1K2\"}, \"Z2K2\": \"Z0\"}";
+		String stringPair = "{\"Z1K1\": \"Z2\", \"Z2K1\": {\"Z1K1\": \"Z6\", \"Z6K1\": \"Z6K1\"}, \"Z2K2\": \"abc\"}";
+		String pairs = "[" + typePair + ", " + idPair + ", " + stringPair + "]";
+		Value result = eval("{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z38\", \"K1\": " + pairs + "}");
+		assertTrue(result.hasMembers());
+		assertEquals(3, result.getMemberKeys().size());
+		assertEquals("Z6", result.getMember("Z1K1").toString());
+		assertEquals("Z0", result.getMember("Z1K2").toString());
+		assertEquals("abc", result.getMember("Z6K1").asString());
+		assertTrue(result.isString());
+		assertEquals("abc", result.asString());
+	}
+
+	// TODO test recursive abstract
+	// TODO test same(value, abstract(reify(value)))
+
 }

@@ -20,6 +20,7 @@ public final class ZConstants {
 	public static final String SAME = "Z33";
 	public static final String VALUE = "Z36";
 	public static final String REIFY = "Z37";
+	public static final String ABSTRACT = "Z38";
 	public static final String BOOLEAN = "Z50";
 	public static final String TRUE = "Z54";
 	public static final String FALSE = "Z55";
