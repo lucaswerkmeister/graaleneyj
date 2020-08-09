@@ -1,5 +1,6 @@
 package de.lucaswerkmeister.graaleneyj.builtins;
 
+import com.oracle.truffle.api.CompilerDirectives.TruffleBoundary;
 import com.oracle.truffle.api.dsl.Specialization;
 import com.oracle.truffle.api.nodes.NodeInfo;
 
@@ -10,6 +11,7 @@ import de.lucaswerkmeister.graaleneyj.runtime.ZList;
 public abstract class ZStringToCharacterlist extends ZBuiltinNode {
 
 	@Specialization
+	@TruffleBoundary
 	public ZList doString(String s) {
 		ZList ret = ZList.NIL;
 		for (int i = s.length(); i > 0;) {
