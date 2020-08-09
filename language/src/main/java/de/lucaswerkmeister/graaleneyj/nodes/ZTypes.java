@@ -9,6 +9,7 @@ import de.lucaswerkmeister.graaleneyj.runtime.ZCharacter;
 import de.lucaswerkmeister.graaleneyj.runtime.ZList;
 import de.lucaswerkmeister.graaleneyj.runtime.ZNothing;
 import de.lucaswerkmeister.graaleneyj.runtime.ZObject;
+import de.lucaswerkmeister.graaleneyj.runtime.ZReference;
 
 @TypeSystem({
 		// Z50/boolean (Z54/true and Z55/false)
@@ -17,6 +18,8 @@ import de.lucaswerkmeister.graaleneyj.runtime.ZObject;
 		int.class,
 		// Z6/string
 		String.class,
+		// Z9/reference
+		ZReference.class,
 		// Z10/list
 		ZList.class,
 		// Z60/character, boxed
