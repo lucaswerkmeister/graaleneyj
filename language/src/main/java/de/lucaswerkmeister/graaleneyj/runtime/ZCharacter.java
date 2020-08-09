@@ -35,6 +35,10 @@ public class ZCharacter implements TruffleObject {
 		return new ZCharacter(codepoint, Map.of());
 	}
 
+	public int getCodepoint() {
+		return codepoint;
+	}
+
 	@ExportMessage
 	public final boolean isString() {
 		return true;

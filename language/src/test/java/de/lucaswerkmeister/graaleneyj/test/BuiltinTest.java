@@ -2,6 +2,7 @@ package de.lucaswerkmeister.graaleneyj.test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -74,15 +75,17 @@ public class BuiltinTest extends ZTest {
 	@Test
 	public void testValueOfCharacterAWithId() {
 		String characterAWithoutId = "{\"Z1K1\": \"Z60\", \"Z1K2\": \"Z0\", \"Z60K1\": \"A\"}";
-		assertEquals("A",
-				eval("{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z36\", \"K1\": " + characterAWithoutId + "}").asString());
+		Value result = eval("{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z36\", \"K1\": " + characterAWithoutId + "}");
+		assertEquals("A", result.asString());
+		assertNull(result.getMember("Z1K2"));
 	}
 
 	@Test
 	public void testValueOfCharacterThinkingFaceWithId() {
 		String characterThinkingFaceWithoutId = "{\"Z1K1\": \"Z60\", \"Z1K2\": \"Z0\", \"Z60K1\": \"🤔\"}";
-		assertEquals("🤔", eval("{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z36\", \"K1\": " + characterThinkingFaceWithoutId + "}")
-				.asString());
+		Value result = eval("{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z36\", \"K1\": " + characterThinkingFaceWithoutId + "}");
+		assertEquals("🤔", result.asString());
+		assertNull(result.getMember("Z1K2"));
 	}
 
 	@Test

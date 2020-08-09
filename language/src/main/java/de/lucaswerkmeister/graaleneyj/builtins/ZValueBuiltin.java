@@ -11,6 +11,7 @@ import com.oracle.truffle.api.nodes.NodeInfo;
 import de.lucaswerkmeister.graaleneyj.ZConstants;
 import de.lucaswerkmeister.graaleneyj.nodes.ZEvaluateReferenceNode;
 import de.lucaswerkmeister.graaleneyj.nodes.ZEvaluateReferenceNodeGen;
+import de.lucaswerkmeister.graaleneyj.runtime.ZCharacter;
 import de.lucaswerkmeister.graaleneyj.runtime.ZObject;
 import de.lucaswerkmeister.graaleneyj.runtime.ZReference;
 
@@ -19,6 +20,14 @@ public abstract class ZValueBuiltin extends ZBuiltinNode {
 
 	@Child
 	private ZEvaluateReferenceNode evaluateReference = ZEvaluateReferenceNodeGen.create();
+
+	// TODO the following specialization won’t work if the input is a reference to a
+	// character; split all the specializations of this into a new value node,
+	// and then this node only adopts the evaluate reference and value nodes.
+	@Specialization
+	public Object doCharacter(ZCharacter character) {
+		return ZCharacter.cast(character.getCodepoint());
+	}
 
 	@Specialization
 	public Object getValue(Object object) {
@@ -35,9 +44,11 @@ public abstract class ZValueBuiltin extends ZBuiltinNode {
 					return zobject.readMember(ZConstants.BOOLEAN_IDENTITY);
 				case ZConstants.CHARACTER:
 					// code adapted from ZCharacterLiteralNode
+					// TODO this is probably dead code? there should be no way to create a ZObject
+					// with type character, that should be a ZCharacter in the first place
 					String character = (String) zobject.readMember(ZConstants.CHARACTER_CHARACTER);
 					assert character.codePointCount(0, character.length()) == 1;
-					return character.codePointAt(0);
+					return ZCharacter.cast(character.codePointAt(0));
 				}
 
 				Set<String> memberNames = zobject.getMemberNames();
