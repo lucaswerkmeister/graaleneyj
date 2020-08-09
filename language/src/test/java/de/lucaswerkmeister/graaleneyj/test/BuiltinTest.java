@@ -6,6 +6,8 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.util.function.Consumer;
+
 import org.graalvm.polyglot.PolyglotException;
 import org.graalvm.polyglot.Value;
 import org.junit.Test;
@@ -459,10 +461,14 @@ public class BuiltinTest extends ZTest {
 		assertTrue(sawString);
 	}
 
-	@Test
-	public void testReifyPairOfStrings() {
-		Value result = eval(
-				"{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z37\", \"K1\": {\"Z1K1\": \"Z2\", \"Z2K1\": \"first\", \"Z2K2\": \"second\"}}");
+	/**
+	 * Assert that the result is a reified pair of a certain kind.
+	 * 
+	 * @param result The result of the call to Z37/reify
+	 * @param first  Consumer that should run assertions on the first pair element
+	 * @param second Consumer that should run assertions on the second pair element
+	 */
+	private void assertPair(Value result, Consumer<Value> first, Consumer<Value> second) {
 		assertTrue(result.hasArrayElements());
 		assertEquals(3, result.getArraySize());
 		boolean sawType = false, sawFirst = false, sawSecond = false;
@@ -477,12 +483,12 @@ public class BuiltinTest extends ZTest {
 			case "Z2K1":
 				assertFalse(sawFirst);
 				sawFirst = true;
-				assertEquals("first", value.getMember("Z2K2").asString());
+				first.accept(value.getMember("Z2K2"));
 				break;
 			case "Z2K2":
 				assertFalse(sawSecond);
 				sawSecond = true;
-				assertEquals("second", value.getMember("Z2K2").asString());
+				second.accept(value.getMember("Z2K2"));
 				break;
 			default:
 				fail();
@@ -494,37 +500,19 @@ public class BuiltinTest extends ZTest {
 	}
 
 	@Test
+	public void testReifyPairOfStrings() {
+		Value result = eval(
+				"{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z37\", \"K1\": {\"Z1K1\": \"Z2\", \"Z2K1\": \"first\", \"Z2K2\": \"second\"}}");
+		assertPair(result, (first) -> assertEquals("first", first.asString()),
+				(second) -> assertEquals("second", second.asString()));
+	}
+
+	@Test
 	public void testReifyPairOfReferences() {
 		Value result = eval(
 				"{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z37\", \"K1\": {\"Z1K1\": \"Z2\", \"Z2K1\": \"Z2\", \"Z2K2\": \"Z10\"}}");
-		assertTrue(result.hasArrayElements());
-		assertEquals(3, result.getArraySize());
-		boolean sawType = false, sawFirst = false, sawSecond = false;
-		for (int i = 0; i < 3; i++) {
-			Value value = result.getArrayElement(i);
-			switch (value.getMember("Z2K1").asString()) {
-			case "Z1K1":
-				assertFalse(sawType);
-				sawType = true;
-				assertEquals("Z2", value.getMember("Z2K2").toString());
-				break;
-			case "Z2K1":
-				assertFalse(sawFirst);
-				sawFirst = true;
-				assertEquals("Z2", value.getMember("Z2K2").toString());
-				break;
-			case "Z2K2":
-				assertFalse(sawSecond);
-				sawSecond = true;
-				assertEquals("Z10", value.getMember("Z2K2").toString());
-				break;
-			default:
-				fail();
-			}
-		}
-		assertTrue(sawType);
-		assertTrue(sawFirst);
-		assertTrue(sawSecond);
+		assertPair(result, (first) -> assertEquals("Z2", first.toString()),
+				(second) -> assertEquals("Z10", second.toString()));
 	}
 
 	@Test
@@ -533,90 +521,11 @@ public class BuiltinTest extends ZTest {
 		String pairOfReferences = "{\"Z1K1\": \"Z2\", \"Z2K1\": \"Z2\", \"Z2K2\": \"Z10\"}";
 		Value result = eval("{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z37\", \"K1\": {\"Z1K1\": \"Z2\", \"Z2K1\": "
 				+ pairOfStrings + ", \"Z2K2\": " + pairOfReferences + "}}");
-		assertTrue(result.hasArrayElements());
-		assertEquals(3, result.getArraySize());
-		boolean sawType = false, sawFirst = false, sawSecond = false;
-		boolean sawFirstType = false, sawFirstFirst = false, sawFirstSecond = false;
-		boolean sawSecondType = false, sawSecondFirst = false, sawSecondSecond = false;
-		for (int i = 0; i < 3; i++) {
-			Value value = result.getArrayElement(i);
-			switch (value.getMember("Z2K1").asString()) {
-			case "Z1K1":
-				assertFalse(sawType);
-				sawType = true;
-				assertEquals("Z2", value.getMember("Z2K2").toString());
-				break;
-			case "Z2K1":
-				assertFalse(sawFirst);
-				sawFirst = true;
-				Value first = value.getMember("Z2K2");
-				assertTrue(first.hasArrayElements());
-				assertEquals(3, first.getArraySize());
-				for (int j = 0; j < 3; j++) {
-					Value inner = first.getArrayElement(j);
-					switch (inner.getMember("Z2K1").asString()) {
-					case "Z1K1":
-						assertFalse(sawFirstType);
-						sawFirstType = true;
-						assertEquals("Z2", inner.getMember("Z2K2").toString());
-						break;
-					case "Z2K1":
-						assertFalse(sawFirstFirst);
-						sawFirstFirst = true;
-						assertEquals("first", inner.getMember("Z2K2").asString());
-						break;
-					case "Z2K2":
-						assertFalse(sawFirstSecond);
-						sawFirstSecond = true;
-						assertEquals("second", inner.getMember("Z2K2").asString());
-						break;
-					default:
-						fail();
-					}
-				}
-				assertTrue(sawFirstType);
-				assertTrue(sawFirstFirst);
-				assertTrue(sawFirstSecond);
-				break;
-			case "Z2K2":
-				assertFalse(sawSecond);
-				sawSecond = true;
-				Value second = value.getMember("Z2K2");
-				assertTrue(second.hasArrayElements());
-				assertEquals(3, second.getArraySize());
-				for (int j = 0; j < 3; j++) {
-					Value inner = second.getArrayElement(j);
-					switch (inner.getMember("Z2K1").asString()) {
-					case "Z1K1":
-						assertFalse(sawSecondType);
-						sawSecondType = true;
-						assertEquals("Z2", inner.getMember("Z2K2").toString());
-						break;
-					case "Z2K1":
-						assertFalse(sawSecondFirst);
-						sawSecondFirst = true;
-						assertEquals("Z2", inner.getMember("Z2K2").toString());
-						break;
-					case "Z2K2":
-						assertFalse(sawSecondSecond);
-						sawSecondSecond = true;
-						assertEquals("Z10", inner.getMember("Z2K2").toString());
-						break;
-					default:
-						fail();
-					}
-				}
-				assertTrue(sawSecondType);
-				assertTrue(sawSecondFirst);
-				assertTrue(sawSecondSecond);
-				break;
-			default:
-				fail();
-			}
-		}
-		assertTrue(sawType);
-		assertTrue(sawFirst);
-		assertTrue(sawSecond);
+		assertPair(result,
+				(first) -> assertPair(first, (firstFirst) -> assertEquals("first", firstFirst.asString()),
+						(firstSecond) -> assertEquals("second", firstSecond.asString())),
+				(second) -> assertPair(second, (secondFirst) -> assertEquals("Z2", secondFirst.toString()),
+						(secondSecond) -> assertEquals("Z10", secondSecond.toString())));
 	}
 
 }
