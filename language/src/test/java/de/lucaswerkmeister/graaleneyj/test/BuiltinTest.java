@@ -91,6 +91,27 @@ public class BuiltinTest extends ZTest {
 	}
 
 	@Test
+	public void testValueOfCharacterReferenceSpace() {
+		Value result = eval("{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z36\", \"K1\": \"Z301\"}");
+		assertEquals(" ", result.asString());
+		assertNull(result.getMember("Z1K2"));
+	}
+
+	@Test
+	public void testValueOfCharacterReferenceA() {
+		Value result = eval("{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z36\", \"K1\": \"Z302\"}");
+		assertEquals("a", result.asString());
+		assertNull(result.getMember("Z1K2"));
+	}
+
+	@Test
+	public void testValueOfCharacterReferenceSushi() {
+		Value result = eval("{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z36\", \"K1\": \"Z303\"}");
+		assertEquals("🍣", result.asString());
+		assertNull(result.getMember("Z1K2"));
+	}
+
+	@Test
 	public void testHeadOfSingleElementList() {
 		assertEquals("A", eval("{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z64\", \"K1\": [\"A\"]}").asString());
 	}
