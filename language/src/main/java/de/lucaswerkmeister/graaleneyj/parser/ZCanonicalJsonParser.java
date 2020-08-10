@@ -38,6 +38,7 @@ import de.lucaswerkmeister.graaleneyj.nodes.ZReferenceLiteralNode;
 import de.lucaswerkmeister.graaleneyj.nodes.ZReferenceLiteralNodeGen;
 import de.lucaswerkmeister.graaleneyj.nodes.ZRootNode;
 import de.lucaswerkmeister.graaleneyj.nodes.ZStringLiteralNode;
+import de.lucaswerkmeister.graaleneyj.nodes.ZStringLiteralNode.ZStringLiteralMemberNode;
 import de.lucaswerkmeister.graaleneyj.nodes.ZThrowConstantNode;
 import de.lucaswerkmeister.graaleneyj.runtime.UnusableImplementationException;
 
@@ -70,6 +71,8 @@ public class ZCanonicalJsonParser {
 	public ZNode parseJsonObject(JsonObject json) {
 		String type = json.get(ZConstants.ZOBJECT_TYPE).getAsString(); // TODO error handling
 		switch (type) {
+		case ZConstants.STRING:
+			return parseJsonObjectAsStringLiteral(json);
 		case ZConstants.FUNCTIONCALL:
 			return parseJsonObjectAsFunctionCall(json);
 		case ZConstants.FUNCTION:
@@ -88,6 +91,24 @@ public class ZCanonicalJsonParser {
 			i++;
 		}
 		return new ZObjectLiteralNode(members);
+	}
+
+	/**
+	 * Parse a JSON object as a string literal. This is used when the string value
+	 * would otherwise look like a reference, or if the string has extra members.
+	 */
+	public ZNode parseJsonObjectAsStringLiteral(JsonObject json) {
+		ZStringLiteralMemberNode[] extraMembers = new ZStringLiteralMemberNode[json.size() - 2];
+		int i = 0;
+		for (Entry<String, JsonElement> entry : json.entrySet()) {
+			if (ZConstants.ZOBJECT_TYPE.equals(entry.getKey())
+					|| ZConstants.STRING_STRING_VALUE.equals(entry.getKey())) {
+				continue;
+			}
+			extraMembers[i] = new ZStringLiteralMemberNode(entry.getKey(), parseJsonElement(entry.getValue()));
+			i++;
+		}
+		return new ZStringLiteralNode(json.get(ZConstants.STRING_STRING_VALUE).getAsString(), extraMembers);
 	}
 
 	/**

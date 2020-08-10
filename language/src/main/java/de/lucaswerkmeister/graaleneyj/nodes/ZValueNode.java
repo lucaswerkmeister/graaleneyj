@@ -14,6 +14,7 @@ import de.lucaswerkmeister.graaleneyj.builtins.ZValueBuiltin;
 import de.lucaswerkmeister.graaleneyj.runtime.ZCharacter;
 import de.lucaswerkmeister.graaleneyj.runtime.ZObject;
 import de.lucaswerkmeister.graaleneyj.runtime.ZReference;
+import de.lucaswerkmeister.graaleneyj.runtime.ZString;
 
 /**
  * Helper node to implement the {@link ZValueBuiltin Z36/value builtin}, after
@@ -29,11 +30,18 @@ public abstract class ZValueNode extends Node {
 	}
 
 	@Specialization
+	public Object doString(ZString string) {
+		return string.asString();
+	}
+
+	@Specialization
 	public Object doZObject(ZObject object) {
 		try {
 			String type = ((ZReference) object.readMember(ZConstants.ZOBJECT_TYPE)).getId();
 			switch (type) {
 			case ZConstants.STRING:
+				// TODO this should be dead code, there should be no way to get a ZObject of
+				// type string in the first place
 				return object.readMember(ZConstants.STRING_STRING_VALUE);
 			case ZConstants.BOOLEAN:
 				return object.readMember(ZConstants.BOOLEAN_IDENTITY);
