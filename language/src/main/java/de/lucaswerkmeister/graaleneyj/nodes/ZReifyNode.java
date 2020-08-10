@@ -32,13 +32,12 @@ public abstract class ZReifyNode extends Node {
 
 	@Specialization
 	public Object doString(String value) {
-		// TODO what if the value looks like a reference?
 		return value;
 	}
 
 	@Specialization
 	public Object doReference(ZReference value) {
-		return value.getId();
+		return value;
 	}
 
 	// note: that guard also ensures that this specialization does not match String
