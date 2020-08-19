@@ -49,13 +49,14 @@ public class ZImplementationCodeNode extends ZImplementationNode {
 		if (source != null) {
 			Source s = Source.newBuilder(sourceLanguage, source, functionId).build();
 			ZContext c = lookupContextReference(ZLanguage.class).get();
-			return c.parse(s, argumentNames);
-		} else {
-			RuntimeException exception = new UnusableImplementationException(
-					"Unusable code language: " + sourceLanguage);
-			ZRootNode throwNode = new ZRootNode(zLanguage, new ZThrowConstantNode(exception));
-			return Truffle.getRuntime().createCallTarget(throwNode);
+			if (c.canParseLanguage(sourceLanguage)) {
+				return c.parse(s, argumentNames);
+			}
 		}
+
+		RuntimeException exception = new UnusableImplementationException("Unusable code language: " + sourceLanguage);
+		ZRootNode throwNode = new ZRootNode(zLanguage, new ZThrowConstantNode(exception));
+		return Truffle.getRuntime().createCallTarget(throwNode);
 	}
 
 }

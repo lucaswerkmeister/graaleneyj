@@ -27,6 +27,10 @@ public final class ZContext {
 		return env.getInternalTruffleFile("abstracttext/eneyj/data/" + zid + ".json");
 	}
 
+	public boolean canParseLanguage(String language) {
+		return env.getPublicLanguages().containsKey(language);
+	}
+
 	public CallTarget parse(Source source, String... argumentNames) {
 		return env.parsePublic(source, argumentNames);
 	}
