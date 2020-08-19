@@ -30,7 +30,7 @@ public class ZImplementationCodeNode extends ZImplementationNode {
 			// TODO functions can have side-effects by accessing and modifying properties of
 			// the globalThis :(
 			this.sourceLanguage = "js";
-			this.source = "let K0;\n" + source + "\nreturn K0;";
+			this.source = "(function(){\nlet K0;\n" + source + "\nreturn K0;\n})()";
 			break;
 		case "python":
 			// TODO doesn’t actually work yet because GraalPython doesn’t support parse
