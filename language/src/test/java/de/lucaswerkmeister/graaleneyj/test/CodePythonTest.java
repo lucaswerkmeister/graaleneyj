@@ -4,10 +4,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assume.assumeTrue;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
-@Ignore("GraalPython doesn’t support parse requests with arguments yet")
 public class CodePythonTest extends ZTest {
 
 	@Before
@@ -16,7 +14,8 @@ public class CodePythonTest extends ZTest {
 	}
 
 	private String nandWithOnlyPythonImplementation() {
-		return "{\"Z1K1\": \"Z8\", \"Z8K4\": [{\"Z1K1\": \"Z14\", \"Z14K1\": {\"Z1K1\": \"Z16\", \"Z16K1\": \"python\", \"Z16K2\": \"K0 = not(Z53K1 and Z53K2)\"}}]}";
+		return "{\"Z1K1\": \"Z8\", \"Z1K2\": \"Z53\", \"Z8K1\": [{\"Z1K2\": \"Z53K1\"}, {\"Z1K2\": \"Z53K2\"}], "
+				+ "\"Z8K4\": [{\"Z1K1\": \"Z14\", \"Z14K1\": {\"Z1K1\": \"Z16\", \"Z16K1\": \"python\", \"Z16K2\": \"K0 = not(Z53K1 and Z53K2)\"}}]}";
 	}
 
 	@Test

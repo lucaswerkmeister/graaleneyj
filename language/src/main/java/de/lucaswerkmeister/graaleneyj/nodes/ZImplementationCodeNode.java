@@ -33,11 +33,8 @@ public class ZImplementationCodeNode extends ZImplementationNode {
 			this.source = "(function(){\nlet K0;\n" + source + "\nreturn K0;\n})()";
 			break;
 		case "python":
-			// TODO doesn’t actually work yet because GraalPython doesn’t support parse
-			// requests with argument names
 			this.sourceLanguage = "python";
-			// this.source = source + "\nK0";
-			this.source = null;
+			this.source = source + "\nK0";
 			break;
 		default:
 			this.sourceLanguage = sourceLanguage;
