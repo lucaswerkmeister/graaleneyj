@@ -614,6 +614,12 @@ public class BuiltinTest extends ZTest {
 		assertEquals("abc", result.asString());
 	}
 
+	@Test
+	public void testAbstractReifyString() {
+		String reifyCall = "{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z37\", \"K1\": \"a string\"}";
+		assertEquals("a string", eval("{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z38\", \"K1\": " + reifyCall + "}").asString());
+	}
+
 	// TODO test recursive abstract
 	// TODO test same(value, abstract(reify(value)))
 
