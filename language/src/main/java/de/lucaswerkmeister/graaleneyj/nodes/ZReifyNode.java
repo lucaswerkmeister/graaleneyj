@@ -61,8 +61,8 @@ public abstract class ZReifyNode extends Node {
 	}
 
 	public Object makePair(String key, Object value) {
-		return new ZObject(Map.of( //
-				ZConstants.ZOBJECT_TYPE, ZConstants.PAIR, //
+		return new ZObject(Map.<String, Object>of( //
+				ZConstants.ZOBJECT_TYPE, new ZReference(ZConstants.PAIR, null), // TODO context
 				ZConstants.PAIR_FIRST, key, //
 				ZConstants.PAIR_SECOND, value //
 		));

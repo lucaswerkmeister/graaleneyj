@@ -1,15 +1,19 @@
 package de.lucaswerkmeister.graaleneyj.builtins;
 
+import com.oracle.truffle.api.dsl.CachedContext;
 import com.oracle.truffle.api.dsl.Fallback;
 import com.oracle.truffle.api.dsl.Specialization;
 import com.oracle.truffle.api.nodes.NodeInfo;
 
 import de.lucaswerkmeister.graaleneyj.ZConstants;
+import de.lucaswerkmeister.graaleneyj.ZLanguage;
 import de.lucaswerkmeister.graaleneyj.nodes.ZEvaluateReferenceNode;
 import de.lucaswerkmeister.graaleneyj.nodes.ZEvaluateReferenceNodeGen;
 import de.lucaswerkmeister.graaleneyj.nodes.ZReifyNode;
 import de.lucaswerkmeister.graaleneyj.nodes.ZReifyNodeGen;
+import de.lucaswerkmeister.graaleneyj.runtime.ZContext;
 import de.lucaswerkmeister.graaleneyj.runtime.ZList;
+import de.lucaswerkmeister.graaleneyj.runtime.ZReference;
 
 /**
  * <p>
@@ -31,8 +35,8 @@ public abstract class ZReifyBuiltin extends ZBuiltinNode {
 	private ZReifyNode reify = ZReifyNodeGen.create();
 
 	@Specialization
-	public ZList doString(String value) {
-		return new ZList(reify.makePair(ZConstants.ZOBJECT_TYPE, ZConstants.STRING),
+	public ZList doString(String value, @CachedContext(ZLanguage.class) ZContext context) {
+		return new ZList(reify.makePair(ZConstants.ZOBJECT_TYPE, new ZReference(ZConstants.STRING, context)),
 				new ZList(reify.makePair(ZConstants.STRING_STRING_VALUE, value), ZList.NIL));
 	}
 
