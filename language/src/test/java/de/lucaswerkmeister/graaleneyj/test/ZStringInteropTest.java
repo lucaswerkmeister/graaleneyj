@@ -1,5 +1,6 @@
 package de.lucaswerkmeister.graaleneyj.test;
 
+import static de.lucaswerkmeister.graaleneyj.test.ZAssert.assertZReference;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -29,7 +30,7 @@ public class ZStringInteropTest extends ZTest {
 
 	@Test
 	public void testReadMember_type() {
-		assertEquals("Z6", eval("{\"Z1K1\": \"Z6\", \"Z1K2\": \"Z0\", \"Z6K1\": \"a\"}").getMember("Z1K1").toString());
+		assertZReference("Z6", eval("{\"Z1K1\": \"Z6\", \"Z1K2\": \"Z0\", \"Z6K1\": \"a\"}").getMember("Z1K1"));
 	}
 
 	@Test
@@ -39,7 +40,7 @@ public class ZStringInteropTest extends ZTest {
 
 	@Test
 	public void testReadMember_id() {
-		assertEquals("Z0", eval("{\"Z1K1\": \"Z6\", \"Z1K2\": \"Z0\", \"Z6K1\": \"a\"}").getMember("Z1K2").toString());
+		assertZReference("Z0", eval("{\"Z1K1\": \"Z6\", \"Z1K2\": \"Z0\", \"Z6K1\": \"a\"}").getMember("Z1K2"));
 	}
 
 	@Test

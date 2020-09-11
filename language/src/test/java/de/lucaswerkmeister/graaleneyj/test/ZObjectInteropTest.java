@@ -1,5 +1,6 @@
 package de.lucaswerkmeister.graaleneyj.test;
 
+import static de.lucaswerkmeister.graaleneyj.test.ZAssert.assertZReference;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -24,7 +25,7 @@ public class ZObjectInteropTest extends ZTest {
 
 	@Test
 	public void testReadMember() {
-		assertEquals("Z1", eval("{\"Z1K1\": \"Z1\"}").getMember("Z1K1").toString());
+		assertZReference("Z1", eval("{\"Z1K1\": \"Z1\"}").getMember("Z1K1"));
 	}
 
 	@Test
