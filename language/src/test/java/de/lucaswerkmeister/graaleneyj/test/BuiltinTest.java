@@ -373,7 +373,7 @@ public class BuiltinTest extends ZTest {
 			first = swap;
 		}
 		assertEquals("Z1K1", first.getMember("Z2K1").asString());
-		assertEquals("Z60", first.getMember("Z2K2").toString());
+		assertZReference("Z60", first.getMember("Z2K2"));
 		assertEquals("Z60K1", second.getMember("Z2K1").asString());
 		assertEquals("a", second.getMember("Z2K2").asString());
 	}
@@ -391,12 +391,12 @@ public class BuiltinTest extends ZTest {
 			case "Z1K1":
 				assertFalse(sawType);
 				sawType = true;
-				assertEquals("Z60", value.getMember("Z2K2").toString());
+				assertZReference("Z60", value.getMember("Z2K2"));
 				break;
 			case "Z1K2":
 				assertFalse(sawId);
 				sawId = true;
-				assertEquals("Z0", value.getMember("Z2K2").toString());
+				assertZReference("Z0", value.getMember("Z2K2"));
 				break;
 			case "Z60K1":
 				assertFalse(sawCharacter);
@@ -568,7 +568,7 @@ public class BuiltinTest extends ZTest {
 		Value result = eval("{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z38\", \"K1\": [" + typePair + ", " + characterPair + "]}");
 		assertTrue(result.hasMembers());
 		assertEquals(2, result.getMemberKeys().size());
-		assertEquals("Z60", result.getMember("Z1K1").toString());
+		assertZReference("Z60", result.getMember("Z1K1"));
 		assertEquals("a", result.getMember("Z60K1").asString());
 		assertTrue(result.isString());
 		assertEquals("a", result.asString());
@@ -583,8 +583,8 @@ public class BuiltinTest extends ZTest {
 		Value result = eval("{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z38\", \"K1\": " + pairs + "}");
 		assertTrue(result.hasMembers());
 		assertEquals(3, result.getMemberKeys().size());
-		assertEquals("Z60", result.getMember("Z1K1").toString());
-		assertEquals("Z0", result.getMember("Z1K2").toString());
+		assertZReference("Z60", result.getMember("Z1K1"));
+		assertZReference("Z0", result.getMember("Z1K2"));
 		assertEquals("a", result.getMember("Z60K1").asString());
 		assertTrue(result.isString());
 		assertEquals("a", result.asString());
