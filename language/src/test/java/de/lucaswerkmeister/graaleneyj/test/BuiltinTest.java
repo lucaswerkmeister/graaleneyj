@@ -462,12 +462,12 @@ public class BuiltinTest extends ZTest {
 			case "Z1K1":
 				assertFalse(sawType);
 				sawType = true;
-				assertEquals("Z6", value.getMember("Z2K2").toString());
+				assertZReference("Z6", value.getMember("Z2K2"));
 				break;
 			case "Z1K2":
 				assertFalse(sawId);
 				sawId = true;
-				assertEquals("Z0", value.getMember("Z2K2").toString());
+				assertZReference("Z0", value.getMember("Z2K2"));
 				break;
 			case "Z6K1":
 				assertFalse(sawString);
@@ -608,8 +608,8 @@ public class BuiltinTest extends ZTest {
 		Value result = eval("{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z38\", \"K1\": " + pairs + "}");
 		assertTrue(result.hasMembers());
 		assertEquals(3, result.getMemberKeys().size());
-		assertEquals("Z6", result.getMember("Z1K1").toString());
-		assertEquals("Z0", result.getMember("Z1K2").toString());
+		assertZReference("Z6", result.getMember("Z1K1"));
+		assertZReference("Z0", result.getMember("Z1K2"));
 		assertEquals("abc", result.getMember("Z6K1").asString());
 		assertTrue(result.isString());
 		assertEquals("abc", result.asString());

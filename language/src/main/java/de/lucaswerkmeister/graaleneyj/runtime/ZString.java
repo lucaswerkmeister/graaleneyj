@@ -4,6 +4,7 @@ import java.util.Map;
 
 import com.oracle.truffle.api.CompilerDirectives;
 import com.oracle.truffle.api.TruffleLanguage;
+import com.oracle.truffle.api.dsl.CachedContext;
 import com.oracle.truffle.api.interop.InteropLibrary;
 import com.oracle.truffle.api.interop.InvalidArrayIndexException;
 import com.oracle.truffle.api.interop.TruffleObject;
@@ -60,10 +61,11 @@ public class ZString implements TruffleObject {
 	}
 
 	@ExportMessage
-	public final Object readMember(String member) throws UnknownIdentifierException {
+	public final Object readMember(String member, @CachedContext(ZLanguage.class) ZContext context)
+			throws UnknownIdentifierException {
 		switch (member) {
 		case ZConstants.ZOBJECT_TYPE:
-			return ZConstants.STRING;
+			return new ZReference(ZConstants.STRING, context);
 		case ZConstants.STRING_STRING_VALUE:
 			return value;
 		}
