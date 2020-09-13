@@ -533,8 +533,7 @@ public class BuiltinTest extends ZTest {
 	public void testReifyPairOfReferences() {
 		Value result = eval(
 				"{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z37\", \"K1\": {\"Z1K1\": \"Z2\", \"Z2K1\": \"Z2\", \"Z2K2\": \"Z10\"}}");
-		assertPair(result, (first) -> assertZReference("Z2", first),
-				(second) -> assertZReference("Z10", second));
+		assertPair(result, (first) -> assertZReference("Z2", first), (second) -> assertZReference("Z10", second));
 	}
 
 	@Test
@@ -615,13 +614,66 @@ public class BuiltinTest extends ZTest {
 		assertEquals("abc", result.asString());
 	}
 
+	// TODO test recursive abstract
+
 	@Test
 	public void testAbstractReifyString() {
 		String reifyCall = "{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z37\", \"K1\": \"a string\"}";
 		assertEquals("a string", eval("{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z38\", \"K1\": " + reifyCall + "}").asString());
 	}
 
-	// TODO test recursive abstract
-	// TODO test same(value, abstract(reify(value)))
+	public void testSameAbstractReify(String value) {
+		String reifyCall = "{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z37\", \"K1\": " + value + "}";
+		String abstractCall = "{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z38\", \"K1\": " + reifyCall + "}";
+		String sameCall = "{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z33\", \"K1\": " + value + ", \"K2\": " + abstractCall + "}";
+		assertEquals(true, eval(sameCall).asBoolean());
+	}
+
+	@Test
+	public void testSameAbstractReifyObject() {
+		testSameAbstractReify("{\"Z1K1\": \"Z1\", \"Z1K2\": \"Z0\"}");
+	}
+
+	@Test
+	public void testSameAbstractReifyCharacterWithoutId() {
+		testSameAbstractReify("{\"Z1K1\": \"Z60\", \"Z60K1\": \"a\"}");
+	}
+
+	@Test
+	public void testSameAbstractReifyCharacterWithId() {
+		testSameAbstractReify("{\"Z1K1\": \"Z60\", \"Z1K2\": \"Z0\", \"Z60K1\": \"a\"}");
+	}
+
+	@Test
+	public void testSameAbstractReifyStringLiteral() {
+		testSameAbstractReify("\"a string\"");
+	}
+
+	@Test
+	public void testSameAbstractReifyStringWithoutId() {
+		testSameAbstractReify("{\"Z1K1\": \"Z6\", \"Z6K1\": \"a string\"}");
+	}
+
+	@Test
+	public void testSameAbstractReifyStringWithId() {
+		testSameAbstractReify("{\"Z1K1\": \"Z6\", \"Z1K2\": \"Z0\", \"Z6K1\": \"a string\"}");
+	}
+
+	@Test
+	public void testSameAbstractReifyPairOfStrings() {
+		testSameAbstractReify("{\"Z1K1\": \"Z2\", \"Z2K1\": \"first\", \"Z2K2\": \"second\"}");
+	}
+
+	@Test
+	public void testSameAbstractReifyPairOfReferences() {
+		testSameAbstractReify("{\"Z1K1\": \"Z2\", \"Z2K1\": \"Z2\", \"Z2K2\": \"Z10\"}");
+	}
+
+	@Test
+	public void testSameAbstractReifyPairOfPairs() {
+		String pairOfStrings = "{\"Z1K1\": \"Z2\", \"Z2K1\": \"first\", \"Z2K2\": \"second\"}";
+		String pairOfReferences = "{\"Z1K1\": \"Z2\", \"Z2K1\": \"Z2\", \"Z2K2\": \"Z10\"}";
+		testSameAbstractReify("{\"Z1K1\": \"Z2\", \"Z2K1\": " + pairOfStrings + ", \"Z2K2\": " + pairOfReferences + "}");
+	}
 
 }
