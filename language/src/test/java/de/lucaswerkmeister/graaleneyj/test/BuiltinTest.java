@@ -614,7 +614,34 @@ public class BuiltinTest extends ZTest {
 		assertEquals("abc", result.asString());
 	}
 
-	// TODO test recursive abstract
+	@Test
+	public void testAbstractProjectName() {
+		// TODO because we can’t reify/abstract lists yet, this test pretends the label
+		// is a (monolingual) text, rather than a multilingual text
+		String typeTextPair = "{\"Z1K1\": \"Z2\", \"Z2K1\": {\"Z1K1\": \"Z6\", \"Z6K1\": \"Z1K1\"}, \"Z2K2\": \"Z11\"}";
+		String languageEnglishPair = "{\"Z1K1\": \"Z2\", \"Z2K1\": {\"Z1K1\": \"Z6\", \"Z6K1\": \"Z11K1\"}, \"Z2K2\": \"Z251\"}";
+		String textProjectNamePair = "{\"Z1K1\": \"Z2\", \"Z2K1\": {\"Z1K1\": \"Z6\", \"Z6K1\": \"Z11K2\"}, \"Z2K2\": \"project_name\"}";
+		String labelPair = "{\"Z1K1\": \"Z2\", \"Z2K1\": {\"Z1K1\": \"Z6\", \"Z6K1\": \"Z1K3\"}, \"Z2K2\": ["
+				+ typeTextPair + ", " + languageEnglishPair + ", " + textProjectNamePair + "]}";
+		String typeStringPair = "{\"Z1K1\": \"Z2\", \"Z2K1\": {\"Z1K1\": \"Z6\", \"Z6K1\": \"Z1K1\"}, \"Z2K2\": \"Z6\"}";
+		String idZ28Pair = "{\"Z1K1\": \"Z2\", \"Z2K1\": {\"Z1K1\": \"Z6\", \"Z6K1\": \"Z1K2\"}, \"Z2K2\": \"Z28\"}";
+		String stringValueEneyjPair = "{\"Z1K1\": \"Z2\", \"Z2K1\": {\"Z1K1\": \"Z6\", \"Z6K1\": \"Z6K1\"}, \"Z2K2\": \"eneyj\"}";
+		String object = "[" + typeStringPair + ", " + idZ28Pair + ", " + labelPair + ", " + stringValueEneyjPair + "]";
+		Value result = eval("{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z38\", \"K1\": " + object + "}");
+		assertTrue(result.isString());
+		assertEquals("eneyj", result.asString());
+		assertTrue(result.hasMembers());
+		assertEquals(4, result.getMemberKeys().size());
+		assertZReference("Z6", result.getMember("Z1K1"));
+		assertZReference("Z28", result.getMember("Z1K2"));
+		assertEquals("eneyj", result.getMember("Z6K1").asString());
+		Value label = result.getMember("Z1K3");
+		assertTrue(label.hasMembers());
+		assertEquals(3, label.getMemberKeys().size());
+		assertZReference("Z11", label.getMember("Z1K1"));
+		assertZReference("Z251", label.getMember("Z11K1"));
+		assertEquals("project_name", label.getMember("Z11K2").asString());
+	}
 
 	@Test
 	public void testAbstractReifyString() {
