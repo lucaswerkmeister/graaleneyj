@@ -1,4 +1,5 @@
 # GraalEneyj
+[![Build Status](https://travis-ci.com/lucaswerkmeister/graaleneyj.svg?branch=main)](https://travis-ci.com/lucaswerkmeister/graaleneyj)
 
 An **early work in progress** [GraalVM][] implementation of [eneyj][].
 
