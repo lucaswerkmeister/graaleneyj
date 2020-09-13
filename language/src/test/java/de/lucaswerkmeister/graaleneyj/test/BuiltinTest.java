@@ -673,7 +673,8 @@ public class BuiltinTest extends ZTest {
 	public void testSameAbstractReifyPairOfPairs() {
 		String pairOfStrings = "{\"Z1K1\": \"Z2\", \"Z2K1\": \"first\", \"Z2K2\": \"second\"}";
 		String pairOfReferences = "{\"Z1K1\": \"Z2\", \"Z2K1\": \"Z2\", \"Z2K2\": \"Z10\"}";
-		testSameAbstractReify("{\"Z1K1\": \"Z2\", \"Z2K1\": " + pairOfStrings + ", \"Z2K2\": " + pairOfReferences + "}");
+		testSameAbstractReify(
+				"{\"Z1K1\": \"Z2\", \"Z2K1\": " + pairOfStrings + ", \"Z2K2\": " + pairOfReferences + "}");
 	}
 
 }
