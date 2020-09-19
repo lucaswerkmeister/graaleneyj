@@ -490,7 +490,7 @@ public class BuiltinTest extends ZTest {
 	 * @param first  Consumer that should run assertions on the first pair element
 	 * @param second Consumer that should run assertions on the second pair element
 	 */
-	private void assertPair(Value result, Consumer<Value> first, Consumer<Value> second) {
+	private void assertReifiedPair(Value result, Consumer<Value> first, Consumer<Value> second) {
 		assertTrue(result.hasArrayElements());
 		assertEquals(3, result.getArraySize());
 		boolean sawType = false, sawFirst = false, sawSecond = false;
@@ -525,7 +525,7 @@ public class BuiltinTest extends ZTest {
 	public void testReifyPairOfStrings() {
 		Value result = eval(
 				"{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z37\", \"K1\": {\"Z1K1\": \"Z2\", \"Z2K1\": \"first\", \"Z2K2\": \"second\"}}");
-		assertPair(result, (first) -> assertEquals("first", first.asString()),
+		assertReifiedPair(result, (first) -> assertEquals("first", first.asString()),
 				(second) -> assertEquals("second", second.asString()));
 	}
 
@@ -533,7 +533,7 @@ public class BuiltinTest extends ZTest {
 	public void testReifyPairOfReferences() {
 		Value result = eval(
 				"{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z37\", \"K1\": {\"Z1K1\": \"Z2\", \"Z2K1\": \"Z2\", \"Z2K2\": \"Z10\"}}");
-		assertPair(result, (first) -> assertZReference("Z2", first), (second) -> assertZReference("Z10", second));
+		assertReifiedPair(result, (first) -> assertZReference("Z2", first), (second) -> assertZReference("Z10", second));
 	}
 
 	@Test
@@ -542,10 +542,10 @@ public class BuiltinTest extends ZTest {
 		String pairOfReferences = "{\"Z1K1\": \"Z2\", \"Z2K1\": \"Z2\", \"Z2K2\": \"Z10\"}";
 		Value result = eval("{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z37\", \"K1\": {\"Z1K1\": \"Z2\", \"Z2K1\": "
 				+ pairOfStrings + ", \"Z2K2\": " + pairOfReferences + "}}");
-		assertPair(result,
-				(first) -> assertPair(first, (firstFirst) -> assertEquals("first", firstFirst.asString()),
+		assertReifiedPair(result,
+				(first) -> assertReifiedPair(first, (firstFirst) -> assertEquals("first", firstFirst.asString()),
 						(firstSecond) -> assertEquals("second", firstSecond.asString())),
-				(second) -> assertPair(second, (secondFirst) -> assertZReference("Z2", secondFirst),
+				(second) -> assertReifiedPair(second, (secondFirst) -> assertZReference("Z2", secondFirst),
 						(secondSecond) -> assertZReference("Z10", secondSecond)));
 	}
 
