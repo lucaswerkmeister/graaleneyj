@@ -43,7 +43,7 @@ public abstract class ZAbstractNode extends Node {
 			Map<String, Object> members = new HashMap<>();
 			while (list != ZList.NIL) {
 				Object pair = list.getHead();
-				assert ("Z2".equals(((ZReference) pairs.readMember(pair, ZConstants.ZOBJECT_TYPE)).getId()));
+				assert (ZConstants.PAIR.equals(((ZReference) pairs.readMember(pair, ZConstants.ZOBJECT_TYPE)).getId()));
 				String key = (String) pairs.readMember(pair, ZConstants.PAIR_FIRST); // TODO proper error handling
 				Object value = pairs.readMember(pair, ZConstants.PAIR_SECOND);
 				members.put(key, execute(value));
