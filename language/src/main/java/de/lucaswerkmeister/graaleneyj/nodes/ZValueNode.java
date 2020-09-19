@@ -1,6 +1,5 @@
 package de.lucaswerkmeister.graaleneyj.nodes;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import com.oracle.truffle.api.dsl.CachedContext;
@@ -12,6 +11,8 @@ import com.oracle.truffle.api.interop.UnknownIdentifierException;
 import com.oracle.truffle.api.interop.UnsupportedMessageException;
 import com.oracle.truffle.api.library.CachedLibrary;
 import com.oracle.truffle.api.nodes.Node;
+import com.oracle.truffle.api.object.DynamicObject;
+import com.oracle.truffle.api.object.DynamicObjectLibrary;
 
 import de.lucaswerkmeister.graaleneyj.ZConstants;
 import de.lucaswerkmeister.graaleneyj.ZLanguage;
@@ -31,6 +32,14 @@ public abstract class ZValueNode extends Node {
 
 	/** Library for working with a members object. */
 	private final InteropLibrary membersLib = InteropLibrary.getFactory().createDispatched(LIMIT);
+
+	/** Library for adding members to the newly created values object. */
+	@Child
+	protected DynamicObjectLibrary objectLib = DynamicObjectLibrary.getFactory().createDispatched(LIMIT);
+
+	/** Library for adding the ZOBJECT_TYPE member to the newly created object. */
+	@Child
+	protected DynamicObjectLibrary typeLib = DynamicObjectLibrary.getFactory().createDispatched(LIMIT);
 
 	public abstract Object execute(Object value);
 
@@ -66,17 +75,17 @@ public abstract class ZValueNode extends Node {
 				return ZCharacter.cast(character.codePointAt(0));
 			}
 
+			DynamicObject object = context.makeObject(Map.of());
 			Object members = values.getMembers(value);
 			long length = membersLib.getArraySize(members);
-			Map<String, Object> membersMap = new HashMap<>((int) length);
-			membersMap.put(ZConstants.ZOBJECT_TYPE, type);
+			typeLib.put(object, ZConstants.ZOBJECT_TYPE, type);
 			for (long i = 0; i < length; i++) {
 				final String key = (String) membersLib.readArrayElement(members, i);
 				if (!key.startsWith("Z1K")) {
-					membersMap.put(key, values.readMember(value, key));
+					objectLib.put(object, key, values.readMember(value, key));
 				}
 			}
-			return context.makeObject(membersMap);
+			return object;
 		} catch (UnknownIdentifierException | UnsupportedMessageException | InvalidArrayIndexException e) {
 			// This should never happen; we only read keys that are guaranteed to be present
 			throw new RuntimeException(e);
