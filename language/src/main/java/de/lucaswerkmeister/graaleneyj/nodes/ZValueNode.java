@@ -2,11 +2,14 @@ package de.lucaswerkmeister.graaleneyj.nodes;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 import com.oracle.truffle.api.dsl.Fallback;
 import com.oracle.truffle.api.dsl.Specialization;
+import com.oracle.truffle.api.interop.InteropLibrary;
+import com.oracle.truffle.api.interop.InvalidArrayIndexException;
 import com.oracle.truffle.api.interop.UnknownIdentifierException;
+import com.oracle.truffle.api.interop.UnsupportedMessageException;
+import com.oracle.truffle.api.library.CachedLibrary;
 import com.oracle.truffle.api.nodes.Node;
 
 import de.lucaswerkmeister.graaleneyj.ZConstants;
@@ -22,6 +25,11 @@ import de.lucaswerkmeister.graaleneyj.runtime.ZString;
  */
 public abstract class ZValueNode extends Node {
 
+	protected static final int LIMIT = 3;
+
+	/** Library for working with a members object. */
+	private final InteropLibrary membersLib = InteropLibrary.getFactory().createDispatched(LIMIT);
+
 	public abstract Object execute(Object value);
 
 	@Specialization
@@ -34,36 +42,39 @@ public abstract class ZValueNode extends Node {
 		return string.asString();
 	}
 
-	@Specialization
-	public Object doZObject(ZObject object) {
+	@Specialization(limit = "LIMIT", guards = { "values.hasMembers(value)" })
+	public Object doGeneric(Object value, @CachedLibrary("value") InteropLibrary values) {
+		// TODO use multiple InteropLibrary instances for different keys?
 		try {
-			String type = ((ZReference) object.readMember(ZConstants.ZOBJECT_TYPE)).getId();
+			String type = ((ZReference) values.readMember(value, ZConstants.ZOBJECT_TYPE)).getId();
 			switch (type) {
 			case ZConstants.STRING:
 				// TODO this should be dead code, there should be no way to get a ZObject of
 				// type string in the first place
-				return object.readMember(ZConstants.STRING_STRING_VALUE);
+				return values.readMember(value, ZConstants.STRING_STRING_VALUE);
 			case ZConstants.BOOLEAN:
-				return object.readMember(ZConstants.BOOLEAN_IDENTITY);
+				return values.readMember(value, ZConstants.BOOLEAN_IDENTITY);
 			case ZConstants.CHARACTER:
 				// code adapted from ZCharacterLiteralNode
 				// TODO this is probably dead code? there should be no way to create a ZObject
 				// with type character, that should be a ZCharacter in the first place
-				String character = (String) object.readMember(ZConstants.CHARACTER_CHARACTER);
+				String character = (String) values.readMember(value, ZConstants.CHARACTER_CHARACTER);
 				assert character.codePointCount(0, character.length()) == 1;
 				return ZCharacter.cast(character.codePointAt(0));
 			}
 
-			Set<String> memberNames = object.getMemberNames();
-			Map<String, Object> members = new HashMap<>(memberNames.size());
-			members.put(ZConstants.ZOBJECT_TYPE, type);
-			for (String memberName : memberNames) {
-				if (!memberName.startsWith("Z1K")) {
-					members.put(memberName, object.readMember(memberName));
+			Object members = values.getMembers(value);
+			long length = membersLib.getArraySize(members);
+			Map<String, Object> membersMap = new HashMap<>((int) length);
+			membersMap.put(ZConstants.ZOBJECT_TYPE, type);
+			for (long i = 0; i < length; i++) {
+				final String key = (String) membersLib.readArrayElement(members, i);
+				if (!key.startsWith("Z1K")) {
+					membersMap.put(key, values.readMember(value, key));
 				}
 			}
-			return new ZObject(members);
-		} catch (UnknownIdentifierException e) {
+			return new ZObject(membersMap);
+		} catch (UnknownIdentifierException | UnsupportedMessageException | InvalidArrayIndexException e) {
 			// This should never happen; we only read keys that are guaranteed to be present
 			throw new RuntimeException(e);
 		}
