@@ -684,13 +684,41 @@ public class BuiltinTest extends ZTest {
 
 	@Test
 	public void testAbstractProjectName() {
-		// TODO because we can’t reify/abstract lists yet, this test pretends the label
-		// is a (monolingual) text, rather than a multilingual text
 		String typeTextPair = "{\"Z1K1\": \"Z2\", \"Z2K1\": {\"Z1K1\": \"Z6\", \"Z6K1\": \"Z1K1\"}, \"Z2K2\": \"Z11\"}";
 		String languageEnglishPair = "{\"Z1K1\": \"Z2\", \"Z2K1\": {\"Z1K1\": \"Z6\", \"Z6K1\": \"Z11K1\"}, \"Z2K2\": \"Z251\"}";
 		String textProjectNamePair = "{\"Z1K1\": \"Z2\", \"Z2K1\": {\"Z1K1\": \"Z6\", \"Z6K1\": \"Z11K2\"}, \"Z2K2\": \"project_name\"}";
+		String languageGermanPair = "{\"Z1K1\": \"Z2\", \"Z2K1\": {\"Z1K1\": \"Z6\", \"Z6K1\": \"Z11K1\"}, \"Z2K2\": \"Z254\"}";
+		String textProjektnamePair = "{\"Z1K1\": \"Z2\", \"Z2K1\": {\"Z1K1\": \"Z6\", \"Z6K1\": \"Z11K2\"}, \"Z2K2\": \"Projektname\"}";
+		String englishLabelPairs = "[" + typeTextPair + ", " + languageEnglishPair + ", " + textProjectNamePair + "]";
+		String germanLabelPairs = "[" + typeTextPair + ", " + languageGermanPair + ", " + textProjektnamePair + "]";
+		String typeListPair = "{\"Z1K1\": \"Z2\", \"Z2K1\": {\"Z1K1\": \"Z6\", \"Z6K1\": \"Z1K1\"}, \"Z2K2\": \"Z10\"}";
+		String idNilPair = "{\"Z1K1\": \"Z2\", \"Z2K1\": {\"Z1K1\": \"Z6\", \"Z6K1\": \"Z1K2\"}, \"Z2K2\": \"Z13\"}";
+		String headListIsNilPair = "{\"Z1K1\": \"Z2\", \"Z2K1\": {\"Z1K1\": \"Z6\", \"Z6K1\": \"Z10K1\"}, \"Z2K2\": \"Z441\"}";
+		String tailListIsNilPair = "{\"Z1K1\": \"Z2\", \"Z2K1\": {\"Z1K1\": \"Z6\", \"Z6K1\": \"Z10K2\"}, \"Z2K2\": \"Z441\"}";
+		String nilPairs = "[" + typeListPair + ", " + idNilPair + ", " + headListIsNilPair + ", " + tailListIsNilPair
+				+ "]";
+		/*
+		 * TODO Remove the nilPairs reassignment. Currently, there’s no way to get a
+		 * correct idNilPair – "Z2K2": "Z13" will actually immediately evaluate to nil
+		 * object, but we need it to be a ZReference with the ID Z13. There’s no way to
+		 * create such a ZReference at the moment, so we cheat and instead of specifying
+		 * the reified nil as JSON, we get it by actually calling reify(nil).
+		 */
+		nilPairs = "{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z37\", \"K1\": \"Z13\"}";
+		String headGermanLabelPair = "{\"Z1K1\": \"Z2\", \"Z2K1\": {\"Z1K1\": \"Z6\", \"Z6K1\": \"Z10K1\"}, \"Z2K2\": "
+				+ germanLabelPairs + "}";
+		String tailNilPair = "{\"Z1K1\": \"Z2\", \"Z2K1\": {\"Z1K1\": \"Z6\", \"Z6K1\": \"Z10K2\"}, \"Z2K2\": "
+				+ nilPairs + "}";
+		String headEnglishLabelPair = "{\"Z1K1\": \"Z2\", \"Z2K1\": {\"Z1K1\": \"Z6\", \"Z6K1\": \"Z10K1\"}, \"Z2K2\": "
+				+ englishLabelPairs + "}";
+		String tailGermanLabelPair = "{\"Z1K1\": \"Z2\", \"Z2K1\": {\"Z1K1\": \"Z6\", \"Z6K1\": \"Z10K2\"}, \"Z2K2\": "
+				+ "[" + typeListPair + ", " + headGermanLabelPair + ", " + tailNilPair + "]" + "}";
+		String labelsPairs = "[" + typeListPair + ", " + headEnglishLabelPair + ", " + tailGermanLabelPair + "]";
+		String textsPair = "{\"Z1K1\": \"Z2\", \"Z2K1\": {\"Z1K1\": \"Z6\", \"Z6K1\": \"Z12K1\"}, \"Z2K2\": "
+				+ labelsPairs + "}";
+		String typeMultilingualTextPair = "{\"Z1K1\": \"Z2\", \"Z2K1\": {\"Z1K1\": \"Z6\", \"Z6K1\": \"Z1K1\"}, \"Z2K2\": \"Z12\"}";
 		String labelPair = "{\"Z1K1\": \"Z2\", \"Z2K1\": {\"Z1K1\": \"Z6\", \"Z6K1\": \"Z1K3\"}, \"Z2K2\": ["
-				+ typeTextPair + ", " + languageEnglishPair + ", " + textProjectNamePair + "]}";
+				+ typeMultilingualTextPair + ", " + textsPair + "]}";
 		String typeStringPair = "{\"Z1K1\": \"Z2\", \"Z2K1\": {\"Z1K1\": \"Z6\", \"Z6K1\": \"Z1K1\"}, \"Z2K2\": \"Z6\"}";
 		String idZ28Pair = "{\"Z1K1\": \"Z2\", \"Z2K1\": {\"Z1K1\": \"Z6\", \"Z6K1\": \"Z1K2\"}, \"Z2K2\": \"Z28\"}";
 		String stringValueEneyjPair = "{\"Z1K1\": \"Z2\", \"Z2K1\": {\"Z1K1\": \"Z6\", \"Z6K1\": \"Z6K1\"}, \"Z2K2\": \"eneyj\"}";
@@ -703,12 +731,25 @@ public class BuiltinTest extends ZTest {
 		assertZReference("Z6", result.getMember("Z1K1"));
 		assertZReference("Z28", result.getMember("Z1K2"));
 		assertEquals("eneyj", result.getMember("Z6K1").asString());
-		Value label = result.getMember("Z1K3");
-		assertTrue(label.hasMembers());
-		assertEquals(3, label.getMemberKeys().size());
-		assertZReference("Z11", label.getMember("Z1K1"));
-		assertZReference("Z251", label.getMember("Z11K1"));
-		assertEquals("project_name", label.getMember("Z11K2").asString());
+		Value labels = result.getMember("Z1K3");
+		assertTrue(labels.hasMembers());
+		assertEquals(2, labels.getMemberKeys().size());
+		assertZReference("Z12", labels.getMember("Z1K1"));
+		Value labelsList = labels.getMember("Z12K1");
+		assertTrue(labelsList.hasArrayElements());
+		assertEquals(2, labelsList.getArraySize());
+		Value englishLabel = labelsList.getArrayElement(0);
+		assertTrue(englishLabel.hasMembers());
+		assertEquals(3, englishLabel.getMemberKeys().size());
+		assertZReference("Z11", englishLabel.getMember("Z1K1"));
+		assertZReference("Z251", englishLabel.getMember("Z11K1"));
+		assertEquals("project_name", englishLabel.getMember("Z11K2").asString());
+		Value germanLabel = labelsList.getArrayElement(1);
+		assertTrue(germanLabel.hasMembers());
+		assertEquals(3, germanLabel.getMemberKeys().size());
+		assertZReference("Z11", germanLabel.getMember("Z1K1"));
+		assertZReference("Z254", germanLabel.getMember("Z11K1"));
+		assertEquals("Projektname", germanLabel.getMember("Z11K2").asString());
 	}
 
 	@Test
@@ -770,6 +811,27 @@ public class BuiltinTest extends ZTest {
 		String pairOfReferences = "{\"Z1K1\": \"Z2\", \"Z2K1\": \"Z2\", \"Z2K2\": \"Z10\"}";
 		testSameAbstractReify(
 				"{\"Z1K1\": \"Z2\", \"Z2K1\": " + pairOfStrings + ", \"Z2K2\": " + pairOfReferences + "}");
+	}
+
+	@Test
+	public void testSameAbstractReifyNil() {
+		testSameAbstractReify("Z13");
+		testSameAbstractReify("[]");
+	}
+
+	@Test
+	public void testSameAbstractReifySingleElementList() {
+		testSameAbstractReify("[\"a\"]");
+	}
+
+	@Test
+	public void testSameAbstractReifyTwoElementsList() {
+		testSameAbstractReify("[\"a\", \"b\"]");
+	}
+
+	@Test
+	public void testSameAbstractReifyProjectName() {
+		testSameAbstractReify("Z28");
 	}
 
 }
