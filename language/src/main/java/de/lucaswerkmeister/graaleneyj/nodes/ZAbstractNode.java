@@ -3,6 +3,7 @@ package de.lucaswerkmeister.graaleneyj.nodes;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.oracle.truffle.api.dsl.CachedContext;
 import com.oracle.truffle.api.dsl.Specialization;
 import com.oracle.truffle.api.interop.InteropLibrary;
 import com.oracle.truffle.api.interop.UnknownIdentifierException;
@@ -11,10 +12,11 @@ import com.oracle.truffle.api.library.CachedLibrary;
 import com.oracle.truffle.api.nodes.Node;
 
 import de.lucaswerkmeister.graaleneyj.ZConstants;
+import de.lucaswerkmeister.graaleneyj.ZLanguage;
 import de.lucaswerkmeister.graaleneyj.builtins.ZAbstractBuiltin;
 import de.lucaswerkmeister.graaleneyj.runtime.ZCharacter;
+import de.lucaswerkmeister.graaleneyj.runtime.ZContext;
 import de.lucaswerkmeister.graaleneyj.runtime.ZList;
-import de.lucaswerkmeister.graaleneyj.runtime.ZObject;
 import de.lucaswerkmeister.graaleneyj.runtime.ZReference;
 import de.lucaswerkmeister.graaleneyj.runtime.ZString;
 
@@ -37,7 +39,8 @@ public abstract class ZAbstractNode extends Node {
 	}
 
 	@Specialization
-	public Object doList(ZList list, @CachedLibrary(limit = "3") InteropLibrary pairs) {
+	public Object doList(ZList list, @CachedContext(ZLanguage.class) ZContext context,
+			@CachedLibrary(limit = "3") InteropLibrary pairs) {
 		// TODO use multiple InteropLibrary instances for different keys?
 		try {
 			Map<String, Object> members = new HashMap<>();
@@ -95,7 +98,7 @@ public abstract class ZAbstractNode extends Node {
 				Object character = members.remove(ZConstants.CHARACTER_CHARACTER);
 				return new ZCharacter(((String) character).codePointAt(0), members); // TODO proper error handling
 			}
-			return new ZObject(members);
+			return context.makeObject(members);
 		} catch (UnknownIdentifierException | UnsupportedMessageException e) {
 			throw new RuntimeException(e); // TODO
 		}

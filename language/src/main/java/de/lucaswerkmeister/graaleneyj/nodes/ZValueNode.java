@@ -3,6 +3,7 @@ package de.lucaswerkmeister.graaleneyj.nodes;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.oracle.truffle.api.dsl.CachedContext;
 import com.oracle.truffle.api.dsl.Fallback;
 import com.oracle.truffle.api.dsl.Specialization;
 import com.oracle.truffle.api.interop.InteropLibrary;
@@ -13,9 +14,10 @@ import com.oracle.truffle.api.library.CachedLibrary;
 import com.oracle.truffle.api.nodes.Node;
 
 import de.lucaswerkmeister.graaleneyj.ZConstants;
+import de.lucaswerkmeister.graaleneyj.ZLanguage;
 import de.lucaswerkmeister.graaleneyj.builtins.ZValueBuiltin;
 import de.lucaswerkmeister.graaleneyj.runtime.ZCharacter;
-import de.lucaswerkmeister.graaleneyj.runtime.ZObject;
+import de.lucaswerkmeister.graaleneyj.runtime.ZContext;
 import de.lucaswerkmeister.graaleneyj.runtime.ZReference;
 import de.lucaswerkmeister.graaleneyj.runtime.ZString;
 
@@ -43,7 +45,8 @@ public abstract class ZValueNode extends Node {
 	}
 
 	@Specialization(limit = "LIMIT", guards = { "values.hasMembers(value)" })
-	public Object doGeneric(Object value, @CachedLibrary("value") InteropLibrary values) {
+	public Object doGeneric(Object value, @CachedLibrary("value") InteropLibrary values,
+			@CachedContext(ZLanguage.class) ZContext context) {
 		// TODO use multiple InteropLibrary instances for different keys?
 		try {
 			String type = ((ZReference) values.readMember(value, ZConstants.ZOBJECT_TYPE)).getId();
@@ -73,7 +76,7 @@ public abstract class ZValueNode extends Node {
 					membersMap.put(key, values.readMember(value, key));
 				}
 			}
-			return new ZObject(membersMap);
+			return context.makeObject(membersMap);
 		} catch (UnknownIdentifierException | UnsupportedMessageException | InvalidArrayIndexException e) {
 			// This should never happen; we only read keys that are guaranteed to be present
 			throw new RuntimeException(e);

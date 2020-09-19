@@ -11,16 +11,20 @@ import com.oracle.truffle.api.interop.InteropLibrary;
 import com.oracle.truffle.api.interop.TruffleObject;
 import com.oracle.truffle.api.interop.UnsupportedMessageException;
 import com.oracle.truffle.api.interop.UnsupportedTypeException;
+import com.oracle.truffle.api.object.Shape;
 import com.oracle.truffle.api.source.Source;
 
 public final class ZContext {
 
 	private final Env env;
 
+	private final Shape initialZObjectShape;
+
 	private final Map<String, Object> objects = new HashMap<>();
 
-	public ZContext(Env env) {
+	public ZContext(Env env, Shape initialZObjectShape) {
 		this.env = env;
+		this.initialZObjectShape = initialZObjectShape;
 	}
 
 	public TruffleFile getTruffleFile(String zid) {
@@ -33,6 +37,10 @@ public final class ZContext {
 
 	public CallTarget parse(Source source, String... argumentNames) {
 		return env.parsePublic(source, argumentNames);
+	}
+
+	public ZObject makeObject(Map<String, Object> members) {
+		return new ZObject(initialZObjectShape, members);
 	}
 
 	public boolean hasObject(String zid) {

@@ -6,6 +6,7 @@ import com.oracle.truffle.api.CallTarget;
 import com.oracle.truffle.api.Truffle;
 import com.oracle.truffle.api.TruffleLanguage;
 import com.oracle.truffle.api.TruffleLanguage.ContextPolicy;
+import com.oracle.truffle.api.object.Shape;
 
 import de.lucaswerkmeister.graaleneyj.nodes.ZNode;
 import de.lucaswerkmeister.graaleneyj.nodes.ZRootNode;
@@ -20,10 +21,11 @@ public class ZLanguage extends TruffleLanguage<ZContext> {
 	public static final String ID = "z"; // TODO name?
 
 	private final ZCanonicalJsonParser parser = new ZCanonicalJsonParser(this);
+	private final Shape initialZObjectShape = Shape.newBuilder().build();
 
 	@Override
 	protected ZContext createContext(Env env) {
-		return new ZContext(env);
+		return new ZContext(env, initialZObjectShape);
 	}
 
 	@Override

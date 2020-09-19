@@ -12,9 +12,9 @@ import com.oracle.truffle.api.library.CachedLibrary;
 import com.oracle.truffle.api.nodes.Node;
 
 import de.lucaswerkmeister.graaleneyj.ZConstants;
+import de.lucaswerkmeister.graaleneyj.ZLanguage;
 import de.lucaswerkmeister.graaleneyj.builtins.ZReifyBuiltin;
 import de.lucaswerkmeister.graaleneyj.runtime.ZList;
-import de.lucaswerkmeister.graaleneyj.runtime.ZObject;
 import de.lucaswerkmeister.graaleneyj.runtime.ZReference;
 
 /**
@@ -61,7 +61,8 @@ public abstract class ZReifyNode extends Node {
 	}
 
 	public Object makePair(String key, Object value) {
-		return new ZObject(Map.<String, Object>of( //
+		// TODO @CachedContext?
+		return lookupContextReference(ZLanguage.class).get().makeObject(Map.<String, Object>of( //
 				ZConstants.ZOBJECT_TYPE, new ZReference(ZConstants.PAIR, null), // TODO context
 				ZConstants.PAIR_FIRST, key, //
 				ZConstants.PAIR_SECOND, value //

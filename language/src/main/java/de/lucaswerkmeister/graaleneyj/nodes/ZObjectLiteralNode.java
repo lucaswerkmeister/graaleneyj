@@ -6,6 +6,8 @@ import java.util.Map;
 import com.oracle.truffle.api.frame.VirtualFrame;
 import com.oracle.truffle.api.nodes.Node;
 
+import de.lucaswerkmeister.graaleneyj.ZLanguage;
+import de.lucaswerkmeister.graaleneyj.runtime.ZContext;
 import de.lucaswerkmeister.graaleneyj.runtime.ZObject;
 
 public class ZObjectLiteralNode extends ZNode {
@@ -35,7 +37,9 @@ public class ZObjectLiteralNode extends ZNode {
 		for (ZObjectLiteralMemberNode member : members) {
 			entries.put(member.key, member.value.execute(virtualFrame));
 		}
-		return new ZObject(entries);
+		// TODO @CachedContext?
+		ZContext context = lookupContextReference(ZLanguage.class).get();
+		return context.makeObject(entries);
 	}
 
 	@Override
