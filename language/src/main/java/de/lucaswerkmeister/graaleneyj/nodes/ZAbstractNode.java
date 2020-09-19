@@ -4,7 +4,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.oracle.truffle.api.dsl.Specialization;
+import com.oracle.truffle.api.interop.InteropLibrary;
 import com.oracle.truffle.api.interop.UnknownIdentifierException;
+import com.oracle.truffle.api.interop.UnsupportedMessageException;
+import com.oracle.truffle.api.library.CachedLibrary;
 import com.oracle.truffle.api.nodes.Node;
 
 import de.lucaswerkmeister.graaleneyj.ZConstants;
@@ -34,14 +37,15 @@ public abstract class ZAbstractNode extends Node {
 	}
 
 	@Specialization
-	public Object doList(ZList list) {
+	public Object doList(ZList list, @CachedLibrary(limit = "3") InteropLibrary pairs) {
+		// TODO use multiple InteropLibrary instances for different keys?
 		try {
 			Map<String, Object> members = new HashMap<>();
 			while (list != ZList.NIL) {
-				ZObject pair = (ZObject) list.getHead(); // TODO proper error handling
-				assert "Z2".equals(((ZReference) pair.readMember(ZConstants.ZOBJECT_TYPE)).getId());
-				String key = (String) pair.readMember(ZConstants.PAIR_FIRST); // TODO proper error handling
-				Object value = pair.readMember(ZConstants.PAIR_SECOND);
+				Object pair = list.getHead();
+				assert ("Z2".equals(((ZReference) pairs.readMember(pair, ZConstants.ZOBJECT_TYPE)).getId()));
+				String key = (String) pairs.readMember(pair, ZConstants.PAIR_FIRST); // TODO proper error handling
+				Object value = pairs.readMember(pair, ZConstants.PAIR_SECOND);
 				members.put(key, execute(value));
 				list = list.getTail();
 			}
@@ -92,7 +96,7 @@ public abstract class ZAbstractNode extends Node {
 				return new ZCharacter(((String) character).codePointAt(0), members); // TODO proper error handling
 			}
 			return new ZObject(members);
-		} catch (UnknownIdentifierException e) {
+		} catch (UnknownIdentifierException | UnsupportedMessageException e) {
 			throw new RuntimeException(e); // TODO
 		}
 	}

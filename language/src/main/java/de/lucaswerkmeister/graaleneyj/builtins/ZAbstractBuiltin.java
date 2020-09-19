@@ -17,7 +17,7 @@ public abstract class ZAbstractBuiltin extends ZBuiltinNode {
 
 	@Specialization
 	public Object doList(ZList list) {
-		return abstract_.doList(list);
+		return abstract_.execute(list);
 	}
 
 	// TODO error fallback for non-list arguments
