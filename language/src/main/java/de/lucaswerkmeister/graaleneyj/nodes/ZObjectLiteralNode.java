@@ -1,10 +1,10 @@
 package de.lucaswerkmeister.graaleneyj.nodes;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import com.oracle.truffle.api.frame.VirtualFrame;
 import com.oracle.truffle.api.nodes.Node;
+import com.oracle.truffle.api.object.DynamicObjectLibrary;
 
 import de.lucaswerkmeister.graaleneyj.ZLanguage;
 import de.lucaswerkmeister.graaleneyj.runtime.ZContext;
@@ -26,6 +26,9 @@ public class ZObjectLiteralNode extends ZNode {
 	@Children
 	private ZObjectLiteralMemberNode[] members;
 
+	@Child
+	protected DynamicObjectLibrary objectLib = DynamicObjectLibrary.getFactory().createDispatched(3);
+
 	public ZObjectLiteralNode(ZObjectLiteralMemberNode[] members) {
 		this.members = members;
 	}
@@ -33,13 +36,13 @@ public class ZObjectLiteralNode extends ZNode {
 	@Override
 	public ZObject executeZObject(VirtualFrame virtualFrame) {
 		// TODO look at type’s evaluator, …
-		Map<String, Object> entries = new HashMap<>();
-		for (ZObjectLiteralMemberNode member : members) {
-			entries.put(member.key, member.value.execute(virtualFrame));
-		}
 		// TODO @CachedContext?
 		ZContext context = lookupContextReference(ZLanguage.class).get();
-		return context.makeObject(entries);
+		ZObject object = context.makeObject(Map.of());
+		for (ZObjectLiteralMemberNode member : members) {
+			objectLib.put(object, member.key, member.value.execute(virtualFrame));
+		}
+		return object;
 	}
 
 	@Override
