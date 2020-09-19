@@ -4,7 +4,10 @@ import java.util.Map;
 
 import com.oracle.truffle.api.dsl.CachedContext;
 import com.oracle.truffle.api.dsl.Specialization;
+import com.oracle.truffle.api.library.CachedLibrary;
 import com.oracle.truffle.api.nodes.Node;
+import com.oracle.truffle.api.object.DynamicObject;
+import com.oracle.truffle.api.object.DynamicObjectLibrary;
 
 import de.lucaswerkmeister.graaleneyj.ZConstants;
 import de.lucaswerkmeister.graaleneyj.ZLanguage;
@@ -19,12 +22,15 @@ public abstract class ZPairNode extends Node {
 	public abstract Object execute(Object first, Object second);
 
 	@Specialization
-	public Object doGeneric(Object first, Object second, @CachedContext(ZLanguage.class) ZContext context) {
-		return context.makeObject(Map.<String, Object>of( //
-				ZConstants.ZOBJECT_TYPE, new ZReference(ZConstants.PAIR, context), //
-				ZConstants.PAIR_FIRST, first, //
-				ZConstants.PAIR_SECOND, second //
-		));
+	public Object doGeneric(Object first, Object second, @CachedContext(ZLanguage.class) ZContext context,
+			@CachedLibrary(limit = "3") DynamicObjectLibrary putType,
+			@CachedLibrary(limit = "3") DynamicObjectLibrary putFirst,
+			@CachedLibrary(limit = "3") DynamicObjectLibrary putSecond) {
+		DynamicObject pair = context.makeObject(Map.of());
+		putType.put(pair, ZConstants.ZOBJECT_TYPE, new ZReference(ZConstants.PAIR, context));
+		putFirst.put(pair, ZConstants.PAIR_FIRST, first);
+		putSecond.put(pair, ZConstants.PAIR_SECOND, second);
+		return pair;
 	}
 
 }

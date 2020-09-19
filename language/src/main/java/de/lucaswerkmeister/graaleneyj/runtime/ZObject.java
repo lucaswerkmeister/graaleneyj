@@ -19,7 +19,21 @@ import com.oracle.truffle.api.object.DynamicObjectLibrary;
 import com.oracle.truffle.api.object.Shape;
 
 import de.lucaswerkmeister.graaleneyj.ZLanguage;
+import de.lucaswerkmeister.graaleneyj.nodes.ZPairNode;
 
+/**
+ * <p>
+ * A generic object with members, initialized at construction time.
+ * </p>
+ * <p>
+ * AST nodes may add additional members to the object after it has been created
+ * (usually obtained from {@link ZContext#makeObject(Map)}), e. g. to use a more
+ * specific/optimized {@link DynamicObjectLibrary} (compare {@link ZPairNode}).
+ * However, objects are supposed to be immutable – nodes should therefore only
+ * add members to objects immediately after their creation, before they are
+ * released to other parts of the program.
+ * </p>
+ */
 @ExportLibrary(InteropLibrary.class)
 public class ZObject extends DynamicObject implements TruffleObject {
 
