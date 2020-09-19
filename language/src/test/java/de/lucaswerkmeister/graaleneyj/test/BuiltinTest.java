@@ -533,7 +533,8 @@ public class BuiltinTest extends ZTest {
 	public void testReifyPairOfReferences() {
 		Value result = eval(
 				"{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z37\", \"K1\": {\"Z1K1\": \"Z2\", \"Z2K1\": \"Z2\", \"Z2K2\": \"Z10\"}}");
-		assertReifiedPair(result, (first) -> assertZReference("Z2", first), (second) -> assertZReference("Z10", second));
+		assertReifiedPair(result, (first) -> assertZReference("Z2", first),
+				(second) -> assertZReference("Z10", second));
 	}
 
 	@Test
@@ -547,6 +548,73 @@ public class BuiltinTest extends ZTest {
 						(firstSecond) -> assertEquals("second", firstSecond.asString())),
 				(second) -> assertReifiedPair(second, (secondFirst) -> assertZReference("Z2", secondFirst),
 						(secondSecond) -> assertZReference("Z10", secondSecond)));
+	}
+
+	private void assertReifiedList(Value result, boolean isNil, Consumer<Value> head, Consumer<Value> tail) {
+		int expectedSize = isNil ? 4 : 3;
+		assertTrue(result.hasArrayElements());
+		assertEquals(expectedSize, result.getArraySize());
+		boolean sawType = false, sawId = false, sawHead = false, sawTail = false;
+		for (int i = 0; i < expectedSize; i++) {
+			Value value = result.getArrayElement(i);
+			switch (value.getMember("Z2K1").asString()) {
+			case "Z1K1":
+				assertFalse(sawType);
+				sawType = true;
+				assertZReference("Z10", value.getMember("Z2K2"));
+				break;
+			case "Z1K2":
+				assertTrue(isNil);
+				assertFalse(sawId);
+				sawId = true;
+				assertZReference("Z13", value.getMember("Z2K2"));
+				break;
+			case "Z10K1":
+				assertFalse(sawHead);
+				sawHead = true;
+				head.accept(value.getMember("Z2K2"));
+				break;
+			case "Z10K2":
+				assertFalse(sawTail);
+				sawTail = true;
+				tail.accept(value.getMember("Z2K2"));
+				break;
+			default:
+				fail();
+			}
+		}
+		assertTrue(sawType);
+		assertEquals(isNil, sawId);
+		assertTrue(sawHead);
+		assertTrue(sawTail);
+	}
+
+	private void assertReifiedList(Value result, Consumer<Value> head, Consumer<Value> tail) {
+		assertReifiedList(result, false, head, tail);
+	}
+
+	private void assertReifiedNil(Value result) {
+		assertReifiedList(result, true, (head) -> assertZReference("Z441", head),
+				(tail) -> assertZReference("Z441", tail));
+	}
+
+	@Test
+	public void testReifyNil() {
+		Value result = eval("{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z37\", \"K1\": \"Z13\"}");
+		assertReifiedNil(result);
+	}
+
+	@Test
+	public void testReifySingleElementList() {
+		Value result = eval("{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z37\", \"K1\": [\"a\"]}");
+		assertReifiedList(result, (head) -> assertEquals("a", head.asString()), (tail) -> assertReifiedNil(tail));
+	}
+
+	@Test
+	public void testReifyTwoElementsList() {
+		Value result = eval("{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z37\", \"K1\": [\"a\", \"b\"]}");
+		assertReifiedList(result, (head) -> assertEquals("a", head.asString()), (tail) -> assertReifiedList(tail,
+				(tailHead) -> assertEquals("b", tailHead.asString()), (tailTail) -> assertReifiedNil(tailTail)));
 	}
 
 	@Test

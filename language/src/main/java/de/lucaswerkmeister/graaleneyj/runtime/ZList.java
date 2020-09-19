@@ -1,14 +1,18 @@
 package de.lucaswerkmeister.graaleneyj.runtime;
 
+import com.oracle.truffle.api.CompilerDirectives;
 import com.oracle.truffle.api.CompilerDirectives.TruffleBoundary;
 import com.oracle.truffle.api.TruffleLanguage;
+import com.oracle.truffle.api.dsl.CachedContext;
 import com.oracle.truffle.api.interop.InteropLibrary;
 import com.oracle.truffle.api.interop.InvalidArrayIndexException;
 import com.oracle.truffle.api.interop.TruffleObject;
+import com.oracle.truffle.api.interop.UnknownIdentifierException;
 import com.oracle.truffle.api.library.CachedLibrary;
 import com.oracle.truffle.api.library.ExportLibrary;
 import com.oracle.truffle.api.library.ExportMessage;
 
+import de.lucaswerkmeister.graaleneyj.ZConstants;
 import de.lucaswerkmeister.graaleneyj.ZLanguage;
 
 /**
@@ -81,6 +85,48 @@ public final class ZList implements TruffleObject {
 	}
 
 	@ExportMessage
+	public final boolean hasMembers() {
+		return true;
+	}
+
+	@ExportMessage
+	public final ZListKeys getMembers(boolean includeInternal) {
+		return new ZListKeys(this == NIL);
+	}
+
+	@ExportMessage
+	public final boolean isMemberReadable(String member) {
+		return ZConstants.ZOBJECT_TYPE.equals(member) || ZConstants.LIST_HEAD.equals(member)
+				|| ZConstants.LIST_TAIL.equals(member) || (ZConstants.ZOBJECT_ID.equals(member) == (this == NIL));
+	}
+
+	@ExportMessage
+	public final Object readMember(String member, @CachedContext(ZLanguage.class) ZContext context)
+			throws UnknownIdentifierException {
+		switch (member) {
+		case ZConstants.ZOBJECT_TYPE:
+			return new ZReference(ZConstants.LIST, context);
+		case ZConstants.LIST_HEAD:
+			if (this == NIL) {
+				return new ZReference(ZConstants.LISTISNIL, context);
+			} else {
+				return head;
+			}
+		case ZConstants.LIST_TAIL:
+			if (this == NIL) {
+				return new ZReference(ZConstants.LISTISNIL, context);
+			} else {
+				return tail;
+			}
+		case ZConstants.ZOBJECT_ID:
+			if (this == NIL) {
+				return new ZReference(ZConstants.NIL, context);
+			}
+		}
+		throw UnknownIdentifierException.create(member);
+	}
+
+	@ExportMessage
 	public final boolean hasLanguage() {
 		return true;
 	}
@@ -113,6 +159,70 @@ public final class ZList implements TruffleObject {
 		}
 		ZList list = (ZList) obj;
 		return length == list.length && head.equals(list.head) && tail.equals(list.tail);
+	}
+
+	/**
+	 * Helper object for {@link ZList#getMembers()}. All lists have members
+	 * Z1K1/type, Z10K1/head, Z10K2/tail; only Z13/nil has member Z1K2/id; there are
+	 * no other members.
+	 */
+	@ExportLibrary(InteropLibrary.class)
+	static final class ZListKeys implements TruffleObject {
+
+		private final boolean isNil;
+
+		public ZListKeys(boolean isNil) {
+			this.isNil = isNil;
+		}
+
+		@ExportMessage
+		public boolean hasArrayElements() {
+			return true;
+		}
+
+		@ExportMessage
+		public boolean isArrayElementReadable(long index) {
+			return 0 <= index && index < (isNil ? 4 : 3);
+		}
+
+		@ExportMessage
+		public long getArraySize() {
+			return isNil ? 4 : 3;
+		}
+
+		@ExportMessage
+		public String readArrayElement(long index) throws InvalidArrayIndexException {
+			if (0 <= index && index < 4) {
+				switch ((int) index) {
+				case 0:
+					return ZConstants.ZOBJECT_TYPE;
+				case 1:
+					return ZConstants.LIST_HEAD;
+				case 2:
+					return ZConstants.LIST_TAIL;
+				case 3:
+					if (isNil)
+						return ZConstants.ZOBJECT_ID;
+				}
+			}
+			CompilerDirectives.transferToInterpreter();
+			throw InvalidArrayIndexException.create(index);
+		}
+
+		@ExportMessage
+		public boolean hasLanguage() {
+			return true;
+		}
+
+		@ExportMessage
+		public Class<? extends TruffleLanguage<?>> getLanguage() {
+			return ZLanguage.class;
+		}
+
+		@ExportMessage
+		public final String toDisplayString(boolean allowSideEffects) {
+			return "ZListKeys";
+		}
 	}
 
 }
