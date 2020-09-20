@@ -167,29 +167,29 @@ public class BuiltinTest extends ZTest {
 
 	@Test
 	public void testTailOfSingleElementArray() {
-		assertEquals("[]", eval("Z65").execute().execute((Object) new String[] { "A" }).toString());
+		assertEquals("[]", eval("\"Z65\"").execute().execute((Object) new String[] { "A" }).toString());
 	}
 
 	@Test
 	public void testTailOfTwoElementArray() {
-		assertEquals("[B]", eval("Z65").execute().execute((Object) new String[] { "A", "B" }).toString());
+		assertEquals("[B]", eval("\"Z65\"").execute().execute((Object) new String[] { "A", "B" }).toString());
 	}
 
 	@Test
 	public void testTailOfThreeElementArray() {
-		assertEquals("[B, C]", eval("Z65").execute().execute((Object) new String[] { "A", "B", "C" }).toString());
+		assertEquals("[B, C]", eval("\"Z65\"").execute().execute((Object) new String[] { "A", "B", "C" }).toString());
 	}
 
 	@Test
 	public void testTailOfFourElementArray() {
 		assertEquals("[B, C, D]",
-				eval("Z65").execute().execute((Object) new String[] { "A", "B", "C", "D" }).toString());
+				eval("\"Z65\"").execute().execute((Object) new String[] { "A", "B", "C", "D" }).toString());
 	}
 
 	@Test
 	public void testTailOfEmptyArray() {
 		try {
-			eval("Z65").execute().execute((Object) new String[0]).toString();
+			eval("\"Z65\"").execute().execute((Object) new String[0]).toString();
 			throw new IllegalStateException("Should have thrown an exception");
 		} catch (PolyglotException e) {
 			assertTrue(e.isGuestException());
@@ -815,7 +815,7 @@ public class BuiltinTest extends ZTest {
 
 	@Test
 	public void testSameAbstractReifyNil() {
-		testSameAbstractReify("Z13");
+		testSameAbstractReify("\"Z13\"");
 		testSameAbstractReify("[]");
 	}
 
@@ -831,7 +831,7 @@ public class BuiltinTest extends ZTest {
 
 	@Test
 	public void testSameAbstractReifyProjectName() {
-		testSameAbstractReify("Z28");
+		testSameAbstractReify("\"Z28\"");
 	}
 
 }

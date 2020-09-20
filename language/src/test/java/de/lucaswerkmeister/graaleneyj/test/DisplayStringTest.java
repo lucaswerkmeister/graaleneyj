@@ -33,7 +33,7 @@ public class DisplayStringTest extends ZTest {
 
 	@Test
 	public void testZNothing() {
-		assertEquals("nothing", eval("Z23").toString());
+		assertEquals("nothing", eval("\"Z23\"").toString());
 	}
 
 	@Test
@@ -43,7 +43,7 @@ public class DisplayStringTest extends ZTest {
 
 	@Test
 	public void testZReference() {
-		assertEquals("Z53", eval("Z53").toString());
+		assertEquals("Z53", eval("\"Z53\"").toString());
 	}
 
 }
