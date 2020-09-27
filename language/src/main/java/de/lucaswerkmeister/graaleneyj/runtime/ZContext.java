@@ -14,6 +14,8 @@ import com.oracle.truffle.api.interop.UnsupportedTypeException;
 import com.oracle.truffle.api.object.Shape;
 import com.oracle.truffle.api.source.Source;
 
+import de.lucaswerkmeister.graaleneyj.filesystem.WikiLambdaFileSystem;
+
 public final class ZContext {
 
 	private final Env env;
@@ -28,7 +30,7 @@ public final class ZContext {
 	}
 
 	public TruffleFile getTruffleFile(String zid) {
-		return env.getInternalTruffleFile("abstracttext/eneyj/data/" + zid + ".json");
+		return env.getInternalTruffleFile(WikiLambdaFileSystem.zidToPath(zid).toString());
 	}
 
 	public boolean canParseLanguage(String language) {
