@@ -73,8 +73,9 @@
                     </includes>
                     <additionalClasspathElements>
                         <additionalClasspathElement>${java.home}/languages/python/graalpython.jar</additionalClasspathElement>
-                        <additionalClasspathElement>${java.home}/languages/llvm/sulong.jar</additionalClasspathElement>
+                        <additionalClasspathElement>${java.home}/languages/llvm/sulong-core.jar</additionalClasspathElement>
                         <additionalClasspathElement>${java.home}/languages/llvm/sulong-api.jar</additionalClasspathElement>
+                        <additionalClasspathElement>${java.home}/languages/llvm/sulong-native.jar</additionalClasspathElement>
                     </additionalClasspathElements>
                     <argLine>-Dgraalvm.locatorDisabled=true ${test.argLine}</argLine>
                 </configuration>

@@ -16,7 +16,7 @@ jobs:
             ${{ runner.os }}-maven-
       - uses: DeLaGuardo/setup-graalvm@master
         with:
-          graalvm-version: '20.3.0.java11'
+          graalvm-version: '21.0.0.java11'
       - name: Install GraalPython
         run: gu install python
       - name: Build with Maven
