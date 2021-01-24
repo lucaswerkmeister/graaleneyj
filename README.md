@@ -2,6 +2,26 @@
 
 An **early work in progress** [GraalVM][] implementation of [eneyj][].
 
+## Current status
+
+As of 25 January 2021, development on this project has been stalled for a few months,
+partly because I wasn’t sure what to do next.
+Most of the “important” builtin functions are implemented,
+and user-defined functions can be implemented in code (JavaScript or Python) or by calling other functions.
+There is some support for reading objects from an installation of [WikiLambda][].
+The last thing I worked on was a new parser (to replace the [Gson][] library),
+but this is not finished yet
+(you can find the work in progress on the `antlr` branch).
+
+Eventually, GraalEneyj will have to move from the early AbstractText/eneyj function model
+to the [Wikifunctions function model][]
+(probably via the [pre-generic function model][] first),
+and this may in fact be the next development step.
+But that means that we need a different default source of objects
+(other than the current `abstracttext` submodule);
+either some installation of WikiLambda, if the extension is “ready enough”,
+or directly include some standard objects in this repository, I suppose.
+
 ## What’s ready so far
 
 The `z` launcher script accepts a JSON value on standard input,
@@ -94,3 +114,7 @@ you agree to make your contribution available under this license.
 [eneyj]: https://github.com/google/abstracttext/tree/master/eneyj#readme
 [SimpleLanguage IDE setup instructions]: https://www.graalvm.org/docs/graalvm-as-a-platform/implement-language/#ide-setup
 [SimpleLanguage]: https://github.com/graalvm/simplelanguage#readme
+[WikiLambda]: https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:WikiLambda
+[Gson]: https://github.com/google/gson
+[Wikifunctions function model]: https://meta.wikimedia.org/wiki/Special:MyLanguage/Abstract_Wikipedia/Function_model
+[pre-generic function model]: https://meta.wikimedia.org/wiki/Special:MyLanguage/Abstract_Wikipedia/Pre-generic_function_model
