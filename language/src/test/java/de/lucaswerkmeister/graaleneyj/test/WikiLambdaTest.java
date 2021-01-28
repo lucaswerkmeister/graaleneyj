@@ -53,7 +53,7 @@ public class WikiLambdaTest {
 
 	@Test
 	public void testZTypeMembers() {
-		Value ztype = eval("Z1").execute();
+		Value ztype = eval("\"Z1\"").execute();
 		assertTrue(ztype.hasMembers());
 		Value aliases = ztype.getMember("Z2K3");
 		assertTrue(aliases.hasMembers());
