@@ -16,6 +16,7 @@ value returns [JsonElement element]:
 object returns [JsonObject o]:
 	BEGIN_OBJECT {
 		$o = new JsonObject();
+		$o.setStartIndex($BEGIN_OBJECT.getStartIndex());
 	}
 	(
 		firstKey=string NAME_SEPARATOR firstValue=value {
@@ -28,11 +29,14 @@ object returns [JsonObject o]:
 			}
 		)*
 	)?
-	END_OBJECT;
+	END_OBJECT {
+		$o.setStopIndex($END_OBJECT.getStopIndex());
+	};
 
 array returns [JsonArray a]:
 	BEGIN_ARRAY {
 		$a = new JsonArray();
+		$a.setStartIndex($BEGIN_ARRAY.getStartIndex());
 	}
 	(
 		firstValue=value {
@@ -45,13 +49,17 @@ array returns [JsonArray a]:
 			}
 		)*
 	)?
-	END_ARRAY;
+	END_ARRAY {
+		$a.setStopIndex($END_ARRAY.getStopIndex());
+	};
 
 stringValue returns [JsonString s]: string {
 	$s = new JsonString($string.s);
+	$s.setStartIndex($string.startIndex);
+	$s.setStopIndex($string.stopIndex);
 };
 
-string returns [String s]: STRING {
+string returns [String s, int startIndex, int stopIndex]: STRING {
 	String content = $STRING.getText();
 	int start = 1, end = content.length() - 1;
 	StringBuilder sb = new StringBuilder();
@@ -96,6 +104,8 @@ string returns [String s]: STRING {
 		}
 	}
 	$s = sb.toString();
+	$startIndex = $STRING.getStartIndex();
+	$stopIndex = $STRING.getStopIndex();
 };
 
 BEGIN_OBJECT: '{';

@@ -2,6 +2,7 @@ package de.lucaswerkmeister.graaleneyj.nodes;
 
 import com.oracle.truffle.api.frame.VirtualFrame;
 import com.oracle.truffle.api.nodes.RootNode;
+import com.oracle.truffle.api.source.SourceSection;
 
 import de.lucaswerkmeister.graaleneyj.ZLanguage;
 
@@ -14,9 +15,12 @@ public final class ZRootNode extends RootNode {
 	@Child
 	private ZNode node;
 
-	public ZRootNode(ZLanguage language, ZNode node) {
+	private final SourceSection sourceSection;
+
+	public ZRootNode(ZLanguage language, ZNode node, SourceSection sourceSection) {
 		super(language);
 		this.node = node;
+		this.sourceSection = sourceSection;
 	}
 
 	@Override
@@ -42,6 +46,11 @@ public final class ZRootNode extends RootNode {
 	@Override
 	public Object execute(VirtualFrame virtualFrame) {
 		return node.execute(virtualFrame);
+	}
+
+	@Override
+	public SourceSection getSourceSection() {
+		return sourceSection;
 	}
 
 }
