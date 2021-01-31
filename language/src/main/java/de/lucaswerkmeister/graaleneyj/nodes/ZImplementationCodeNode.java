@@ -55,7 +55,7 @@ public class ZImplementationCodeNode extends ZImplementationNode {
 		}
 
 		RuntimeException exception = new UnusableImplementationException("Unusable code language: " + sourceLanguage);
-		ZRootNode throwNode = new ZRootNode(zLanguage, new ZThrowConstantNode(exception));
+		ZRootNode throwNode = new ZRootNode(zLanguage, new ZThrowConstantNode(exception), getSourceSection());
 		return Truffle.getRuntime().createCallTarget(throwNode);
 	}
 

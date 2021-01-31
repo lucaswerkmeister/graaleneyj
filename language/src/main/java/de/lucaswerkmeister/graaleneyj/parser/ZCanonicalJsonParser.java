@@ -1,14 +1,18 @@
 package de.lucaswerkmeister.graaleneyj.parser;
 
+import java.io.IOException;
 import java.util.Map.Entry;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonPrimitive;
+import org.antlr.v4.runtime.CharStream;
+import org.antlr.v4.runtime.CharStreams;
+import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.TokenStream;
+
 import com.oracle.truffle.api.dsl.NodeFactory;
+import com.oracle.truffle.api.source.Source;
+import com.oracle.truffle.api.source.SourceSection;
 
 import de.lucaswerkmeister.graaleneyj.ZConstants;
 import de.lucaswerkmeister.graaleneyj.ZLanguage;
@@ -47,8 +51,26 @@ public class ZCanonicalJsonParser {
 
 	private final ZLanguage language;
 
+	private Source currentSource;
+
 	public ZCanonicalJsonParser(ZLanguage language) {
 		this.language = language;
+	}
+
+	public ZRootNode parseSource(Source source) throws IOException {
+		assert currentSource == null;
+		currentSource = source;
+
+		CharStream cs = CharStreams.fromReader(source.getReader());
+		ZJsonLexer lexer = new ZJsonLexer(cs);
+		TokenStream ts = new CommonTokenStream(lexer);
+		ZJsonParser jsonParser = new ZJsonParser(ts);
+		JsonElement element = jsonParser.value().element;
+		ZNode node = parseJsonElement(element);
+		ZRootNode rootNode = new ZRootNode(language, node, source.createSection(0, source.getLength()));
+
+		currentSource = null;
+		return rootNode;
 	}
 
 	public ZNode parseJsonElement(JsonElement json) {
@@ -58,15 +80,10 @@ public class ZCanonicalJsonParser {
 		if (json instanceof JsonArray) {
 			return parseJsonArray((JsonArray) json);
 		}
-		if (json instanceof JsonPrimitive) {
-			JsonPrimitive primitive = (JsonPrimitive) json;
-			if (primitive.isString()) {
-				return parseJsonString(primitive.getAsString());
-			} else {
-				throw new IllegalArgumentException("JSON literal must be string");
-			}
+		if (json instanceof JsonString) {
+			return parseJsonString((JsonString) json);
 		}
-		throw new IllegalStateException("JSON element was neither object nor array nor primitive");
+		throw new IllegalStateException("JSON element was neither object nor array nor string");
 	}
 
 	public ZNode parseJsonObject(JsonObject json) {
@@ -91,7 +108,9 @@ public class ZCanonicalJsonParser {
 			members[i] = new ZObjectLiteralMemberNode(entry.getKey(), parseJsonElement(entry.getValue()));
 			i++;
 		}
-		return new ZObjectLiteralNode(members);
+		ZNode ret = new ZObjectLiteralNode(members);
+		ret.setSourceSection(json.getSourceCharIndex(), json.getSourceLength());
+		return ret;
 	}
 
 	/**
@@ -109,7 +128,9 @@ public class ZCanonicalJsonParser {
 			extraMembers[i] = new ZStringLiteralMemberNode(entry.getKey(), parseJsonElement(entry.getValue()));
 			i++;
 		}
-		return new ZStringLiteralNode(json.get(ZConstants.STRING_STRING_VALUE).getAsString(), extraMembers);
+		ZNode ret = new ZStringLiteralNode(json.get(ZConstants.STRING_STRING_VALUE).getAsString(), extraMembers);
+		ret.setSourceSection(json.getSourceCharIndex(), json.getSourceLength());
+		return ret;
 	}
 
 	/**
@@ -141,14 +162,18 @@ public class ZCanonicalJsonParser {
 		if (arguments.firstKey() != 1 || arguments.lastKey() != arguments.size()) {
 			throw new IllegalArgumentException("Function call keys are not contiguous: " + arguments.keySet());
 		}
+		ZNode ret;
 		if (function instanceof ZReferenceLiteralNode
 				&& ZConstants.IF.equals(((ZReferenceLiteralNode) function).getId())) {
 			if (arguments.size() != 3) {
 				throw new IllegalArgumentException("Call to if with " + arguments.size() + " ≠ 3 arguments");
 			}
-			return new ZIfNode(arguments.get(1), arguments.get(2), arguments.get(3));
+			ret = new ZIfNode(arguments.get(1), arguments.get(2), arguments.get(3));
+		} else {
+			ret = new ZFunctionCallNode(function, arguments.values().toArray(new ZNode[arguments.size()]));
 		}
-		return new ZFunctionCallNode(function, arguments.values().toArray(new ZNode[arguments.size()]));
+		ret.setSourceSection(json.getSourceCharIndex(), json.getSourceLength());
+		return ret;
 	}
 
 	public ZFunctionNode parseJsonObjectAsFunction(JsonObject json) {
@@ -164,63 +189,88 @@ public class ZCanonicalJsonParser {
 			implementationNodes[i] = parseJsonObjectAsImplementation(implementationJsons.get(i).getAsJsonObject(),
 					functionId, argumentNames);
 		}
-		return new ZFunctionNode(implementationNodes, functionId);
+		ZFunctionNode ret = new ZFunctionNode(implementationNodes, functionId);
+		ret.setSourceSection(json.getSourceCharIndex(), json.getSourceLength());
+		return ret;
 	}
 
 	public ZImplementationNode parseJsonObjectAsImplementation(JsonObject json, String functionId,
 			String[] argumentNames) {
 		JsonObject implementation = json.getAsJsonObject(ZConstants.IMPLEMENTATION_IMPLEMENTATION);
 		String type = implementation.get(ZConstants.ZOBJECT_TYPE).getAsString();
+		SourceSection implementationSourceSection = currentSource.createSection(implementation.getSourceCharIndex(),
+				implementation.getSourceLength());
+		ZImplementationNode ret;
 		switch (type) {
 		case ZConstants.FUNCTIONCALL:
 			ZNode node = parseJsonObjectAsFunctionCall(implementation);
-			ZRootNode rootNode = new ZRootNode(language, node);
-			return new ZImplementationFunctioncallNode(rootNode, functionId);
+			ZRootNode rootNode = new ZRootNode(language, node, implementationSourceSection);
+			ret = new ZImplementationFunctioncallNode(rootNode, functionId);
+			break;
 		case ZConstants.BUILTIN:
 			String builtin = implementation.get(ZConstants.ZOBJECT_ID).getAsString();
 			switch (builtin) {
 			case ZConstants.IF:
 				// note: parseJsonObjectAsFunctionCall usually parses “if” calls specially, this
 				// builtin implementation is used when “if” is called indirectly
-				return makeBuiltin(ZIfNodeFactory.getInstance(), functionId);
+				ret = makeBuiltin(ZIfNodeFactory.getInstance(), functionId, implementationSourceSection);
+				break;
 			case ZConstants.SAME:
-				return makeBuiltin(ZSameBuiltinFactory.getInstance(), functionId, ZValueBuiltinFactory.getInstance());
+				ret = makeBuiltin(ZSameBuiltinFactory.getInstance(), functionId, implementationSourceSection,
+						ZValueBuiltinFactory.getInstance());
+				break;
 			case ZConstants.VALUE:
-				return makeBuiltin(ZValueBuiltinFactory.getInstance(), functionId);
+				ret = makeBuiltin(ZValueBuiltinFactory.getInstance(), functionId, implementationSourceSection);
+				break;
 			case ZConstants.REIFY:
-				return makeBuiltin(ZReifyBuiltinFactory.getInstance(), functionId);
+				ret = makeBuiltin(ZReifyBuiltinFactory.getInstance(), functionId, implementationSourceSection);
+				break;
 			case ZConstants.ABSTRACT:
-				return makeBuiltin(ZAbstractBuiltinFactory.getInstance(), functionId);
+				ret = makeBuiltin(ZAbstractBuiltinFactory.getInstance(), functionId, implementationSourceSection);
+				break;
 			case ZConstants.CHARACTERTOSTRING:
-				return makeBuiltin(ZCharacterToStringBuiltinFactory.getInstance(), functionId);
+				ret = makeBuiltin(ZCharacterToStringBuiltinFactory.getInstance(), functionId,
+						implementationSourceSection);
+				break;
 			case ZConstants.STRINGTOCHARACTERLIST:
-				return makeBuiltin(ZStringToCharacterlistFactory.getInstance(), functionId);
+				ret = makeBuiltin(ZStringToCharacterlistFactory.getInstance(), functionId, implementationSourceSection);
+				break;
 			case ZConstants.HEAD:
-				return makeBuiltin(ZHeadBuiltinFactory.getInstance(), functionId);
+				ret = makeBuiltin(ZHeadBuiltinFactory.getInstance(), functionId, implementationSourceSection);
+				break;
 			case ZConstants.TAIL:
-				return makeBuiltin(ZTailBuiltinFactory.getInstance(), functionId);
+				ret = makeBuiltin(ZTailBuiltinFactory.getInstance(), functionId, implementationSourceSection);
+				break;
 			default:
-				return new ZImplementationBuiltinNode(
-						new ZRootNode(language,
-								new ZThrowConstantNode(
-										new UnusableImplementationException("Unknown builtin: " + builtin))),
-						functionId);
+				ZThrowConstantNode throwConstantNode = new ZThrowConstantNode(
+						new UnusableImplementationException("Unknown builtin: " + builtin));
+				throwConstantNode.setSourceSection(implementation.getSourceCharIndex(),
+						implementation.getSourceLength());
+				ret = new ZImplementationBuiltinNode(
+						new ZRootNode(language, throwConstantNode, implementationSourceSection), functionId);
+				break;
 			}
+			break;
 		case ZConstants.CODE:
 			String sourceLanguage = implementation.get(ZConstants.CODE_LANGUAGE).getAsString();
 			String source = implementation.get(ZConstants.CODE_SOURCE).getAsString();
-			return new ZImplementationCodeNode(language, sourceLanguage, source, functionId, argumentNames);
+			ret = new ZImplementationCodeNode(language, sourceLanguage, source, functionId, argumentNames);
+			break;
 		default:
-			return new ZImplementationBuiltinNode(
-					new ZRootNode(language,
-							new ZThrowConstantNode(
-									new UnusableImplementationException("Unsupported implementation type: " + type))),
-					functionId);
+			ZThrowConstantNode throwConstantNode = new ZThrowConstantNode(
+					new UnusableImplementationException("Unsupported implementation type: " + type));
+			throwConstantNode.setSourceSection(implementation.getSourceCharIndex(), implementation.getSourceLength());
+			ret = new ZImplementationBuiltinNode(
+					new ZRootNode(language, throwConstantNode, implementationSourceSection), functionId);
+			break;
 		}
+		ret.setSourceSection(json.getSourceCharIndex(), json.getSourceLength());
+		return ret;
 	}
 
-	private ZImplementationBuiltinNode makeBuiltin(NodeFactory<? extends ZNode> factory, String functionId) {
-		return makeBuiltin(factory, functionId, null);
+	private ZImplementationBuiltinNode makeBuiltin(NodeFactory<? extends ZNode> factory, String functionId,
+			SourceSection implementationSourceSection) {
+		return makeBuiltin(factory, functionId, implementationSourceSection, null);
 	}
 
 	/**
@@ -229,15 +279,17 @@ public class ZCanonicalJsonParser {
 	 *
 	 * @param factory
 	 * @param functionId
-	 * @param wrapArgumentsFactory Wrap each argument of the outer builtin with a
-	 *                             call to this builtin, which must accept a single
-	 *                             argument. Used, for instance, by the Z33/same
-	 *                             builtin to wrap each argument in a call to the
-	 *                             Z36/value builtin.
+	 * @param implementationSourceSection
+	 * @param wrapArgumentsFactory        Wrap each argument of the outer builtin
+	 *                                    with a call to this builtin, which must
+	 *                                    accept a single argument. Used, for
+	 *                                    instance, by the Z33/same builtin to wrap
+	 *                                    each argument in a call to the Z36/value
+	 *                                    builtin.
 	 * @return
 	 */
 	private ZImplementationBuiltinNode makeBuiltin(NodeFactory<? extends ZNode> factory, String functionId,
-			NodeFactory<? extends ZNode> wrapArgumentsFactory) {
+			SourceSection implementationSourceSection, NodeFactory<? extends ZNode> wrapArgumentsFactory) {
 		int argumentCount = factory.getExecutionSignature().size();
 		ZNode[] argumentNodes = new ZNode[argumentCount];
 		for (int i = 0; i < argumentCount; i++) {
@@ -250,21 +302,25 @@ public class ZCanonicalJsonParser {
 			argumentNodes[i] = argumentNode;
 		}
 		ZNode builtinNode = factory.createNode((Object) argumentNodes);
-		ZRootNode rootNode = new ZRootNode(language, builtinNode);
+		ZRootNode rootNode = new ZRootNode(language, builtinNode, implementationSourceSection);
 		return new ZImplementationBuiltinNode(rootNode, functionId);
 	}
 
 	public ZReferenceLiteralNode parseJsonObjectAsReference(JsonObject json) {
 		// TODO error handling, and check whether it’s okay to throw away all other keys
 		String id = json.get(ZConstants.REFERENCE_ID).getAsString();
-		return ZReferenceLiteralNodeGen.create(id);
+		ZReferenceLiteralNode ret = ZReferenceLiteralNodeGen.create(id);
+		ret.setSourceSection(json.getSourceCharIndex(), json.getSourceLength());
+		return ret;
 	}
 
 	public ZReadArgumentNode parseJsonObjectAsArgumentReference(JsonObject json) {
 		// TODO is it safe to assume that ZwhateverKi is always the (i-1)th argument?
 		String reference = json.get(ZConstants.ARGUMENTREFERENCE_REFERENCE).getAsString();
 		int index = Integer.parseInt(reference.substring(reference.indexOf('K') + 1));
-		return new ZReadArgumentNode(index - 1);
+		ZReadArgumentNode ret = new ZReadArgumentNode(index - 1);
+		ret.setSourceSection(json.getSourceCharIndex(), json.getSourceLength());
+		return ret;
 	}
 
 	public ZCharacterLiteralNode parseJsonObjectAsCharacter(JsonObject json) {
@@ -278,7 +334,10 @@ public class ZCanonicalJsonParser {
 			extraMembers[i] = new ZCharacterLiteralMemberNode(entry.getKey(), parseJsonElement(entry.getValue()));
 			i++;
 		}
-		return new ZCharacterLiteralNode(json.get(ZConstants.CHARACTER_CHARACTER).getAsString(), extraMembers);
+		ZCharacterLiteralNode ret = new ZCharacterLiteralNode(json.get(ZConstants.CHARACTER_CHARACTER).getAsString(),
+				extraMembers);
+		ret.setSourceSection(json.getSourceCharIndex(), json.getSourceLength());
+		return ret;
 	}
 
 	public ZListLiteralNode parseJsonArray(JsonArray json) {
@@ -286,27 +345,31 @@ public class ZCanonicalJsonParser {
 		for (int i = 0; i < nodes.length; i++) {
 			nodes[i] = parseJsonElement(json.get(i));
 		}
-		return new ZListLiteralNode(nodes);
+		ZListLiteralNode ret = new ZListLiteralNode(nodes);
+		ret.setSourceSection(json.getSourceCharIndex(), json.getSourceLength());
+		return ret;
 	}
 
 	/**
 	 * A string represents a reference if it starts with a capital letter followed
 	 * by a digit, otherwise it represents a string literal.
 	 */
-	public ZNode parseJsonString(String json) {
-		if (json.length() < 2) {
-			return new ZStringLiteralNode(json);
+	public ZNode parseJsonString(JsonString json) {
+		String string = json.getString();
+		ZNode ret;
+		if (string.length() < 2) {
+			ret = new ZStringLiteralNode(string);
+		} else if (string.charAt(0) > 127 || string.charAt(1) > 127) {
+			ret = new ZStringLiteralNode(string);
+		} else if (!Character.isUpperCase(string.charAt(0))) {
+			ret = new ZStringLiteralNode(string);
+		} else if (!Character.isDigit(string.charAt(1))) {
+			ret = new ZStringLiteralNode(string);
+		} else {
+			ret = ZReferenceLiteralNodeGen.create(string);
 		}
-		if (json.charAt(0) > 127 || json.charAt(1) > 127) {
-			return new ZStringLiteralNode(json);
-		}
-		if (!Character.isUpperCase(json.charAt(0))) {
-			return new ZStringLiteralNode(json);
-		}
-		if (!Character.isDigit(json.charAt(1))) {
-			return new ZStringLiteralNode(json);
-		}
-		return ZReferenceLiteralNodeGen.create(json);
+		ret.setSourceSection(json.getSourceCharIndex(), json.getSourceLength());
+		return ret;
 	}
 
 }

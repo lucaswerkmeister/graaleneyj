@@ -1,14 +1,11 @@
 package de.lucaswerkmeister.graaleneyj;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonElement;
 import com.oracle.truffle.api.CallTarget;
 import com.oracle.truffle.api.Truffle;
 import com.oracle.truffle.api.TruffleLanguage;
 import com.oracle.truffle.api.TruffleLanguage.ContextPolicy;
 import com.oracle.truffle.api.object.Shape;
 
-import de.lucaswerkmeister.graaleneyj.nodes.ZNode;
 import de.lucaswerkmeister.graaleneyj.nodes.ZRootNode;
 import de.lucaswerkmeister.graaleneyj.parser.ZCanonicalJsonParser;
 import de.lucaswerkmeister.graaleneyj.runtime.ZContext;
@@ -35,9 +32,7 @@ public class ZLanguage extends TruffleLanguage<ZContext> {
 			// for now
 			throw new UnsupportedOperationException("Can’t parse with arguments yet");
 		}
-		JsonElement element = new Gson().fromJson(request.getSource().getReader(), JsonElement.class);
-		ZNode node = parser.parseJsonElement(element);
-		ZRootNode rootNode = new ZRootNode(this, node);
+		ZRootNode rootNode = parser.parseSource(request.getSource());
 		return Truffle.getRuntime().createCallTarget(rootNode);
 	}
 
