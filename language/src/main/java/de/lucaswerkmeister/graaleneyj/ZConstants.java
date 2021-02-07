@@ -12,6 +12,8 @@ public final class ZConstants {
 	public static final String FUNCTION = "Z8";
 	public static final String REFERENCE = "Z9";
 	public static final String LIST = "Z10";
+	public static final String MONOLINGUALTEXT = "Z11";
+	public static final String MULTILINGUALTEXT = "Z12";
 	public static final String NIL = "Z13";
 	public static final String CODE = "Z16";
 	public static final String ARGUMENTREFERENCE = "Z18";
@@ -46,6 +48,9 @@ public final class ZConstants {
 	public static final String REFERENCE_ID = "Z9K1";
 	public static final String LIST_HEAD = "Z10K1";
 	public static final String LIST_TAIL = "Z10K2";
+	public static final String MONOLINGUALTEXT_LANGUAGE = "Z11K1";
+	public static final String MONOLINGUALTEXT_TEXT = "Z11K2";
+	public static final String MULTILINGUALTEXT_TEXTS = "Z12K1";
 	public static final String IMPLEMENTATION_IMPLEMENTATION = "Z14K1";
 	public static final String CODE_LANGUAGE = "Z16K1";
 	public static final String CODE_SOURCE = "Z16K2";

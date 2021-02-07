@@ -14,6 +14,7 @@ import com.oracle.truffle.api.interop.UnsupportedTypeException;
 import com.oracle.truffle.api.object.Shape;
 import com.oracle.truffle.api.source.Source;
 
+import de.lucaswerkmeister.graaleneyj.ZLanguage;
 import de.lucaswerkmeister.graaleneyj.filesystem.WikiLambdaFileSystem;
 
 public final class ZContext {
@@ -22,11 +23,14 @@ public final class ZContext {
 
 	private final Shape initialZObjectShape;
 
+	private final String userLanguage;
+
 	private final Map<String, Object> objects = new HashMap<>();
 
 	public ZContext(Env env, Shape initialZObjectShape) {
 		this.env = env;
 		this.initialZObjectShape = initialZObjectShape;
+		this.userLanguage = env.getOptions().get(ZLanguage.userLanguage);
 	}
 
 	public TruffleFile getTruffleFile(String zid) {
@@ -74,6 +78,10 @@ public final class ZContext {
 		}
 		assert error instanceof TruffleObject;
 		return (TruffleObject) error;
+	}
+
+	public String getUserLanguage() {
+		return userLanguage;
 	}
 
 }
