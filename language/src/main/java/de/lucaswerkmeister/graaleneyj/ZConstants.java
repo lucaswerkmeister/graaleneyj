@@ -6,7 +6,6 @@ package de.lucaswerkmeister.graaleneyj;
 public final class ZConstants {
 
 	public static final String ZOBJECT = "Z1";
-	public static final String PAIR = "Z2";
 	public static final String STRING = "Z6";
 	public static final String FUNCTIONCALL = "Z7";
 	public static final String FUNCTION = "Z8";
@@ -16,6 +15,7 @@ public final class ZConstants {
 	public static final String CODE = "Z16";
 	public static final String ARGUMENTREFERENCE = "Z18";
 	public static final String BUILTIN = "Z19";
+	public static final String PAIR = "Z22";
 	public static final String NOTHING = "Z23";
 	public static final String IF = "Z31";
 	public static final String SAME = "Z33";
@@ -34,8 +34,6 @@ public final class ZConstants {
 
 	public static final String ZOBJECT_TYPE = "Z1K1";
 	public static final String ZOBJECT_ID = "Z1K2";
-	public static final String PAIR_FIRST = "Z2K1";
-	public static final String PAIR_SECOND = "Z2K2";
 	public static final String STRING_STRING_VALUE = "Z6K1";
 	public static final String FUNCTIONCALL_FUNCTION = "Z7K1";
 	public static final String FUNCTION_ARGUMENTS = "Z8K1";
@@ -47,6 +45,8 @@ public final class ZConstants {
 	public static final String CODE_LANGUAGE = "Z16K1";
 	public static final String CODE_SOURCE = "Z16K2";
 	public static final String ARGUMENTREFERENCE_REFERENCE = "Z18K1";
+	public static final String PAIR_FIRST = "Z22K1";
+	public static final String PAIR_SECOND = "Z22K2";
 	public static final String BOOLEAN_IDENTITY = "Z50K1";
 	public static final String CHARACTER_CHARACTER = "Z60K1";
 

@@ -11,9 +11,9 @@ public class ZPairTest extends ZTest {
 	@Test
 	public void testPairAB() {
 		Value pair = eval("\"Z355\"").execute();
-		assertZReference("Z2", pair.getMember("Z1K1"));
-		assertEquals("A", pair.getMember("Z2K1").asString());
-		assertEquals("B", pair.getMember("Z2K2").asString());
+		assertZReference("Z22", pair.getMember("Z1K1"));
+		assertEquals("A", pair.getMember("Z22K1").asString());
+		assertEquals("B", pair.getMember("Z22K2").asString());
 	}
 
 }

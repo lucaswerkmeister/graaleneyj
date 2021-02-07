@@ -53,18 +53,18 @@ public class BuiltinTest extends ZTest {
 	@Test
 	public void testValueOfPairWithoutId() {
 		Value result = eval(
-				"{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z36\", \"K1\": {\"Z1K1\": \"Z2\", \"Z2K1\": \"first\", \"Z2K2\": \"second\"}}");
-		assertEquals("first", result.getMember("Z2K1").asString());
-		assertEquals("second", result.getMember("Z2K2").asString());
+				"{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z36\", \"K1\": {\"Z1K1\": \"Z22\", \"Z22K1\": \"first\", \"Z22K2\": \"second\"}}");
+		assertEquals("first", result.getMember("Z22K1").asString());
+		assertEquals("second", result.getMember("Z22K2").asString());
 		assertFalse(result.hasMember("Z1K2"));
 	}
 
 	@Test
 	public void testValueOfPairWithId() {
 		Value result = eval(
-				"{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z36\", \"K1\": {\"Z1K1\": \"Z2\", \"Z1K2\": \"Z0\", \"Z2K1\": \"first\", \"Z2K2\": \"second\"}}");
-		assertEquals("first", result.getMember("Z2K1").asString());
-		assertEquals("second", result.getMember("Z2K2").asString());
+				"{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z36\", \"K1\": {\"Z1K1\": \"Z22\", \"Z1K2\": \"Z0\", \"Z22K1\": \"first\", \"Z22K2\": \"second\"}}");
+		assertEquals("first", result.getMember("Z22K1").asString());
+		assertEquals("second", result.getMember("Z22K2").asString());
 		assertFalse(result.hasMember("Z1K2"));
 	}
 
@@ -349,15 +349,15 @@ public class BuiltinTest extends ZTest {
 		assertEquals(2, result.getArraySize());
 		Value first = result.getArrayElement(0);
 		Value second = result.getArrayElement(1);
-		if (first.getMember("Z2K1").asString().equals("Z1K2")) {
+		if (first.getMember("Z22K1").asString().equals("Z1K2")) {
 			Value swap = second;
 			second = first;
 			first = swap;
 		}
-		assertEquals("Z1K1", first.getMember("Z2K1").asString());
-		assertZReference("Z1", first.getMember("Z2K2"));
-		assertEquals("Z1K2", second.getMember("Z2K1").asString());
-		assertZReference("Z0", second.getMember("Z2K2"));
+		assertEquals("Z1K1", first.getMember("Z22K1").asString());
+		assertZReference("Z1", first.getMember("Z22K2"));
+		assertEquals("Z1K2", second.getMember("Z22K1").asString());
+		assertZReference("Z0", second.getMember("Z22K2"));
 	}
 
 	@Test
@@ -367,15 +367,15 @@ public class BuiltinTest extends ZTest {
 		assertEquals(2, result.getArraySize());
 		Value first = result.getArrayElement(0);
 		Value second = result.getArrayElement(1);
-		if (first.getMember("Z2K1").asString().equals("Z60K1")) {
+		if (first.getMember("Z22K1").asString().equals("Z60K1")) {
 			Value swap = second;
 			second = first;
 			first = swap;
 		}
-		assertEquals("Z1K1", first.getMember("Z2K1").asString());
-		assertZReference("Z60", first.getMember("Z2K2"));
-		assertEquals("Z60K1", second.getMember("Z2K1").asString());
-		assertEquals("a", second.getMember("Z2K2").asString());
+		assertEquals("Z1K1", first.getMember("Z22K1").asString());
+		assertZReference("Z60", first.getMember("Z22K2"));
+		assertEquals("Z60K1", second.getMember("Z22K1").asString());
+		assertEquals("a", second.getMember("Z22K2").asString());
 	}
 
 	@Test
@@ -387,21 +387,21 @@ public class BuiltinTest extends ZTest {
 		boolean sawType = false, sawId = false, sawCharacter = false;
 		for (int i = 0; i < 3; i++) {
 			Value value = result.getArrayElement(i);
-			switch (value.getMember("Z2K1").asString()) {
+			switch (value.getMember("Z22K1").asString()) {
 			case "Z1K1":
 				assertFalse(sawType);
 				sawType = true;
-				assertZReference("Z60", value.getMember("Z2K2"));
+				assertZReference("Z60", value.getMember("Z22K2"));
 				break;
 			case "Z1K2":
 				assertFalse(sawId);
 				sawId = true;
-				assertZReference("Z0", value.getMember("Z2K2"));
+				assertZReference("Z0", value.getMember("Z22K2"));
 				break;
 			case "Z60K1":
 				assertFalse(sawCharacter);
 				sawCharacter = true;
-				assertEquals("a", value.getMember("Z2K2").asString());
+				assertEquals("a", value.getMember("Z22K2").asString());
 				break;
 			default:
 				fail();
@@ -419,15 +419,15 @@ public class BuiltinTest extends ZTest {
 		assertEquals(2, result.getArraySize());
 		Value first = result.getArrayElement(0);
 		Value second = result.getArrayElement(1);
-		if (first.getMember("Z2K1").asString().equals("Z6K1")) {
+		if (first.getMember("Z22K1").asString().equals("Z6K1")) {
 			Value swap = second;
 			second = first;
 			first = swap;
 		}
-		assertEquals("Z1K1", first.getMember("Z2K1").asString());
-		assertZReference("Z6", first.getMember("Z2K2"));
-		assertEquals("Z6K1", second.getMember("Z2K1").asString());
-		assertEquals("a string", second.getMember("Z2K2").asString());
+		assertEquals("Z1K1", first.getMember("Z22K1").asString());
+		assertZReference("Z6", first.getMember("Z22K2"));
+		assertEquals("Z6K1", second.getMember("Z22K1").asString());
+		assertEquals("a string", second.getMember("Z22K2").asString());
 	}
 
 	@Test
@@ -438,15 +438,15 @@ public class BuiltinTest extends ZTest {
 		assertEquals(2, result.getArraySize());
 		Value first = result.getArrayElement(0);
 		Value second = result.getArrayElement(1);
-		if (first.getMember("Z2K1").asString().equals("Z6K1")) {
+		if (first.getMember("Z22K1").asString().equals("Z6K1")) {
 			Value swap = second;
 			second = first;
 			first = swap;
 		}
-		assertEquals("Z1K1", first.getMember("Z2K1").asString());
-		assertZReference("Z6", first.getMember("Z2K2"));
-		assertEquals("Z6K1", second.getMember("Z2K1").asString());
-		assertEquals("a string", second.getMember("Z2K2").asString());
+		assertEquals("Z1K1", first.getMember("Z22K1").asString());
+		assertZReference("Z6", first.getMember("Z22K2"));
+		assertEquals("Z6K1", second.getMember("Z22K1").asString());
+		assertEquals("a string", second.getMember("Z22K2").asString());
 	}
 
 	@Test
@@ -458,21 +458,21 @@ public class BuiltinTest extends ZTest {
 		boolean sawType = false, sawId = false, sawString = false;
 		for (int i = 0; i < 3; i++) {
 			Value value = result.getArrayElement(i);
-			switch (value.getMember("Z2K1").asString()) {
+			switch (value.getMember("Z22K1").asString()) {
 			case "Z1K1":
 				assertFalse(sawType);
 				sawType = true;
-				assertZReference("Z6", value.getMember("Z2K2"));
+				assertZReference("Z6", value.getMember("Z22K2"));
 				break;
 			case "Z1K2":
 				assertFalse(sawId);
 				sawId = true;
-				assertZReference("Z0", value.getMember("Z2K2"));
+				assertZReference("Z0", value.getMember("Z22K2"));
 				break;
 			case "Z6K1":
 				assertFalse(sawString);
 				sawString = true;
-				assertEquals("a string", value.getMember("Z2K2").asString());
+				assertEquals("a string", value.getMember("Z22K2").asString());
 				break;
 			default:
 				fail();
@@ -496,21 +496,21 @@ public class BuiltinTest extends ZTest {
 		boolean sawType = false, sawFirst = false, sawSecond = false;
 		for (int i = 0; i < 3; i++) {
 			Value value = result.getArrayElement(i);
-			switch (value.getMember("Z2K1").asString()) {
+			switch (value.getMember("Z22K1").asString()) {
 			case "Z1K1":
 				assertFalse(sawType);
 				sawType = true;
-				assertZReference("Z2", value.getMember("Z2K2"));
+				assertZReference("Z22", value.getMember("Z22K2"));
 				break;
-			case "Z2K1":
+			case "Z22K1":
 				assertFalse(sawFirst);
 				sawFirst = true;
-				first.accept(value.getMember("Z2K2"));
+				first.accept(value.getMember("Z22K2"));
 				break;
-			case "Z2K2":
+			case "Z22K2":
 				assertFalse(sawSecond);
 				sawSecond = true;
-				second.accept(value.getMember("Z2K2"));
+				second.accept(value.getMember("Z22K2"));
 				break;
 			default:
 				fail();
@@ -524,7 +524,7 @@ public class BuiltinTest extends ZTest {
 	@Test
 	public void testReifyPairOfStrings() {
 		Value result = eval(
-				"{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z37\", \"K1\": {\"Z1K1\": \"Z2\", \"Z2K1\": \"first\", \"Z2K2\": \"second\"}}");
+				"{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z37\", \"K1\": {\"Z1K1\": \"Z22\", \"Z22K1\": \"first\", \"Z22K2\": \"second\"}}");
 		assertReifiedPair(result, (first) -> assertEquals("first", first.asString()),
 				(second) -> assertEquals("second", second.asString()));
 	}
@@ -532,21 +532,21 @@ public class BuiltinTest extends ZTest {
 	@Test
 	public void testReifyPairOfReferences() {
 		Value result = eval(
-				"{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z37\", \"K1\": {\"Z1K1\": \"Z2\", \"Z2K1\": \"Z2\", \"Z2K2\": \"Z10\"}}");
-		assertReifiedPair(result, (first) -> assertZReference("Z2", first),
+				"{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z37\", \"K1\": {\"Z1K1\": \"Z22\", \"Z22K1\": \"Z22\", \"Z22K2\": \"Z10\"}}");
+		assertReifiedPair(result, (first) -> assertZReference("Z22", first),
 				(second) -> assertZReference("Z10", second));
 	}
 
 	@Test
 	public void testReifyPairOfPairs() {
-		String pairOfStrings = "{\"Z1K1\": \"Z2\", \"Z2K1\": \"first\", \"Z2K2\": \"second\"}";
-		String pairOfReferences = "{\"Z1K1\": \"Z2\", \"Z2K1\": \"Z2\", \"Z2K2\": \"Z10\"}";
-		Value result = eval("{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z37\", \"K1\": {\"Z1K1\": \"Z2\", \"Z2K1\": "
-				+ pairOfStrings + ", \"Z2K2\": " + pairOfReferences + "}}");
+		String pairOfStrings = "{\"Z1K1\": \"Z22\", \"Z22K1\": \"first\", \"Z22K2\": \"second\"}";
+		String pairOfReferences = "{\"Z1K1\": \"Z22\", \"Z22K1\": \"Z22\", \"Z22K2\": \"Z10\"}";
+		Value result = eval("{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z37\", \"K1\": {\"Z1K1\": \"Z22\", \"Z22K1\": "
+				+ pairOfStrings + ", \"Z22K2\": " + pairOfReferences + "}}");
 		assertReifiedPair(result,
 				(first) -> assertReifiedPair(first, (firstFirst) -> assertEquals("first", firstFirst.asString()),
 						(firstSecond) -> assertEquals("second", firstSecond.asString())),
-				(second) -> assertReifiedPair(second, (secondFirst) -> assertZReference("Z2", secondFirst),
+				(second) -> assertReifiedPair(second, (secondFirst) -> assertZReference("Z22", secondFirst),
 						(secondSecond) -> assertZReference("Z10", secondSecond)));
 	}
 
@@ -557,27 +557,27 @@ public class BuiltinTest extends ZTest {
 		boolean sawType = false, sawId = false, sawHead = false, sawTail = false;
 		for (int i = 0; i < expectedSize; i++) {
 			Value value = result.getArrayElement(i);
-			switch (value.getMember("Z2K1").asString()) {
+			switch (value.getMember("Z22K1").asString()) {
 			case "Z1K1":
 				assertFalse(sawType);
 				sawType = true;
-				assertZReference("Z10", value.getMember("Z2K2"));
+				assertZReference("Z10", value.getMember("Z22K2"));
 				break;
 			case "Z1K2":
 				assertTrue(isNil);
 				assertFalse(sawId);
 				sawId = true;
-				assertZReference("Z13", value.getMember("Z2K2"));
+				assertZReference("Z13", value.getMember("Z22K2"));
 				break;
 			case "Z10K1":
 				assertFalse(sawHead);
 				sawHead = true;
-				head.accept(value.getMember("Z2K2"));
+				head.accept(value.getMember("Z22K2"));
 				break;
 			case "Z10K2":
 				assertFalse(sawTail);
 				sawTail = true;
-				tail.accept(value.getMember("Z2K2"));
+				tail.accept(value.getMember("Z22K2"));
 				break;
 			default:
 				fail();
@@ -619,8 +619,8 @@ public class BuiltinTest extends ZTest {
 
 	@Test
 	public void testAbstractObject() {
-		String typePair = "{\"Z1K1\": \"Z2\", \"Z2K1\": {\"Z1K1\": \"Z6\", \"Z6K1\": \"Z1K1\"}, \"Z2K2\": \"Z1\"}";
-		String idPair = "{\"Z1K1\": \"Z2\", \"Z2K1\": {\"Z1K1\": \"Z6\", \"Z6K1\": \"Z1K2\"}, \"Z2K2\": \"Z0\"}";
+		String typePair = "{\"Z1K1\": \"Z22\", \"Z22K1\": {\"Z1K1\": \"Z6\", \"Z6K1\": \"Z1K1\"}, \"Z22K2\": \"Z1\"}";
+		String idPair = "{\"Z1K1\": \"Z22\", \"Z22K1\": {\"Z1K1\": \"Z6\", \"Z6K1\": \"Z1K2\"}, \"Z22K2\": \"Z0\"}";
 		Value result = eval("{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z38\", \"K1\": [" + typePair + ", " + idPair + "]}");
 		assertTrue(result.hasMembers());
 		assertEquals(2, result.getMemberKeys().size());
@@ -630,8 +630,8 @@ public class BuiltinTest extends ZTest {
 
 	@Test
 	public void testAbstractCharacter() {
-		String typePair = "{\"Z1K1\": \"Z2\", \"Z2K1\": {\"Z1K1\": \"Z6\", \"Z6K1\": \"Z1K1\"}, \"Z2K2\": \"Z60\"}";
-		String characterPair = "{\"Z1K1\": \"Z2\", \"Z2K1\": {\"Z1K1\": \"Z6\", \"Z6K1\": \"Z60K1\"}, \"Z2K2\": \"a\"}";
+		String typePair = "{\"Z1K1\": \"Z22\", \"Z22K1\": {\"Z1K1\": \"Z6\", \"Z6K1\": \"Z1K1\"}, \"Z22K2\": \"Z60\"}";
+		String characterPair = "{\"Z1K1\": \"Z22\", \"Z22K1\": {\"Z1K1\": \"Z6\", \"Z6K1\": \"Z60K1\"}, \"Z22K2\": \"a\"}";
 		Value result = eval("{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z38\", \"K1\": [" + typePair + ", " + characterPair + "]}");
 		assertTrue(result.hasMembers());
 		assertEquals(2, result.getMemberKeys().size());
@@ -643,9 +643,9 @@ public class BuiltinTest extends ZTest {
 
 	@Test
 	public void testAbstractCharacterWithId() {
-		String typePair = "{\"Z1K1\": \"Z2\", \"Z2K1\": {\"Z1K1\": \"Z6\", \"Z6K1\": \"Z1K1\"}, \"Z2K2\": \"Z60\"}";
-		String idPair = "{\"Z1K1\": \"Z2\", \"Z2K1\": {\"Z1K1\": \"Z6\", \"Z6K1\": \"Z1K2\"}, \"Z2K2\": \"Z0\"}";
-		String characterPair = "{\"Z1K1\": \"Z2\", \"Z2K1\": {\"Z1K1\": \"Z6\", \"Z6K1\": \"Z60K1\"}, \"Z2K2\": \"a\"}";
+		String typePair = "{\"Z1K1\": \"Z22\", \"Z22K1\": {\"Z1K1\": \"Z6\", \"Z6K1\": \"Z1K1\"}, \"Z22K2\": \"Z60\"}";
+		String idPair = "{\"Z1K1\": \"Z22\", \"Z22K1\": {\"Z1K1\": \"Z6\", \"Z6K1\": \"Z1K2\"}, \"Z22K2\": \"Z0\"}";
+		String characterPair = "{\"Z1K1\": \"Z22\", \"Z22K1\": {\"Z1K1\": \"Z6\", \"Z6K1\": \"Z60K1\"}, \"Z22K2\": \"a\"}";
 		String pairs = "[" + typePair + ", " + idPair + ", " + characterPair + "]";
 		Value result = eval("{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z38\", \"K1\": " + pairs + "}");
 		assertTrue(result.hasMembers());
@@ -659,8 +659,8 @@ public class BuiltinTest extends ZTest {
 
 	@Test
 	public void testAbstractString() {
-		String typePair = "{\"Z1K1\": \"Z2\", \"Z2K1\": {\"Z1K1\": \"Z6\", \"Z6K1\": \"Z1K1\"}, \"Z2K2\": \"Z6\"}";
-		String stringPair = "{\"Z1K1\": \"Z2\", \"Z2K1\": {\"Z1K1\": \"Z6\", \"Z6K1\": \"Z6K1\"}, \"Z2K2\": \"abc\"}";
+		String typePair = "{\"Z1K1\": \"Z22\", \"Z22K1\": {\"Z1K1\": \"Z6\", \"Z6K1\": \"Z1K1\"}, \"Z22K2\": \"Z6\"}";
+		String stringPair = "{\"Z1K1\": \"Z22\", \"Z22K1\": {\"Z1K1\": \"Z6\", \"Z6K1\": \"Z6K1\"}, \"Z22K2\": \"abc\"}";
 		Value result = eval("{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z38\", \"K1\": [" + typePair + ", " + stringPair + "]}");
 		assertTrue(result.isString());
 		assertEquals("abc", result.asString());
@@ -668,9 +668,9 @@ public class BuiltinTest extends ZTest {
 
 	@Test
 	public void testAbstractStringWithId() {
-		String typePair = "{\"Z1K1\": \"Z2\", \"Z2K1\": {\"Z1K1\": \"Z6\", \"Z6K1\": \"Z1K1\"}, \"Z2K2\": \"Z6\"}";
-		String idPair = "{\"Z1K1\": \"Z2\", \"Z2K1\": {\"Z1K1\": \"Z6\", \"Z6K1\": \"Z1K2\"}, \"Z2K2\": \"Z0\"}";
-		String stringPair = "{\"Z1K1\": \"Z2\", \"Z2K1\": {\"Z1K1\": \"Z6\", \"Z6K1\": \"Z6K1\"}, \"Z2K2\": \"abc\"}";
+		String typePair = "{\"Z1K1\": \"Z22\", \"Z22K1\": {\"Z1K1\": \"Z6\", \"Z6K1\": \"Z1K1\"}, \"Z22K2\": \"Z6\"}";
+		String idPair = "{\"Z1K1\": \"Z22\", \"Z22K1\": {\"Z1K1\": \"Z6\", \"Z6K1\": \"Z1K2\"}, \"Z22K2\": \"Z0\"}";
+		String stringPair = "{\"Z1K1\": \"Z22\", \"Z22K1\": {\"Z1K1\": \"Z6\", \"Z6K1\": \"Z6K1\"}, \"Z22K2\": \"abc\"}";
 		String pairs = "[" + typePair + ", " + idPair + ", " + stringPair + "]";
 		Value result = eval("{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z38\", \"K1\": " + pairs + "}");
 		assertTrue(result.hasMembers());
@@ -684,44 +684,44 @@ public class BuiltinTest extends ZTest {
 
 	@Test
 	public void testAbstractProjectName() {
-		String typeTextPair = "{\"Z1K1\": \"Z2\", \"Z2K1\": {\"Z1K1\": \"Z6\", \"Z6K1\": \"Z1K1\"}, \"Z2K2\": \"Z11\"}";
-		String languageEnglishPair = "{\"Z1K1\": \"Z2\", \"Z2K1\": {\"Z1K1\": \"Z6\", \"Z6K1\": \"Z11K1\"}, \"Z2K2\": \"Z251\"}";
-		String textProjectNamePair = "{\"Z1K1\": \"Z2\", \"Z2K1\": {\"Z1K1\": \"Z6\", \"Z6K1\": \"Z11K2\"}, \"Z2K2\": \"project_name\"}";
-		String languageGermanPair = "{\"Z1K1\": \"Z2\", \"Z2K1\": {\"Z1K1\": \"Z6\", \"Z6K1\": \"Z11K1\"}, \"Z2K2\": \"Z254\"}";
-		String textProjektnamePair = "{\"Z1K1\": \"Z2\", \"Z2K1\": {\"Z1K1\": \"Z6\", \"Z6K1\": \"Z11K2\"}, \"Z2K2\": \"Projektname\"}";
+		String typeTextPair = "{\"Z1K1\": \"Z22\", \"Z22K1\": {\"Z1K1\": \"Z6\", \"Z6K1\": \"Z1K1\"}, \"Z22K2\": \"Z11\"}";
+		String languageEnglishPair = "{\"Z1K1\": \"Z22\", \"Z22K1\": {\"Z1K1\": \"Z6\", \"Z6K1\": \"Z11K1\"}, \"Z22K2\": \"Z251\"}";
+		String textProjectNamePair = "{\"Z1K1\": \"Z22\", \"Z22K1\": {\"Z1K1\": \"Z6\", \"Z6K1\": \"Z11K2\"}, \"Z22K2\": \"project_name\"}";
+		String languageGermanPair = "{\"Z1K1\": \"Z22\", \"Z22K1\": {\"Z1K1\": \"Z6\", \"Z6K1\": \"Z11K1\"}, \"Z22K2\": \"Z254\"}";
+		String textProjektnamePair = "{\"Z1K1\": \"Z22\", \"Z22K1\": {\"Z1K1\": \"Z6\", \"Z6K1\": \"Z11K2\"}, \"Z22K2\": \"Projektname\"}";
 		String englishLabelPairs = "[" + typeTextPair + ", " + languageEnglishPair + ", " + textProjectNamePair + "]";
 		String germanLabelPairs = "[" + typeTextPair + ", " + languageGermanPair + ", " + textProjektnamePair + "]";
-		String typeListPair = "{\"Z1K1\": \"Z2\", \"Z2K1\": {\"Z1K1\": \"Z6\", \"Z6K1\": \"Z1K1\"}, \"Z2K2\": \"Z10\"}";
-		String idNilPair = "{\"Z1K1\": \"Z2\", \"Z2K1\": {\"Z1K1\": \"Z6\", \"Z6K1\": \"Z1K2\"}, \"Z2K2\": \"Z13\"}";
-		String headListIsNilPair = "{\"Z1K1\": \"Z2\", \"Z2K1\": {\"Z1K1\": \"Z6\", \"Z6K1\": \"Z10K1\"}, \"Z2K2\": \"Z441\"}";
-		String tailListIsNilPair = "{\"Z1K1\": \"Z2\", \"Z2K1\": {\"Z1K1\": \"Z6\", \"Z6K1\": \"Z10K2\"}, \"Z2K2\": \"Z441\"}";
+		String typeListPair = "{\"Z1K1\": \"Z22\", \"Z22K1\": {\"Z1K1\": \"Z6\", \"Z6K1\": \"Z1K1\"}, \"Z22K2\": \"Z10\"}";
+		String idNilPair = "{\"Z1K1\": \"Z22\", \"Z22K1\": {\"Z1K1\": \"Z6\", \"Z6K1\": \"Z1K2\"}, \"Z22K2\": \"Z13\"}";
+		String headListIsNilPair = "{\"Z1K1\": \"Z22\", \"Z22K1\": {\"Z1K1\": \"Z6\", \"Z6K1\": \"Z10K1\"}, \"Z22K2\": \"Z441\"}";
+		String tailListIsNilPair = "{\"Z1K1\": \"Z22\", \"Z22K1\": {\"Z1K1\": \"Z6\", \"Z6K1\": \"Z10K2\"}, \"Z22K2\": \"Z441\"}";
 		String nilPairs = "[" + typeListPair + ", " + idNilPair + ", " + headListIsNilPair + ", " + tailListIsNilPair
 				+ "]";
 		/*
 		 * TODO Remove the nilPairs reassignment. Currently, there’s no way to get a
-		 * correct idNilPair – "Z2K2": "Z13" will actually immediately evaluate to nil
+		 * correct idNilPair – "Z22K2": "Z13" will actually immediately evaluate to nil
 		 * object, but we need it to be a ZReference with the ID Z13. There’s no way to
 		 * create such a ZReference at the moment, so we cheat and instead of specifying
 		 * the reified nil as JSON, we get it by actually calling reify(nil).
 		 */
 		nilPairs = "{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z37\", \"K1\": \"Z13\"}";
-		String headGermanLabelPair = "{\"Z1K1\": \"Z2\", \"Z2K1\": {\"Z1K1\": \"Z6\", \"Z6K1\": \"Z10K1\"}, \"Z2K2\": "
+		String headGermanLabelPair = "{\"Z1K1\": \"Z22\", \"Z22K1\": {\"Z1K1\": \"Z6\", \"Z6K1\": \"Z10K1\"}, \"Z22K2\": "
 				+ germanLabelPairs + "}";
-		String tailNilPair = "{\"Z1K1\": \"Z2\", \"Z2K1\": {\"Z1K1\": \"Z6\", \"Z6K1\": \"Z10K2\"}, \"Z2K2\": "
+		String tailNilPair = "{\"Z1K1\": \"Z22\", \"Z22K1\": {\"Z1K1\": \"Z6\", \"Z6K1\": \"Z10K2\"}, \"Z22K2\": "
 				+ nilPairs + "}";
-		String headEnglishLabelPair = "{\"Z1K1\": \"Z2\", \"Z2K1\": {\"Z1K1\": \"Z6\", \"Z6K1\": \"Z10K1\"}, \"Z2K2\": "
+		String headEnglishLabelPair = "{\"Z1K1\": \"Z22\", \"Z22K1\": {\"Z1K1\": \"Z6\", \"Z6K1\": \"Z10K1\"}, \"Z22K2\": "
 				+ englishLabelPairs + "}";
-		String tailGermanLabelPair = "{\"Z1K1\": \"Z2\", \"Z2K1\": {\"Z1K1\": \"Z6\", \"Z6K1\": \"Z10K2\"}, \"Z2K2\": "
+		String tailGermanLabelPair = "{\"Z1K1\": \"Z22\", \"Z22K1\": {\"Z1K1\": \"Z6\", \"Z6K1\": \"Z10K2\"}, \"Z22K2\": "
 				+ "[" + typeListPair + ", " + headGermanLabelPair + ", " + tailNilPair + "]" + "}";
 		String labelsPairs = "[" + typeListPair + ", " + headEnglishLabelPair + ", " + tailGermanLabelPair + "]";
-		String textsPair = "{\"Z1K1\": \"Z2\", \"Z2K1\": {\"Z1K1\": \"Z6\", \"Z6K1\": \"Z12K1\"}, \"Z2K2\": "
+		String textsPair = "{\"Z1K1\": \"Z22\", \"Z22K1\": {\"Z1K1\": \"Z6\", \"Z6K1\": \"Z12K1\"}, \"Z22K2\": "
 				+ labelsPairs + "}";
-		String typeMultilingualTextPair = "{\"Z1K1\": \"Z2\", \"Z2K1\": {\"Z1K1\": \"Z6\", \"Z6K1\": \"Z1K1\"}, \"Z2K2\": \"Z12\"}";
-		String labelPair = "{\"Z1K1\": \"Z2\", \"Z2K1\": {\"Z1K1\": \"Z6\", \"Z6K1\": \"Z1K3\"}, \"Z2K2\": ["
+		String typeMultilingualTextPair = "{\"Z1K1\": \"Z22\", \"Z22K1\": {\"Z1K1\": \"Z6\", \"Z6K1\": \"Z1K1\"}, \"Z22K2\": \"Z12\"}";
+		String labelPair = "{\"Z1K1\": \"Z22\", \"Z22K1\": {\"Z1K1\": \"Z6\", \"Z6K1\": \"Z1K3\"}, \"Z22K2\": ["
 				+ typeMultilingualTextPair + ", " + textsPair + "]}";
-		String typeStringPair = "{\"Z1K1\": \"Z2\", \"Z2K1\": {\"Z1K1\": \"Z6\", \"Z6K1\": \"Z1K1\"}, \"Z2K2\": \"Z6\"}";
-		String idZ28Pair = "{\"Z1K1\": \"Z2\", \"Z2K1\": {\"Z1K1\": \"Z6\", \"Z6K1\": \"Z1K2\"}, \"Z2K2\": \"Z28\"}";
-		String stringValueEneyjPair = "{\"Z1K1\": \"Z2\", \"Z2K1\": {\"Z1K1\": \"Z6\", \"Z6K1\": \"Z6K1\"}, \"Z2K2\": \"eneyj\"}";
+		String typeStringPair = "{\"Z1K1\": \"Z22\", \"Z22K1\": {\"Z1K1\": \"Z6\", \"Z6K1\": \"Z1K1\"}, \"Z22K2\": \"Z6\"}";
+		String idZ28Pair = "{\"Z1K1\": \"Z22\", \"Z22K1\": {\"Z1K1\": \"Z6\", \"Z6K1\": \"Z1K2\"}, \"Z22K2\": \"Z28\"}";
+		String stringValueEneyjPair = "{\"Z1K1\": \"Z22\", \"Z22K1\": {\"Z1K1\": \"Z6\", \"Z6K1\": \"Z6K1\"}, \"Z22K2\": \"eneyj\"}";
 		String object = "[" + typeStringPair + ", " + idZ28Pair + ", " + labelPair + ", " + stringValueEneyjPair + "]";
 		Value result = eval("{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z38\", \"K1\": " + object + "}");
 		assertTrue(result.isString());
@@ -797,20 +797,20 @@ public class BuiltinTest extends ZTest {
 
 	@Test
 	public void testSameAbstractReifyPairOfStrings() {
-		testSameAbstractReify("{\"Z1K1\": \"Z2\", \"Z2K1\": \"first\", \"Z2K2\": \"second\"}");
+		testSameAbstractReify("{\"Z1K1\": \"Z22\", \"Z22K1\": \"first\", \"Z22K2\": \"second\"}");
 	}
 
 	@Test
 	public void testSameAbstractReifyPairOfReferences() {
-		testSameAbstractReify("{\"Z1K1\": \"Z2\", \"Z2K1\": \"Z2\", \"Z2K2\": \"Z10\"}");
+		testSameAbstractReify("{\"Z1K1\": \"Z22\", \"Z22K1\": \"Z22\", \"Z22K2\": \"Z10\"}");
 	}
 
 	@Test
 	public void testSameAbstractReifyPairOfPairs() {
-		String pairOfStrings = "{\"Z1K1\": \"Z2\", \"Z2K1\": \"first\", \"Z2K2\": \"second\"}";
-		String pairOfReferences = "{\"Z1K1\": \"Z2\", \"Z2K1\": \"Z2\", \"Z2K2\": \"Z10\"}";
+		String pairOfStrings = "{\"Z1K1\": \"Z22\", \"Z22K1\": \"first\", \"Z22K2\": \"second\"}";
+		String pairOfReferences = "{\"Z1K1\": \"Z22\", \"Z22K1\": \"Z22\", \"Z22K2\": \"Z10\"}";
 		testSameAbstractReify(
-				"{\"Z1K1\": \"Z2\", \"Z2K1\": " + pairOfStrings + ", \"Z2K2\": " + pairOfReferences + "}");
+				"{\"Z1K1\": \"Z22\", \"Z22K1\": " + pairOfStrings + ", \"Z22K2\": " + pairOfReferences + "}");
 	}
 
 	@Test

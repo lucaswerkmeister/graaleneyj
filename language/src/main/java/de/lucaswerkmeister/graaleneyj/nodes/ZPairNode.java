@@ -15,7 +15,7 @@ import de.lucaswerkmeister.graaleneyj.runtime.ZContext;
 import de.lucaswerkmeister.graaleneyj.runtime.ZReference;
 
 /**
- * Helper node to create a Z2/pair.
+ * Helper node to create a Z22/pair.
  */
 public abstract class ZPairNode extends Node {
 
