@@ -20,7 +20,7 @@ public class ZFunctionCallNode extends ZNode {
 	private InteropLibrary library;
 
 	@Child
-	private ZEvaluateReferenceNode evaluateReference = ZEvaluateReferenceNodeGen.create();
+	private ZResolveValueNode resolveValue = ZResolveValueNodeGen.create();
 
 	public ZFunctionCallNode(ZNode function, ZNode[] arguments) {
 		this.function = function;
@@ -32,7 +32,7 @@ public class ZFunctionCallNode extends ZNode {
 	@Override
 	public Object execute(VirtualFrame virtualFrame) {
 		Object function = this.function.execute(virtualFrame);
-		function = evaluateReference.execute(function);
+		function = resolveValue.execute(function);
 
 		CompilerAsserts.compilationConstant(this.arguments.length);
 		Object[] arguments = new Object[this.arguments.length];

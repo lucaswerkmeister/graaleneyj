@@ -17,6 +17,7 @@ import de.lucaswerkmeister.graaleneyj.builtins.ZAbstractBuiltin;
 import de.lucaswerkmeister.graaleneyj.runtime.ZCharacter;
 import de.lucaswerkmeister.graaleneyj.runtime.ZContext;
 import de.lucaswerkmeister.graaleneyj.runtime.ZList;
+import de.lucaswerkmeister.graaleneyj.runtime.ZPersistentObject;
 import de.lucaswerkmeister.graaleneyj.runtime.ZReference;
 import de.lucaswerkmeister.graaleneyj.runtime.ZString;
 
@@ -54,6 +55,14 @@ public abstract class ZAbstractNode extends Node {
 			}
 			switch (((ZReference) members.get(ZConstants.ZOBJECT_TYPE)).getId()) { // TODO proper error handling
 			// TODO more cases for more specially handled types
+			case ZConstants.PERSISTENTOBJECT: {
+				members.remove(ZConstants.ZOBJECT_TYPE);
+				String id = (String) members.remove(ZConstants.PERSISTENTOBJECT_ID); // TODO proper error handling
+				Object labels = members.remove(ZConstants.PERSISTENTOBJECT_LABEL);
+				Object value = members.remove(ZConstants.PERSISTENTOBJECT_VALUE);
+				assert members.isEmpty();
+				return new ZPersistentObject(id, value, labels);
+			}
 			case ZConstants.STRING:
 				members.remove(ZConstants.ZOBJECT_TYPE);
 				Object string = members.remove(ZConstants.STRING_STRING_VALUE);

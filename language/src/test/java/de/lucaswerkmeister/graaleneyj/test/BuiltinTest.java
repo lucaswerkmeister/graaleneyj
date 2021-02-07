@@ -618,6 +618,84 @@ public class BuiltinTest extends ZTest {
 	}
 
 	@Test
+	public void testReifyPersistentObjectWithoutLabels() {
+		Value result = eval(
+				"{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z37\", \"K1\": {\"Z1K1\": \"Z2\", \"Z2K1\": \"Z28\", \"Z2K2\": \"eneyj\"}}");
+		assertTrue(result.hasArrayElements());
+		assertEquals(3, result.getArraySize());
+		boolean sawType = false, sawId = false, sawValue = false;
+		for (int i = 0; i < 3; i++) {
+			Value value = result.getArrayElement(i);
+			switch (value.getMember("Z22K1").asString()) {
+			case "Z1K1":
+				assertFalse(sawType);
+				sawType = true;
+				assertZReference("Z2", value.getMember("Z22K2"));
+				break;
+			case "Z2K1":
+				assertFalse(sawId);
+				sawId = true;
+				assertEquals("Z28", value.getMember("Z22K2").asString());
+				break;
+			case "Z2K2":
+				assertFalse(sawValue);
+				sawValue = true;
+				assertEquals("eneyj", value.getMember("Z22K2").asString());
+				break;
+			default:
+				fail();
+			}
+		}
+		assertTrue(sawType);
+		assertTrue(sawId);
+		assertTrue(sawValue);
+	}
+
+	@Test
+	public void testReifyPersistentObjectWithLabels() {
+		Value result = eval(
+				"{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z37\", \"K1\": {\"Z1K1\": \"Z2\", \"Z2K1\": \"Z28\", \"Z2K2\": \"eneyj\", "
+						+ "\"Z2K3\": {\"Z1K1\": \"Z12\", \"Z12K1\": [{\"Z1K1\": \"Z11\", \"Z11K1\": \"en\", \"Z11K2\": \"project name\"}]}}}");
+		assertTrue(result.hasArrayElements());
+		assertEquals(4, result.getArraySize());
+		boolean sawType = false, sawId = false, sawValue = false, sawLabels = false;
+		for (int i = 0; i < 4; i++) {
+			Value value = result.getArrayElement(i);
+			Value labels = value.getMember("Z22K2");
+			switch (value.getMember("Z22K1").asString()) {
+			case "Z1K1":
+				assertFalse(sawType);
+				sawType = true;
+				assertZReference("Z2", labels);
+				break;
+			case "Z2K1":
+				assertFalse(sawId);
+				sawId = true;
+				assertEquals("Z28", labels.asString());
+				break;
+			case "Z2K2":
+				assertFalse(sawValue);
+				sawValue = true;
+				assertEquals("eneyj", labels.asString());
+				break;
+			case "Z2K3":
+				assertFalse(sawLabels);
+				sawLabels = true;
+				assertTrue(labels.hasArrayElements());
+				assertEquals(2, labels.getArraySize());
+				// no further assertions for now
+				break;
+			default:
+				fail();
+			}
+		}
+		assertTrue(sawType);
+		assertTrue(sawId);
+		assertTrue(sawValue);
+		assertTrue(sawLabels);
+	}
+
+	@Test
 	public void testAbstractObject() {
 		String typePair = "{\"Z1K1\": \"Z22\", \"Z22K1\": {\"Z1K1\": \"Z6\", \"Z6K1\": \"Z1K1\"}, \"Z22K2\": \"Z1\"}";
 		String idPair = "{\"Z1K1\": \"Z22\", \"Z22K1\": {\"Z1K1\": \"Z6\", \"Z6K1\": \"Z1K2\"}, \"Z22K2\": \"Z0\"}";
@@ -684,6 +762,10 @@ public class BuiltinTest extends ZTest {
 
 	@Test
 	public void testAbstractProjectName() {
+		// TODO migrate this to abstract a reified persistent object, moving the labels
+		// outside the inner value – the problem is, then it’s not clear how to test the
+		// labels, since currently a reified object delegates all interop messages to
+		// the inner value, which no longer has the labels
 		String typeTextPair = "{\"Z1K1\": \"Z22\", \"Z22K1\": {\"Z1K1\": \"Z6\", \"Z6K1\": \"Z1K1\"}, \"Z22K2\": \"Z11\"}";
 		String languageEnglishPair = "{\"Z1K1\": \"Z22\", \"Z22K1\": {\"Z1K1\": \"Z6\", \"Z6K1\": \"Z11K1\"}, \"Z22K2\": \"Z251\"}";
 		String textProjectNamePair = "{\"Z1K1\": \"Z22\", \"Z22K1\": {\"Z1K1\": \"Z6\", \"Z6K1\": \"Z11K2\"}, \"Z22K2\": \"project_name\"}";

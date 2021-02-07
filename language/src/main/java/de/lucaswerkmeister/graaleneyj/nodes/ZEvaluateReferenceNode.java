@@ -14,6 +14,8 @@ import de.lucaswerkmeister.graaleneyj.runtime.ZReference;
 
 /**
  * Helper node to evaluate a reference until reaching a non-reference value.
+ *
+ * @see ZResolveValueNode
  */
 public abstract class ZEvaluateReferenceNode extends Node {
 
@@ -28,6 +30,8 @@ public abstract class ZEvaluateReferenceNode extends Node {
 	@Specialization(replaces = "doReferenceCached", limit = "3")
 	public Object doReference(ZReference value, @CachedLibrary(value = "value") InteropLibrary values) {
 		Object resolved = value;
+		// TODO there’s no need for this to be a loop, references can only ever point to
+		// persistent objects
 		do {
 			try {
 				resolved = values.execute(resolved);

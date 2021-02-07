@@ -55,17 +55,18 @@ public class WikiLambdaTest {
 	public void testZTypeMembers() {
 		Value ztype = eval("\"Z1\"").execute();
 		assertTrue(ztype.hasMembers());
-		Value aliases = ztype.getMember("Z2K3");
-		assertTrue(aliases.hasMembers());
-		Value aliasesType = aliases.getMember("Z1K1");
-		assertZReference("Z12", aliasesType);
-		Value aliasesList = aliases.getMember("Z12K1");
-		assertTrue(aliasesList.hasArrayElements());
-		assertEquals(1, aliasesList.getArraySize());
-		Value englishAlias = aliasesList.getArrayElement(0);
-		assertTrue(englishAlias.hasMembers());
-		assertEquals("en", englishAlias.getMember("Z11K1").asString());
-		assertEquals("Object", englishAlias.getMember("Z11K2").asString());
+		Value identity = ztype.getMember("Z4K1");
+		assertZReference("Z1", identity);
+		Value keys = ztype.getMember("Z4K2");
+		assertTrue(keys.hasArrayElements());
+		assertEquals(1, keys.getArraySize());
+		Value typeKey = keys.getArrayElement(0);
+		assertZReference("Z3", typeKey.getMember("Z1K1"));
+		// no further assertions on the typeKey for now
+		Value validator = ztype.getMember("Z4K3");
+		assertZReference("Z30", validator);
+		// TODO all of the above tests the inner object of the persistent object;
+		// test the label of the outer object somehow?
 	}
 
 }

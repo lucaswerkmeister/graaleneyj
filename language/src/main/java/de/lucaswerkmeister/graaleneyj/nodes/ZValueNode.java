@@ -26,6 +26,7 @@ import de.lucaswerkmeister.graaleneyj.runtime.ZString;
  * Helper node to implement the {@link ZValueBuiltin Z36/value builtin}, after
  * references have been evaluated.
  */
+// TODO this class should probably no longer be needed at all?
 public abstract class ZValueNode extends Node {
 
 	protected static final int LIMIT = 3;

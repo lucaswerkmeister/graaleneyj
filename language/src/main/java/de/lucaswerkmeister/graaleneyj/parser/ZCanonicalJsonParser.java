@@ -38,6 +38,7 @@ import de.lucaswerkmeister.graaleneyj.nodes.ZListLiteralNode;
 import de.lucaswerkmeister.graaleneyj.nodes.ZNode;
 import de.lucaswerkmeister.graaleneyj.nodes.ZObjectLiteralNode;
 import de.lucaswerkmeister.graaleneyj.nodes.ZObjectLiteralNode.ZObjectLiteralMemberNode;
+import de.lucaswerkmeister.graaleneyj.nodes.ZPersistentObjectNodeGen;
 import de.lucaswerkmeister.graaleneyj.nodes.ZReadArgumentNode;
 import de.lucaswerkmeister.graaleneyj.nodes.ZReferenceLiteralNode;
 import de.lucaswerkmeister.graaleneyj.nodes.ZReferenceLiteralNodeGen;
@@ -89,6 +90,8 @@ public class ZCanonicalJsonParser {
 	public ZNode parseJsonObject(JsonObject json) {
 		String type = json.get(ZConstants.ZOBJECT_TYPE).getAsString(); // TODO error handling
 		switch (type) {
+		case ZConstants.PERSISTENTOBJECT:
+			return parseJsonObjectAsPersistentObject(json);
 		case ZConstants.STRING:
 			return parseJsonObjectAsStringLiteral(json);
 		case ZConstants.FUNCTIONCALL:
@@ -109,6 +112,18 @@ public class ZCanonicalJsonParser {
 			i++;
 		}
 		ZNode ret = new ZObjectLiteralNode(members);
+		ret.setSourceSection(json.getSourceCharIndex(), json.getSourceLength());
+		return ret;
+	}
+
+	public ZNode parseJsonObjectAsPersistentObject(JsonObject json) {
+		String id = json.get(ZConstants.PERSISTENTOBJECT_ID).getAsString();
+		ZNode value = parseJsonElement(json.get(ZConstants.PERSISTENTOBJECT_VALUE));
+		ZNode label = null;
+		if (json.keySet().contains(ZConstants.PERSISTENTOBJECT_LABEL)) {
+			label = parseJsonElement(json.get(ZConstants.PERSISTENTOBJECT_LABEL));
+		}
+		ZNode ret = ZPersistentObjectNodeGen.create(id, value, label);
 		ret.setSourceSection(json.getSourceCharIndex(), json.getSourceLength());
 		return ret;
 	}
