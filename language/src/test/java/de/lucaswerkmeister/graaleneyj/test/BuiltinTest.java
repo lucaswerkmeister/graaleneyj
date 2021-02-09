@@ -291,7 +291,7 @@ public class BuiltinTest extends ZTest {
 	 * A version of Z61/character_to_string with only the builtin implementation.
 	 */
 	private String characterToStringWithOnlyBuiltinImplementation() {
-		return "{\"Z1K1\": \"Z8\", \"Z1K2\": \"Z61\", \"Z8K1\": [{\"Z1K2\": \"Z61K1\"}], "
+		return "{\"Z1K1\": \"Z8\", \"Z1K2\": \"Z61\", \"Z8K1\": [{\"Z17K2\": \"Z61K1\"}], "
 				+ "\"Z8K4\": [{\"Z1K1\": \"Z14\", \"Z14K1\": {\"Z1K1\": \"Z19\", \"Z1K2\": \"Z61\"}}]}";
 	}
 

@@ -14,7 +14,7 @@ public class CodeJsTest extends ZTest {
 	}
 
 	private String nandWithOnlyJsImplementation() {
-		return "{\"Z1K1\": \"Z8\", \"Z1K2\": \"Z53\", \"Z8K1\": [{\"Z1K2\": \"Z53K1\"}, {\"Z1K2\": \"Z53K2\"}], "
+		return "{\"Z1K1\": \"Z8\", \"Z1K2\": \"Z53\", \"Z8K1\": [{\"Z17K2\": \"Z53K1\"}, {\"Z17K2\": \"Z53K2\"}], "
 				+ "\"Z8K4\": [{\"Z1K1\": \"Z14\", \"Z14K1\": {\"Z1K1\": \"Z16\", \"Z16K1\": \"javascript\", \"Z16K2\": \"K0 = !(Z53K1 && Z53K2)\"}}]}";
 	}
 
@@ -43,7 +43,7 @@ public class CodeJsTest extends ZTest {
 	}
 
 	private String negateWithOnlyJsImplementation() {
-		return "{\"Z1K1\": \"Z8\", \"Z1K2\": \"Z56\", \"Z8K1\": [{\"Z1K2\": \"Z56K1\"}], "
+		return "{\"Z1K1\": \"Z8\", \"Z1K2\": \"Z56\", \"Z8K1\": [{\"Z17K2\": \"Z56K1\"}], "
 				+ "\"Z8K4\": [{\"Z1K1\": \"Z14\", \"Z14K1\": {\"Z1K1\": \"Z16\", \"Z16K1\": \"javascript\", \"Z16K2\": \"K0 = !Z56K1\"}}]}";
 	}
 

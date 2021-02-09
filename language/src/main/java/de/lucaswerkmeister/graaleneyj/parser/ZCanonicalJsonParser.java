@@ -196,7 +196,7 @@ public class ZCanonicalJsonParser {
 		JsonArray arguments = json.getAsJsonArray(ZConstants.FUNCTION_ARGUMENTS);
 		String[] argumentNames = new String[arguments.size()];
 		for (int i = 0; i < argumentNames.length; i++) {
-			argumentNames[i] = arguments.get(i).getAsJsonObject().get(ZConstants.ZOBJECT_ID).getAsString();
+			argumentNames[i] = arguments.get(i).getAsJsonObject().get(ZConstants.PARAMETER_KEYID).getAsString();
 		}
 		JsonArray implementationJsons = json.getAsJsonArray(ZConstants.FUNCTION_IMPLEMENTATIONS);
 		ZImplementationNode[] implementationNodes = new ZImplementationNode[implementationJsons.size()];
