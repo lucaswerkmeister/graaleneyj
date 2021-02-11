@@ -91,13 +91,13 @@ public final class ZList implements TruffleObject {
 
 	@ExportMessage
 	public final ZListKeys getMembers(boolean includeInternal) {
-		return new ZListKeys(this == NIL);
+		return new ZListKeys();
 	}
 
 	@ExportMessage
 	public final boolean isMemberReadable(String member) {
 		return ZConstants.ZOBJECT_TYPE.equals(member) || ZConstants.LIST_HEAD.equals(member)
-				|| ZConstants.LIST_TAIL.equals(member) || (ZConstants.ZOBJECT_ID.equals(member) == (this == NIL));
+				|| ZConstants.LIST_TAIL.equals(member);
 	}
 
 	@ExportMessage
@@ -117,10 +117,6 @@ public final class ZList implements TruffleObject {
 				return new ZReference(ZConstants.LISTISNIL, context);
 			} else {
 				return tail;
-			}
-		case ZConstants.ZOBJECT_ID:
-			if (this == NIL) {
-				return new ZReference(ZConstants.NIL, context);
 			}
 		}
 		throw UnknownIdentifierException.create(member);
@@ -162,18 +158,11 @@ public final class ZList implements TruffleObject {
 	}
 
 	/**
-	 * Helper object for {@link ZList#getMembers()}. All lists have members
-	 * Z1K1/type, Z10K1/head, Z10K2/tail; only Z13/nil has member Z1K2/id; there are
-	 * no other members.
+	 * Helper object for {@link ZList#getMembers()}. All lists have exactly the
+	 * members Z1K1/type, Z10K1/head, and Z10K2/tail.
 	 */
 	@ExportLibrary(InteropLibrary.class)
 	static final class ZListKeys implements TruffleObject {
-
-		private final boolean isNil;
-
-		public ZListKeys(boolean isNil) {
-			this.isNil = isNil;
-		}
 
 		@ExportMessage
 		public boolean hasArrayElements() {
@@ -182,17 +171,17 @@ public final class ZList implements TruffleObject {
 
 		@ExportMessage
 		public boolean isArrayElementReadable(long index) {
-			return 0 <= index && index < (isNil ? 4 : 3);
+			return 0 <= index && index < 3;
 		}
 
 		@ExportMessage
 		public long getArraySize() {
-			return isNil ? 4 : 3;
+			return 3;
 		}
 
 		@ExportMessage
 		public String readArrayElement(long index) throws InvalidArrayIndexException {
-			if (0 <= index && index < 4) {
+			if (0 <= index && index < 3) {
 				switch ((int) index) {
 				case 0:
 					return ZConstants.ZOBJECT_TYPE;
@@ -200,9 +189,6 @@ public final class ZList implements TruffleObject {
 					return ZConstants.LIST_HEAD;
 				case 2:
 					return ZConstants.LIST_TAIL;
-				case 3:
-					if (isNil)
-						return ZConstants.ZOBJECT_ID;
 				}
 			}
 			CompilerDirectives.transferToInterpreter();

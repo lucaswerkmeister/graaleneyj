@@ -551,23 +551,16 @@ public class BuiltinTest extends ZTest {
 	}
 
 	private void assertReifiedList(Value result, boolean isNil, Consumer<Value> head, Consumer<Value> tail) {
-		int expectedSize = isNil ? 4 : 3;
 		assertTrue(result.hasArrayElements());
-		assertEquals(expectedSize, result.getArraySize());
-		boolean sawType = false, sawId = false, sawHead = false, sawTail = false;
-		for (int i = 0; i < expectedSize; i++) {
+		assertEquals(3, result.getArraySize());
+		boolean sawType = false, sawHead = false, sawTail = false;
+		for (int i = 0; i < 3; i++) {
 			Value value = result.getArrayElement(i);
 			switch (value.getMember("Z22K1").asString()) {
 			case "Z1K1":
 				assertFalse(sawType);
 				sawType = true;
 				assertZReference("Z10", value.getMember("Z22K2"));
-				break;
-			case "Z1K2":
-				assertTrue(isNil);
-				assertFalse(sawId);
-				sawId = true;
-				assertZReference("Z13", value.getMember("Z22K2"));
 				break;
 			case "Z10K1":
 				assertFalse(sawHead);
@@ -584,7 +577,6 @@ public class BuiltinTest extends ZTest {
 			}
 		}
 		assertTrue(sawType);
-		assertEquals(isNil, sawId);
 		assertTrue(sawHead);
 		assertTrue(sawTail);
 	}

@@ -75,32 +75,19 @@ public abstract class ZAbstractNode extends Node {
 				members.remove(ZConstants.ZOBJECT_TYPE);
 				Object head = members.remove(ZConstants.LIST_HEAD);
 				Object tail = members.remove(ZConstants.LIST_TAIL);
-				Object id = members.remove(ZConstants.ZOBJECT_ID);
 				if (!members.isEmpty()) {
 					throw new IllegalArgumentException("List must not have extra members"); // TODO
 				}
-				if (id == null) {
-					return new ZList(head, (ZList) tail); // TODO proper error handling
-				} else {
-					if (!(id instanceof ZReference)) {
-						throw new IllegalArgumentException("ID of list must be reference"); // TODO
-					}
-					if (!ZConstants.NIL.equals(((ZReference) id).getId())) {
-						throw new IllegalArgumentException("No list other than nil may have an ID"); // TODO
-					}
+				if (tail instanceof ZReference && ZConstants.LISTISNIL.equals(((ZReference) tail).getId())) {
 					if (!(head instanceof ZReference)) {
 						throw new IllegalArgumentException("Head of nil must be reference"); // TODO
 					}
 					if (!ZConstants.LISTISNIL.equals(((ZReference) head).getId())) {
 						throw new IllegalArgumentException("Head of nil must be list_is_nil"); // TODO
 					}
-					if (!(tail instanceof ZReference)) {
-						throw new IllegalArgumentException("Tail of nil must be reference"); // TODO
-					}
-					if (!ZConstants.LISTISNIL.equals(((ZReference) tail).getId())) {
-						throw new IllegalArgumentException("Tail of nil must be list_is_nil"); // TODO
-					}
 					return ZList.NIL;
+				} else {
+					return new ZList(head, (ZList) tail); // TODO proper error handling
 				}
 			case ZConstants.CHARACTER:
 				members.remove(ZConstants.ZOBJECT_TYPE);

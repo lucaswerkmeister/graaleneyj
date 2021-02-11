@@ -36,8 +36,6 @@ public final class ZConstants {
 	public static final String LISTISNIL = "Z441";
 
 	public static final String ZOBJECT_TYPE = "Z1K1";
-	@Deprecated
-	public static final String ZOBJECT_ID = "Z1K2";
 	public static final String PERSISTENTOBJECT_ID = "Z2K1";
 	public static final String PERSISTENTOBJECT_VALUE = "Z2K2";
 	public static final String PERSISTENTOBJECT_LABEL = "Z2K3";
