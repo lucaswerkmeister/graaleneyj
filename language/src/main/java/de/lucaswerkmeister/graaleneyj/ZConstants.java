@@ -18,7 +18,6 @@ public final class ZConstants {
 	public static final String CODE = "Z16";
 	public static final String PARAMETER = "Z17";
 	public static final String ARGUMENTREFERENCE = "Z18";
-	public static final String BUILTIN = "Z19";
 	public static final String PAIR = "Z22";
 	public static final String NOTHING = "Z23";
 	public static final String IF = "Z31";
@@ -53,7 +52,10 @@ public final class ZConstants {
 	public static final String MONOLINGUALTEXT_LANGUAGE = "Z11K1";
 	public static final String MONOLINGUALTEXT_TEXT = "Z11K2";
 	public static final String MULTILINGUALTEXT_TEXTS = "Z12K1";
-	public static final String IMPLEMENTATION_IMPLEMENTATION = "Z14K1";
+	public static final String IMPLEMENTATION_IMPLEMENTS = "Z14K1";
+	public static final String IMPLEMENTATION_FUNCTIONCALL = "Z14K2";
+	public static final String IMPLEMENTATION_CODE = "Z14K3";
+	public static final String IMPLEMENTATION_BUILTIN = "Z14K4";
 	public static final String CODE_LANGUAGE = "Z16K1";
 	public static final String CODE_SOURCE = "Z16K2";
 	public static final String PARAMETER_KEYID = "Z17K2";

@@ -211,19 +211,17 @@ public class ZCanonicalJsonParser {
 
 	public ZImplementationNode parseJsonObjectAsImplementation(JsonObject json, String functionId,
 			String[] argumentNames) {
-		JsonObject implementation = json.getAsJsonObject(ZConstants.IMPLEMENTATION_IMPLEMENTATION);
-		String type = implementation.get(ZConstants.ZOBJECT_TYPE).getAsString();
-		SourceSection implementationSourceSection = currentSource.createSection(implementation.getSourceCharIndex(),
-				implementation.getSourceLength());
+		SourceSection implementationSourceSection = currentSource.createSection(json.getSourceCharIndex(),
+				json.getSourceLength());
 		ZImplementationNode ret;
-		switch (type) {
-		case ZConstants.FUNCTIONCALL:
-			ZNode node = parseJsonObjectAsFunctionCall(implementation);
+		// TODO error if more than one of functioncall/builtin/code keys defined
+		// TODO keySet.contains is ugly, JsonObject should have a method for that
+		if (json.keySet().contains(ZConstants.IMPLEMENTATION_FUNCTIONCALL)) {
+			ZNode node = parseJsonObjectAsFunctionCall(json.getAsJsonObject(ZConstants.IMPLEMENTATION_FUNCTIONCALL));
 			ZRootNode rootNode = new ZRootNode(language, node, implementationSourceSection);
 			ret = new ZImplementationFunctioncallNode(rootNode, functionId);
-			break;
-		case ZConstants.BUILTIN:
-			String builtin = implementation.get(ZConstants.ZOBJECT_ID).getAsString();
+		} else if (json.keySet().contains(ZConstants.IMPLEMENTATION_BUILTIN)) {
+			String builtin = json.get(ZConstants.IMPLEMENTATION_IMPLEMENTS).getAsString();
 			switch (builtin) {
 			case ZConstants.IF:
 				// note: parseJsonObjectAsFunctionCall usually parses “if” calls specially, this
@@ -259,25 +257,23 @@ public class ZCanonicalJsonParser {
 			default:
 				ZThrowConstantNode throwConstantNode = new ZThrowConstantNode(
 						new UnusableImplementationException("Unknown builtin: " + builtin));
-				throwConstantNode.setSourceSection(implementation.getSourceCharIndex(),
-						implementation.getSourceLength());
+				throwConstantNode.setSourceSection(json.getSourceCharIndex(), json.getSourceLength());
 				ret = new ZImplementationBuiltinNode(
 						new ZRootNode(language, throwConstantNode, implementationSourceSection), functionId);
 				break;
 			}
-			break;
-		case ZConstants.CODE:
-			String sourceLanguage = implementation.get(ZConstants.CODE_LANGUAGE).getAsString();
-			String source = implementation.get(ZConstants.CODE_SOURCE).getAsString();
+		} else if (json.keySet().contains(ZConstants.IMPLEMENTATION_CODE)) {
+			JsonObject code = json.getAsJsonObject(ZConstants.IMPLEMENTATION_CODE);
+			String sourceLanguage = code.get(ZConstants.CODE_LANGUAGE).getAsString();
+			String source = code.get(ZConstants.CODE_SOURCE).getAsString();
 			ret = new ZImplementationCodeNode(language, sourceLanguage, source, functionId, argumentNames);
-			break;
-		default:
+		} else {
 			ZThrowConstantNode throwConstantNode = new ZThrowConstantNode(
-					new UnusableImplementationException("Unsupported implementation type: " + type));
-			throwConstantNode.setSourceSection(implementation.getSourceCharIndex(), implementation.getSourceLength());
+					new UnusableImplementationException("Neither function call nor builtin nor code: "
+							+ json.get(ZConstants.IMPLEMENTATION_IMPLEMENTS).getAsString()));
+			throwConstantNode.setSourceSection(json.getSourceCharIndex(), json.getSourceLength());
 			ret = new ZImplementationBuiltinNode(
 					new ZRootNode(language, throwConstantNode, implementationSourceSection), functionId);
-			break;
 		}
 		ret.setSourceSection(json.getSourceCharIndex(), json.getSourceLength());
 		return ret;

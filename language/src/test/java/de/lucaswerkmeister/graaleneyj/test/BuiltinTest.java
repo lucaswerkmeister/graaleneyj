@@ -292,7 +292,7 @@ public class BuiltinTest extends ZTest {
 	 */
 	private String characterToStringWithOnlyBuiltinImplementation() {
 		return "{\"Z1K1\": \"Z8\", \"Z8K5\": \"Z61\", \"Z8K1\": [{\"Z17K2\": \"Z61K1\"}], "
-				+ "\"Z8K4\": [{\"Z1K1\": \"Z14\", \"Z14K1\": {\"Z1K1\": \"Z19\", \"Z1K2\": \"Z61\"}}]}";
+				+ "\"Z8K4\": [{\"Z1K1\": \"Z14\", \"Z14K1\": \"Z61\", \"Z14K4\": \"anonymous builtin of Z61\"}]}";
 	}
 
 	@Test
