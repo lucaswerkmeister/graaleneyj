@@ -46,6 +46,7 @@ public final class ZConstants {
 	public static final String FUNCTIONCALL_FUNCTION = "Z7K1";
 	public static final String FUNCTION_ARGUMENTS = "Z8K1";
 	public static final String FUNCTION_IMPLEMENTATIONS = "Z8K4";
+	public static final String FUNCTION_IDENTITY = "Z8K5";
 	public static final String REFERENCE_ID = "Z9K1";
 	public static final String LIST_HEAD = "Z10K1";
 	public static final String LIST_TAIL = "Z10K2";

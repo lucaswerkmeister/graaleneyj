@@ -8,7 +8,7 @@ public class DisplayStringTest extends ZTest {
 
 	@Test
 	public void testZFunction() {
-		assertEquals("Z0", eval("{\"Z1K1\": \"Z8\", \"Z1K2\": \"Z0\", \"Z8K1\": [], \"Z8K4\": []}").toString());
+		assertEquals("Z0", eval("{\"Z1K1\": \"Z8\", \"Z8K5\": \"Z0\", \"Z8K1\": [], \"Z8K4\": []}").toString());
 	}
 
 	@Test

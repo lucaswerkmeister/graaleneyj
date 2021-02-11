@@ -192,7 +192,7 @@ public class ZCanonicalJsonParser {
 	}
 
 	public ZFunctionNode parseJsonObjectAsFunction(JsonObject json) {
-		String functionId = json.get(ZConstants.ZOBJECT_ID).getAsString();
+		String functionId = json.get(ZConstants.FUNCTION_IDENTITY).getAsString();
 		JsonArray arguments = json.getAsJsonArray(ZConstants.FUNCTION_ARGUMENTS);
 		String[] argumentNames = new String[arguments.size()];
 		for (int i = 0; i < argumentNames.length; i++) {
