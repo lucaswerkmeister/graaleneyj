@@ -6,7 +6,6 @@ import com.oracle.truffle.api.source.Source;
 
 import de.lucaswerkmeister.graaleneyj.ZLanguage;
 import de.lucaswerkmeister.graaleneyj.runtime.UnusableImplementationException;
-import de.lucaswerkmeister.graaleneyj.runtime.ZContext;
 
 public class ZImplementationCodeNode extends ZImplementationNode {
 
@@ -27,8 +26,6 @@ public class ZImplementationCodeNode extends ZImplementationNode {
 		this.zLanguage = zLanguage;
 		switch (sourceLanguage) {
 		case "javascript":
-			// TODO functions can have side-effects by accessing and modifying properties of
-			// the globalThis :(
 			this.sourceLanguage = "js";
 			this.source = "(function(){\nlet K0;\n" + source + "\nreturn K0;\n})()";
 			break;
@@ -48,10 +45,8 @@ public class ZImplementationCodeNode extends ZImplementationNode {
 	public CallTarget makeCallTarget() {
 		if (source != null) {
 			Source s = Source.newBuilder(sourceLanguage, source, functionId).build();
-			ZContext c = lookupContextReference(ZLanguage.class).get();
-			if (c.canParseLanguage(sourceLanguage)) {
-				return c.parse(s, argumentNames);
-			}
+			ZInnerContextNode innerContextNode = ZInnerContextNodeGen.create(zLanguage, s, argumentNames);
+			return Truffle.getRuntime().createCallTarget(innerContextNode);
 		}
 
 		RuntimeException exception = new UnusableImplementationException("Unusable code language: " + sourceLanguage);

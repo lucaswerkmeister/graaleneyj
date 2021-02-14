@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.oracle.truffle.api.CallTarget;
+import com.oracle.truffle.api.TruffleContext;
 import com.oracle.truffle.api.TruffleFile;
 import com.oracle.truffle.api.TruffleLanguage.Env;
 import com.oracle.truffle.api.interop.ArityException;
@@ -43,6 +44,10 @@ public final class ZContext {
 
 	public CallTarget parse(Source source, String... argumentNames) {
 		return env.parsePublic(source, argumentNames);
+	}
+
+	public TruffleContext makeInnerContext() {
+		return env.newContextBuilder().build();
 	}
 
 	public ZObject makeObject(Map<String, Object> members) {

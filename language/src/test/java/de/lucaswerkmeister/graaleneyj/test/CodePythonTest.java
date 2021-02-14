@@ -42,4 +42,21 @@ public class CodePythonTest extends ZTest {
 				+ ", \"K1\": \"Z54\", \"K2\": \"Z54\"}").asBoolean());
 	}
 
+	@Test
+	public void testFunctionCallContextIsolation() {
+		String python = "import builtins\\n" + //
+				"try:\\n" + //
+				"    builtins.c += 1\\n" + //
+				"except AttributeError:\\n" + //
+				"    builtins.c = 1\\n" + //
+				"K0 = builtins.c";
+		String callCounter = "{\"Z1K1\": \"Z8\", \"Z8K5\": \"Z0\", \"Z8K1\": [{\"Z1K1\": \"Z17\", \"Z17K1\": \"Z1\", \"Z17K2\": \"Z0K1\"}], "
+				+ "\"Z8K4\": [{\"Z1K1\": \"Z14\", \"Z14K3\": {\"Z1K1\": \"Z16\", \"Z16K1\": \"python\", \"Z16K2\": \""
+				+ python + "\"}}]}";
+		String call1 = "{\"Z1K1\": \"Z7\", \"Z7K1\": " + callCounter + ", \"K1\": \"ignored\"}";
+		String call2 = "{\"Z1K1\": \"Z7\", \"Z7K1\": " + callCounter + ", \"K1\": " + call1 + "}";
+		String call3 = "{\"Z1K1\": \"Z7\", \"Z7K1\": " + callCounter + ", \"K1\": " + call2 + "}";
+		assertEquals(1, eval(call3).asInt());
+	}
+
 }
