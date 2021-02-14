@@ -18,6 +18,8 @@ for arg; do
                 -Dpolyglot.engine.TraceCompilationDetails=true
             )
             ;;
+        --enable-assertions)
+            java_options+=(-ea);;
         -)
             infile=/dev/stdin
             ;;
