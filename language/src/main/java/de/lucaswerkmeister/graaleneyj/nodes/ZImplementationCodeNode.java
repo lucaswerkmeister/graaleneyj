@@ -45,7 +45,8 @@ public class ZImplementationCodeNode extends ZImplementationNode {
 	public CallTarget makeCallTarget() {
 		if (source != null) {
 			Source s = Source.newBuilder(sourceLanguage, source, functionId).build();
-			ZInnerContextNode innerContextNode = ZInnerContextNodeGen.create(zLanguage, s, argumentNames);
+			ZInnerContextNode innerContextNode = ZInnerContextNodeGen.create(zLanguage, s, argumentNames,
+					getSourceSection());
 			return Truffle.getRuntime().createCallTarget(innerContextNode);
 		}
 

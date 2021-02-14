@@ -11,6 +11,7 @@ import com.oracle.truffle.api.frame.VirtualFrame;
 import com.oracle.truffle.api.nodes.IndirectCallNode;
 import com.oracle.truffle.api.nodes.RootNode;
 import com.oracle.truffle.api.source.Source;
+import com.oracle.truffle.api.source.SourceSection;
 
 import de.lucaswerkmeister.graaleneyj.ZLanguage;
 import de.lucaswerkmeister.graaleneyj.runtime.UnusableImplementationException;
@@ -22,10 +23,13 @@ public abstract class ZInnerContextNode extends RootNode {
 
 	private final String[] argumentNames;
 
-	public ZInnerContextNode(ZLanguage language, Source source, String[] argumentNames) {
+	private final SourceSection sourceSection;
+
+	public ZInnerContextNode(ZLanguage language, Source source, String[] argumentNames, SourceSection sourceSection) {
 		super(language);
 		this.source = source;
 		this.argumentNames = argumentNames;
+		this.sourceSection = sourceSection;
 	}
 
 	@Specialization
@@ -47,6 +51,31 @@ public abstract class ZInnerContextNode extends RootNode {
 			innerTruffleContext.leave(this, outerTruffleContext);
 			innerTruffleContext.close();
 		}
+	}
+
+	@Override
+	public boolean isInternal() {
+		return true;
+	}
+
+	@Override
+	protected boolean isInstrumentable() {
+		return false;
+	}
+
+	@Override
+	public String getName() {
+		return source.getName();
+	}
+
+	@Override
+	public String toString() {
+		return getName();
+	}
+
+	@Override
+	public SourceSection getSourceSection() {
+		return sourceSection;
 	}
 
 }
