@@ -74,7 +74,7 @@ public final class ZContext {
 		if (hasObject(zid)) {
 			error = getObject(zid);
 		} else {
-			ZReference errorReference = new ZReference(zid, this);
+			ZReference errorReference = new ZReference(zid);
 			try {
 				error = InteropLibrary.getFactory().getUncached().execute(errorReference);
 			} catch (UnsupportedTypeException | ArityException | UnsupportedMessageException e) {
