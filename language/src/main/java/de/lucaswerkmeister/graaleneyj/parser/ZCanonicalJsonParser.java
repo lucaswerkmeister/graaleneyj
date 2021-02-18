@@ -36,8 +36,8 @@ import de.lucaswerkmeister.graaleneyj.nodes.ZImplementationFunctioncallNode;
 import de.lucaswerkmeister.graaleneyj.nodes.ZImplementationNode;
 import de.lucaswerkmeister.graaleneyj.nodes.ZListLiteralNode;
 import de.lucaswerkmeister.graaleneyj.nodes.ZNode;
-import de.lucaswerkmeister.graaleneyj.nodes.ZObjectLiteralNode;
 import de.lucaswerkmeister.graaleneyj.nodes.ZObjectLiteralNode.ZObjectLiteralMemberNode;
+import de.lucaswerkmeister.graaleneyj.nodes.ZObjectLiteralNodeGen;
 import de.lucaswerkmeister.graaleneyj.nodes.ZPersistentObjectNodeGen;
 import de.lucaswerkmeister.graaleneyj.nodes.ZReadArgumentNode;
 import de.lucaswerkmeister.graaleneyj.nodes.ZReferenceLiteralNode;
@@ -111,7 +111,7 @@ public class ZCanonicalJsonParser {
 			members[i] = new ZObjectLiteralMemberNode(entry.getKey(), parseJsonElement(entry.getValue()));
 			i++;
 		}
-		ZNode ret = new ZObjectLiteralNode(members);
+		ZNode ret = ZObjectLiteralNodeGen.create(members);
 		ret.setSourceSection(json.getSourceCharIndex(), json.getSourceLength());
 		return ret;
 	}

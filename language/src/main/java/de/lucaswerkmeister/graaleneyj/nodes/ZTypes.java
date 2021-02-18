@@ -8,7 +8,6 @@ import com.oracle.truffle.api.dsl.TypeSystem;
 import de.lucaswerkmeister.graaleneyj.runtime.ZCharacter;
 import de.lucaswerkmeister.graaleneyj.runtime.ZList;
 import de.lucaswerkmeister.graaleneyj.runtime.ZNothing;
-import de.lucaswerkmeister.graaleneyj.runtime.ZObject;
 import de.lucaswerkmeister.graaleneyj.runtime.ZReference;
 
 @TypeSystem({
@@ -23,9 +22,7 @@ import de.lucaswerkmeister.graaleneyj.runtime.ZReference;
 		// Z10/list
 		ZList.class,
 		// Z60/character, boxed
-		ZCharacter.class,
-		// Z1/zobject (not sure if this needs to be in the type system at all)
-		ZObject.class })
+		ZCharacter.class })
 public abstract class ZTypes {
 
 	/**

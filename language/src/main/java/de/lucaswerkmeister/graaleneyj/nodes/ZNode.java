@@ -10,7 +10,6 @@ import com.oracle.truffle.api.source.Source;
 import com.oracle.truffle.api.source.SourceSection;
 
 import de.lucaswerkmeister.graaleneyj.runtime.ZList;
-import de.lucaswerkmeister.graaleneyj.runtime.ZObject;
 
 @TypeSystemReference(ZTypes.class)
 @NodeInfo(language = "Z language", description = "The abstract base node.") // TODO Z language? Eneyj language?
@@ -35,10 +34,6 @@ public abstract class ZNode extends Node {
 
 	public ZList executeZList(VirtualFrame virtualFrame) throws UnexpectedResultException {
 		return ZTypesGen.expectZList(execute(virtualFrame));
-	}
-
-	public ZObject executeZObject(VirtualFrame virtualFrame) throws UnexpectedResultException {
-		return ZTypesGen.expectZObject(execute(virtualFrame));
 	}
 
 	public void setSourceSection(int sourceCharIndex, int sourceLength) {
