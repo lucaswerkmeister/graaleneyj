@@ -10,6 +10,7 @@ import com.oracle.truffle.api.interop.UnsupportedTypeException;
 import com.oracle.truffle.api.library.CachedLibrary;
 import com.oracle.truffle.api.nodes.Node;
 
+import de.lucaswerkmeister.graaleneyj.runtime.ZPersistentObject;
 import de.lucaswerkmeister.graaleneyj.runtime.ZReference;
 
 /**
@@ -29,17 +30,14 @@ public abstract class ZEvaluateReferenceNode extends Node {
 
 	@Specialization(replaces = "doReferenceCached", limit = "3")
 	public Object doReference(ZReference value, @CachedLibrary(value = "value") InteropLibrary values) {
-		Object resolved = value;
-		// TODO there’s no need for this to be a loop, references can only ever point to
-		// persistent objects
-		do {
-			try {
-				resolved = values.execute(resolved);
-			} catch (UnsupportedTypeException | ArityException | UnsupportedMessageException e) {
-				throw new RuntimeException(e);
-			}
-		} while (resolved instanceof ZReference);
-		return resolved;
+		try {
+			Object resolved = values.execute(value);
+			assert resolved instanceof ZPersistentObject
+					: "Reference must point to persistent object (otherwise we might need to evaluate it repeatedly)";
+			return resolved;
+		} catch (UnsupportedTypeException | ArityException | UnsupportedMessageException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	@Fallback
