@@ -37,8 +37,12 @@ import de.lucaswerkmeister.graaleneyj.nodes.ZPairNode;
 @ExportLibrary(InteropLibrary.class)
 public class ZObject extends DynamicObject implements TruffleObject {
 
-	public ZObject(Shape shape, Map<String, Object> members) {
+	public ZObject(Shape shape) {
 		super(shape);
+	}
+
+	public ZObject(Shape shape, Map<String, Object> members) {
+		this(shape);
 		DynamicObjectLibrary objects = DynamicObjectLibrary.getUncached();
 		for (Map.Entry<String, Object> entry : members.entrySet()) {
 			objects.put(this, entry.getKey(), entry.getValue());

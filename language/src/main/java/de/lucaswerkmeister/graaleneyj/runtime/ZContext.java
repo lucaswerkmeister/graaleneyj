@@ -50,6 +50,10 @@ public final class ZContext {
 		return env.newContextBuilder().build();
 	}
 
+	public ZObject makeObject() {
+		return new ZObject(initialZObjectShape);
+	}
+
 	public ZObject makeObject(Map<String, Object> members) {
 		return new ZObject(initialZObjectShape, members);
 	}

@@ -1,7 +1,5 @@
 package de.lucaswerkmeister.graaleneyj.nodes;
 
-import java.util.Map;
-
 import com.oracle.truffle.api.dsl.CachedContext;
 import com.oracle.truffle.api.dsl.Fallback;
 import com.oracle.truffle.api.dsl.Specialization;
@@ -76,7 +74,7 @@ public abstract class ZValueNode extends Node {
 				return ZCharacter.cast(character.codePointAt(0));
 			}
 
-			DynamicObject object = context.makeObject(Map.of());
+			DynamicObject object = context.makeObject();
 			Object members = values.getMembers(value);
 			long length = membersLib.getArraySize(members);
 			typeLib.put(object, ZConstants.ZOBJECT_TYPE, type);

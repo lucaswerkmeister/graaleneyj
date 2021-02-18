@@ -1,7 +1,5 @@
 package de.lucaswerkmeister.graaleneyj.nodes;
 
-import java.util.Map;
-
 import com.oracle.truffle.api.dsl.CachedContext;
 import com.oracle.truffle.api.dsl.Specialization;
 import com.oracle.truffle.api.frame.VirtualFrame;
@@ -37,7 +35,7 @@ public abstract class ZObjectLiteralNode extends ZNode {
 
 	@Specialization
 	public Object doGeneric(VirtualFrame virtualFrame, @CachedContext(ZLanguage.class) ZContext context) {
-		ZObject object = context.makeObject(Map.of());
+		ZObject object = context.makeObject();
 		for (ZObjectLiteralMemberNode member : members) {
 			objectLib.put(object, member.key, member.value.execute(virtualFrame));
 		}
