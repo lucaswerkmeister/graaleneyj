@@ -3,9 +3,11 @@ package de.lucaswerkmeister.graaleneyj.nodes;
 import com.oracle.truffle.api.dsl.CachedContext;
 import com.oracle.truffle.api.dsl.Specialization;
 import com.oracle.truffle.api.frame.VirtualFrame;
+import com.oracle.truffle.api.library.CachedLibrary;
 import com.oracle.truffle.api.nodes.Node;
 import com.oracle.truffle.api.object.DynamicObjectLibrary;
 
+import de.lucaswerkmeister.graaleneyj.ZConstants;
 import de.lucaswerkmeister.graaleneyj.ZLanguage;
 import de.lucaswerkmeister.graaleneyj.runtime.ZContext;
 import de.lucaswerkmeister.graaleneyj.runtime.ZObject;
@@ -23,20 +25,26 @@ public abstract class ZObjectLiteralNode extends ZNode {
 		}
 	}
 
+	@Child
+	private ZNode type;
+
 	@Children
-	private ZObjectLiteralMemberNode[] members;
+	private ZObjectLiteralMemberNode[] otherMembers;
 
 	@Child
 	protected DynamicObjectLibrary objectLib = DynamicObjectLibrary.getFactory().createDispatched(3);
 
-	public ZObjectLiteralNode(ZObjectLiteralMemberNode[] members) {
-		this.members = members;
+	public ZObjectLiteralNode(ZNode type, ZObjectLiteralMemberNode[] otherMembers) {
+		this.type = type;
+		this.otherMembers = otherMembers;
 	}
 
 	@Specialization
-	public Object doGeneric(VirtualFrame virtualFrame, @CachedContext(ZLanguage.class) ZContext context) {
+	public Object doGeneric(VirtualFrame virtualFrame, @CachedContext(ZLanguage.class) ZContext context,
+			@CachedLibrary(limit = "3") DynamicObjectLibrary putType) {
 		ZObject object = context.makeObject();
-		for (ZObjectLiteralMemberNode member : members) {
+		putType.put(object, ZConstants.ZOBJECT_TYPE, type.execute(virtualFrame));
+		for (ZObjectLiteralMemberNode member : otherMembers) {
 			objectLib.put(object, member.key, member.value.execute(virtualFrame));
 		}
 		return object;

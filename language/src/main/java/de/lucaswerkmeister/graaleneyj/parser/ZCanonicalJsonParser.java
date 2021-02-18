@@ -88,7 +88,8 @@ public class ZCanonicalJsonParser {
 	}
 
 	public ZNode parseJsonObject(JsonObject json) {
-		String type = json.get(ZConstants.ZOBJECT_TYPE).getAsString(); // TODO error handling
+		JsonElement typeElement = json.get(ZConstants.ZOBJECT_TYPE);
+		String type = typeElement.getAsString(); // TODO error handling
 		switch (type) {
 		case ZConstants.PERSISTENTOBJECT:
 			return parseJsonObjectAsPersistentObject(json);
@@ -105,13 +106,15 @@ public class ZCanonicalJsonParser {
 		case ZConstants.CHARACTER:
 			return parseJsonObjectAsCharacter(json);
 		}
-		ZObjectLiteralMemberNode[] members = new ZObjectLiteralMemberNode[json.size()];
+		ZObjectLiteralMemberNode[] otherMembers = new ZObjectLiteralMemberNode[json.size() - 1];
 		int i = 0;
 		for (Entry<String, JsonElement> entry : json.entrySet()) {
-			members[i] = new ZObjectLiteralMemberNode(entry.getKey(), parseJsonElement(entry.getValue()));
-			i++;
+			if (!ZConstants.ZOBJECT_TYPE.equals(entry.getKey())) {
+				otherMembers[i] = new ZObjectLiteralMemberNode(entry.getKey(), parseJsonElement(entry.getValue()));
+				i++;
+			}
 		}
-		ZNode ret = ZObjectLiteralNodeGen.create(members);
+		ZNode ret = ZObjectLiteralNodeGen.create(parseJsonElement(typeElement), otherMembers);
 		ret.setSourceSection(json.getSourceCharIndex(), json.getSourceLength());
 		return ret;
 	}
