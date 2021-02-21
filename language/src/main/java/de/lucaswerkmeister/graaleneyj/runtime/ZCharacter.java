@@ -142,21 +142,6 @@ public class ZCharacter implements TruffleObject {
 				return ZConstants.CHARACTER_CHARACTER;
 			}
 		}
-
-		@ExportMessage
-		public boolean hasLanguage() {
-			return true;
-		}
-
-		@ExportMessage
-		public Class<? extends TruffleLanguage<?>> getLanguage() {
-			return ZLanguage.class;
-		}
-
-		@ExportMessage
-		public final String toDisplayString(boolean allowSideEffects) {
-			return "ZCharacterKeys";
-		}
 	}
 
 }
