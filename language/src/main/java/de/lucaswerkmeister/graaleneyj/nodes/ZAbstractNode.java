@@ -94,7 +94,7 @@ public abstract class ZAbstractNode extends Node {
 				Object character = members.remove(ZConstants.CHARACTER_CHARACTER);
 				return new ZCharacter(((String) character).codePointAt(0), members); // TODO proper error handling
 			}
-			return context.makeObject(members);
+			return context.makePlainObject(members);
 		} catch (UnknownIdentifierException | UnsupportedMessageException e) {
 			throw new RuntimeException(e); // TODO
 		}

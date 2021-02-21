@@ -76,7 +76,7 @@ public abstract class ZValueNode extends Node {
 				return ZCharacter.cast(character.codePointAt(0));
 			}
 
-			DynamicObject object = context.makeObject(Map.of());
+			DynamicObject object = context.makePlainObject(Map.of());
 			Object members = values.getMembers(value);
 			long length = membersLib.getArraySize(members);
 			typeLib.put(object, ZConstants.ZOBJECT_TYPE, type);

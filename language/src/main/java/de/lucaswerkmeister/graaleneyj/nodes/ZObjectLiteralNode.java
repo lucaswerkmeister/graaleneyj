@@ -36,7 +36,7 @@ public abstract class ZObjectLiteralNode extends ZNode {
 	@Specialization
 	public Object doGeneric(VirtualFrame virtualFrame, @CachedContext(ZLanguage.class) ZContext context,
 			@CachedLibrary(limit = "3") DynamicObjectLibrary putMember) {
-		ZObject object = context.makeObject(Map.of());
+		ZObject object = context.makePlainObject(Map.of());
 		for (ZObjectLiteralMemberNode member : members) {
 			putMember.put(object, member.key, member.value.execute(virtualFrame));
 		}
