@@ -7,8 +7,10 @@ import com.oracle.truffle.api.interop.InteropLibrary;
 import com.oracle.truffle.api.interop.InvalidArrayIndexException;
 import com.oracle.truffle.api.interop.TruffleObject;
 import com.oracle.truffle.api.interop.UnknownIdentifierException;
+import com.oracle.truffle.api.library.CachedLibrary;
 import com.oracle.truffle.api.library.ExportLibrary;
 import com.oracle.truffle.api.library.ExportMessage;
+import com.oracle.truffle.api.object.DynamicObjectLibrary;
 import com.oracle.truffle.api.object.Shape;
 
 import de.lucaswerkmeister.graaleneyj.ZConstants;
@@ -21,18 +23,24 @@ import de.lucaswerkmeister.graaleneyj.ZConstants;
 public class ZCharacter extends ZObject {
 
 	private final int codepoint;
-	private final Map<String, Object> extraMembers;
+
+	public ZCharacter(int codepoint, Shape shape) {
+		super(shape);
+		this.codepoint = codepoint;
+	}
 
 	public ZCharacter(int codepoint, Shape shape, Map<String, Object> extraMembers) {
-		super(shape);
+		this(codepoint, shape);
 		assert !extraMembers.containsKey(ZConstants.ZOBJECT_TYPE);
 		assert !extraMembers.containsKey(ZConstants.CHARACTER_CHARACTER);
-		this.codepoint = codepoint;
-		this.extraMembers = Map.copyOf(extraMembers);
+		DynamicObjectLibrary objects = DynamicObjectLibrary.getUncached();
+		for (Map.Entry<String, Object> entry : extraMembers.entrySet()) {
+			objects.put(this, entry.getKey(), entry.getValue());
+		}
 	}
 
 	public static ZCharacter cast(int codepoint, Shape shape) {
-		return new ZCharacter(codepoint, shape, Map.of());
+		return new ZCharacter(codepoint, shape);
 	}
 
 	public int getCodepoint() {
@@ -55,26 +63,29 @@ public class ZCharacter extends ZObject {
 	}
 
 	@ExportMessage
-	public final ZCharacterKeys getMembers(boolean includeInternal) {
-		return new ZCharacterKeys(extraMembers.keySet().toArray(new String[extraMembers.size()]));
+	public final ZCharacterKeys getMembers(boolean includeInternal,
+			@CachedLibrary("this") DynamicObjectLibrary objectLibrary) {
+		return new ZCharacterKeys(objectLibrary.getKeyArray(this));
 	}
 
 	@ExportMessage
-	public final boolean isMemberReadable(String member) {
+	public final boolean isMemberReadable(String member, @CachedLibrary("this") DynamicObjectLibrary objectLibrary) {
 		return ZConstants.ZOBJECT_TYPE.equals(member) || ZConstants.CHARACTER_CHARACTER.equals(member)
-				|| extraMembers.containsKey(member);
+				|| objectLibrary.containsKey(this, member);
 	}
 
 	@ExportMessage
-	public final Object readMember(String member) throws UnknownIdentifierException {
+	public final Object readMember(String member, @CachedLibrary("this") DynamicObjectLibrary objectLibrary)
+			throws UnknownIdentifierException {
 		switch (member) {
 		case ZConstants.ZOBJECT_TYPE:
 			return new ZReference(ZConstants.CHARACTER);
 		case ZConstants.CHARACTER_CHARACTER:
 			return asString();
 		}
-		if (extraMembers.containsKey(member)) {
-			return extraMembers.get(member);
+		Object value = objectLibrary.getOrDefault(this, member, null);
+		if (value != null) {
+			return value;
 		} else {
 			throw UnknownIdentifierException.create(member);
 		}
@@ -96,9 +107,9 @@ public class ZCharacter extends ZObject {
 	@ExportLibrary(InteropLibrary.class)
 	static final class ZCharacterKeys implements TruffleObject {
 
-		private final String[] extraKeys;
+		private final Object[] extraKeys;
 
-		public ZCharacterKeys(String[] extraKeys) {
+		public ZCharacterKeys(Object[] extraKeys) {
 			this.extraKeys = extraKeys;
 		}
 
@@ -118,7 +129,7 @@ public class ZCharacter extends ZObject {
 		}
 
 		@ExportMessage
-		public String readArrayElement(long index) throws InvalidArrayIndexException {
+		public Object readArrayElement(long index) throws InvalidArrayIndexException {
 			if (!isArrayElementReadable(index)) {
 				CompilerDirectives.transferToInterpreter();
 				throw InvalidArrayIndexException.create(index);
