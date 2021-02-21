@@ -4,6 +4,7 @@ import com.oracle.truffle.api.dsl.ImplicitCast;
 import com.oracle.truffle.api.dsl.TypeCast;
 import com.oracle.truffle.api.dsl.TypeCheck;
 import com.oracle.truffle.api.dsl.TypeSystem;
+import com.oracle.truffle.api.object.Shape;
 
 import de.lucaswerkmeister.graaleneyj.runtime.ZCharacter;
 import de.lucaswerkmeister.graaleneyj.runtime.ZList;
@@ -48,7 +49,11 @@ public abstract class ZTypes {
 
 	@ImplicitCast
 	public static ZCharacter intToZCharacter(int character) {
-		return ZCharacter.cast(character);
+		// TODO get the shape from some context, or make the cast return a simple object
+		// that doesn’t extend DynamicObject (compare GraalJS’ BigInt), or maybe remove
+		// this implicit cast and int.class from the type system entirely
+		Shape shape = Shape.newBuilder().build();
+		return ZCharacter.cast(character, shape);
 	}
 
 }

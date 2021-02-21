@@ -3,36 +3,36 @@ package de.lucaswerkmeister.graaleneyj.runtime;
 import java.util.Map;
 
 import com.oracle.truffle.api.CompilerDirectives;
-import com.oracle.truffle.api.TruffleLanguage;
 import com.oracle.truffle.api.interop.InteropLibrary;
 import com.oracle.truffle.api.interop.InvalidArrayIndexException;
 import com.oracle.truffle.api.interop.TruffleObject;
 import com.oracle.truffle.api.interop.UnknownIdentifierException;
 import com.oracle.truffle.api.library.ExportLibrary;
 import com.oracle.truffle.api.library.ExportMessage;
+import com.oracle.truffle.api.object.Shape;
 
 import de.lucaswerkmeister.graaleneyj.ZConstants;
-import de.lucaswerkmeister.graaleneyj.ZLanguage;
 
 /**
  * A boxed character (Unicode code point). Unboxed characters are represented by
  * {@code int}. For interop, this behaves like a string.
  */
 @ExportLibrary(InteropLibrary.class)
-public class ZCharacter implements TruffleObject {
+public class ZCharacter extends ZObject {
 
 	private final int codepoint;
 	private final Map<String, Object> extraMembers;
 
-	public ZCharacter(int codepoint, Map<String, Object> extraMembers) {
+	public ZCharacter(int codepoint, Shape shape, Map<String, Object> extraMembers) {
+		super(shape);
 		assert !extraMembers.containsKey(ZConstants.ZOBJECT_TYPE);
 		assert !extraMembers.containsKey(ZConstants.CHARACTER_CHARACTER);
 		this.codepoint = codepoint;
 		this.extraMembers = Map.copyOf(extraMembers);
 	}
 
-	public static ZCharacter cast(int codepoint) {
-		return new ZCharacter(codepoint, Map.of());
+	public static ZCharacter cast(int codepoint, Shape shape) {
+		return new ZCharacter(codepoint, shape, Map.of());
 	}
 
 	public int getCodepoint() {
@@ -78,16 +78,6 @@ public class ZCharacter implements TruffleObject {
 		} else {
 			throw UnknownIdentifierException.create(member);
 		}
-	}
-
-	@ExportMessage
-	public final boolean hasLanguage() {
-		return true;
-	}
-
-	@ExportMessage
-	public final Class<? extends TruffleLanguage<?>> getLanguage() {
-		return ZLanguage.class;
 	}
 
 	@ExportMessage

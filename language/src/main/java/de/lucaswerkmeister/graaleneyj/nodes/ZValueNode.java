@@ -44,8 +44,8 @@ public abstract class ZValueNode extends Node {
 	public abstract Object execute(Object value);
 
 	@Specialization
-	public Object doCharacter(ZCharacter character) {
-		return ZCharacter.cast(character.getCodepoint());
+	public Object doCharacter(ZCharacter character, @CachedContext(ZLanguage.class) ZContext context) {
+		return ZCharacter.cast(character.getCodepoint(), context.getInitialZObjectShape());
 	}
 
 	@Specialization
@@ -72,7 +72,7 @@ public abstract class ZValueNode extends Node {
 				// with type character, that should be a ZCharacter in the first place
 				String character = (String) values.readMember(value, ZConstants.CHARACTER_CHARACTER);
 				assert character.codePointCount(0, character.length()) == 1;
-				return ZCharacter.cast(character.codePointAt(0));
+				return ZCharacter.cast(character.codePointAt(0), context.getInitialZObjectShape());
 			}
 
 			DynamicObject object = new ZPlainObject(context.getInitialZObjectShape());

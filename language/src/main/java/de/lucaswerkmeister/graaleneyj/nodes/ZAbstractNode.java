@@ -93,7 +93,8 @@ public abstract class ZAbstractNode extends Node {
 			case ZConstants.CHARACTER:
 				members.remove(ZConstants.ZOBJECT_TYPE);
 				Object character = members.remove(ZConstants.CHARACTER_CHARACTER);
-				return new ZCharacter(((String) character).codePointAt(0), members); // TODO proper error handling
+				// TODO proper error handling
+				return new ZCharacter(((String) character).codePointAt(0), context.getInitialZObjectShape(), members);
 			}
 			return new ZPlainObject(context.getInitialZObjectShape(), members);
 		} catch (UnknownIdentifierException | UnsupportedMessageException e) {
