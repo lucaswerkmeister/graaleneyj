@@ -18,6 +18,7 @@ import de.lucaswerkmeister.graaleneyj.runtime.ZCharacter;
 import de.lucaswerkmeister.graaleneyj.runtime.ZContext;
 import de.lucaswerkmeister.graaleneyj.runtime.ZList;
 import de.lucaswerkmeister.graaleneyj.runtime.ZPersistentObject;
+import de.lucaswerkmeister.graaleneyj.runtime.ZPlainObject;
 import de.lucaswerkmeister.graaleneyj.runtime.ZReference;
 import de.lucaswerkmeister.graaleneyj.runtime.ZString;
 
@@ -94,7 +95,7 @@ public abstract class ZAbstractNode extends Node {
 				Object character = members.remove(ZConstants.CHARACTER_CHARACTER);
 				return new ZCharacter(((String) character).codePointAt(0), members); // TODO proper error handling
 			}
-			return context.makePlainObject(members);
+			return new ZPlainObject(context.getInitialZObjectShape(), members);
 		} catch (UnknownIdentifierException | UnsupportedMessageException e) {
 			throw new RuntimeException(e); // TODO
 		}

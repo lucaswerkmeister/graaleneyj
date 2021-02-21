@@ -23,9 +23,8 @@ import de.lucaswerkmeister.graaleneyj.nodes.ZPairNode;
  * A generic object with members, initialized at construction time.
  * </p>
  * <p>
- * AST nodes may add additional members to the object after it has been created
- * (usually obtained from {@link ZContext#makePlainObject(Map)}), e. g. to use a
- * more specific/optimized {@link DynamicObjectLibrary} (compare
+ * AST nodes may add additional members to the object after it has been created,
+ * e. g. to use a more specific/optimized {@link DynamicObjectLibrary} (compare
  * {@link ZPairNode}). However, objects are supposed to be immutable – nodes
  * should therefore only add members to objects immediately after their
  * creation, before they are released to other parts of the program.

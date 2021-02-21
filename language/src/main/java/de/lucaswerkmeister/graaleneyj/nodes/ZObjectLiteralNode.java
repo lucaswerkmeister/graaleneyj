@@ -7,11 +7,12 @@ import com.oracle.truffle.api.dsl.Specialization;
 import com.oracle.truffle.api.frame.VirtualFrame;
 import com.oracle.truffle.api.library.CachedLibrary;
 import com.oracle.truffle.api.nodes.Node;
+import com.oracle.truffle.api.object.DynamicObject;
 import com.oracle.truffle.api.object.DynamicObjectLibrary;
 
 import de.lucaswerkmeister.graaleneyj.ZLanguage;
 import de.lucaswerkmeister.graaleneyj.runtime.ZContext;
-import de.lucaswerkmeister.graaleneyj.runtime.ZObject;
+import de.lucaswerkmeister.graaleneyj.runtime.ZPlainObject;
 
 public abstract class ZObjectLiteralNode extends ZNode {
 
@@ -36,7 +37,7 @@ public abstract class ZObjectLiteralNode extends ZNode {
 	@Specialization
 	public Object doGeneric(VirtualFrame virtualFrame, @CachedContext(ZLanguage.class) ZContext context,
 			@CachedLibrary(limit = "3") DynamicObjectLibrary putMember) {
-		ZObject object = context.makePlainObject(Map.of());
+		DynamicObject object = new ZPlainObject(context.getInitialZObjectShape(), Map.of());
 		for (ZObjectLiteralMemberNode member : members) {
 			putMember.put(object, member.key, member.value.execute(virtualFrame));
 		}
