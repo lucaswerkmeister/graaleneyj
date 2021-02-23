@@ -44,8 +44,8 @@ import de.lucaswerkmeister.graaleneyj.nodes.ZReadArgumentNode;
 import de.lucaswerkmeister.graaleneyj.nodes.ZReferenceLiteralNode;
 import de.lucaswerkmeister.graaleneyj.nodes.ZReferenceLiteralNodeGen;
 import de.lucaswerkmeister.graaleneyj.nodes.ZRootNode;
-import de.lucaswerkmeister.graaleneyj.nodes.ZStringLiteralNode;
 import de.lucaswerkmeister.graaleneyj.nodes.ZStringLiteralNode.ZStringLiteralMemberNode;
+import de.lucaswerkmeister.graaleneyj.nodes.ZStringLiteralNodeGen;
 import de.lucaswerkmeister.graaleneyj.nodes.ZThrowConstantNode;
 import de.lucaswerkmeister.graaleneyj.runtime.UnusableImplementationException;
 
@@ -144,7 +144,7 @@ public class ZCanonicalJsonParser {
 			extraMembers[i] = new ZStringLiteralMemberNode(entry.getKey(), parseJsonElement(entry.getValue()));
 			i++;
 		}
-		ZNode ret = new ZStringLiteralNode(json.get(ZConstants.STRING_STRING_VALUE).getAsString(), extraMembers);
+		ZNode ret = ZStringLiteralNodeGen.create(json.get(ZConstants.STRING_STRING_VALUE).getAsString(), extraMembers);
 		ret.setSourceSection(json.getSourceCharIndex(), json.getSourceLength());
 		return ret;
 	}
@@ -370,13 +370,13 @@ public class ZCanonicalJsonParser {
 		String string = json.getString();
 		ZNode ret;
 		if (string.length() < 2) {
-			ret = new ZStringLiteralNode(string);
+			ret = ZStringLiteralNodeGen.create(string);
 		} else if (string.charAt(0) > 127 || string.charAt(1) > 127) {
-			ret = new ZStringLiteralNode(string);
+			ret = ZStringLiteralNodeGen.create(string);
 		} else if (!Character.isUpperCase(string.charAt(0))) {
-			ret = new ZStringLiteralNode(string);
+			ret = ZStringLiteralNodeGen.create(string);
 		} else if (!Character.isDigit(string.charAt(1))) {
-			ret = new ZStringLiteralNode(string);
+			ret = ZStringLiteralNodeGen.create(string);
 		} else {
 			ret = ZReferenceLiteralNodeGen.create(string);
 		}

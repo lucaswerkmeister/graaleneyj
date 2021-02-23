@@ -3,28 +3,28 @@ package de.lucaswerkmeister.graaleneyj.runtime;
 import java.util.Map;
 
 import com.oracle.truffle.api.CompilerDirectives;
-import com.oracle.truffle.api.TruffleLanguage;
 import com.oracle.truffle.api.interop.InteropLibrary;
 import com.oracle.truffle.api.interop.InvalidArrayIndexException;
 import com.oracle.truffle.api.interop.TruffleObject;
 import com.oracle.truffle.api.interop.UnknownIdentifierException;
 import com.oracle.truffle.api.library.ExportLibrary;
 import com.oracle.truffle.api.library.ExportMessage;
+import com.oracle.truffle.api.object.Shape;
 
 import de.lucaswerkmeister.graaleneyj.ZConstants;
-import de.lucaswerkmeister.graaleneyj.ZLanguage;
 
 /**
  * A boxed Z6/string. Should only be used for strings that have extra members,
  * “plain” strings are represented by {@link String}.
  */
 @ExportLibrary(InteropLibrary.class)
-public class ZString implements TruffleObject {
+public class ZString extends ZObject {
 
 	private final String value;
 	private final Map<String, Object> extraMembers;
 
-	public ZString(String value, Map<String, Object> extraMembers) {
+	public ZString(String value, Shape shape, Map<String, Object> extraMembers) {
+		super(shape);
 		assert value != null;
 		assert !extraMembers.containsKey(ZConstants.ZOBJECT_TYPE);
 		assert !extraMembers.containsKey(ZConstants.STRING_STRING_VALUE);
@@ -72,16 +72,6 @@ public class ZString implements TruffleObject {
 		} else {
 			throw UnknownIdentifierException.create(member);
 		}
-	}
-
-	@ExportMessage
-	public final boolean hasLanguage() {
-		return true;
-	}
-
-	@ExportMessage
-	public final Class<? extends TruffleLanguage<?>> getLanguage() {
-		return ZLanguage.class;
 	}
 
 	@ExportMessage

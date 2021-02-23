@@ -70,7 +70,8 @@ public abstract class ZAbstractNode extends Node {
 				if (members.isEmpty()) {
 					return string;
 				} else {
-					return new ZString((String) string, members); // TODO proper error handling
+					// TODO proper error handling
+					return new ZString((String) string, context.getInitialZObjectShape(), members);
 				}
 			case ZConstants.LIST:
 				members.remove(ZConstants.ZOBJECT_TYPE);
