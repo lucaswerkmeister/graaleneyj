@@ -62,7 +62,7 @@ public abstract class ZAbstractNode extends Node {
 				Object labels = members.remove(ZConstants.PERSISTENTOBJECT_LABEL);
 				Object value = members.remove(ZConstants.PERSISTENTOBJECT_VALUE);
 				assert members.isEmpty();
-				return new ZPersistentObject(id, value, labels);
+				return new ZPersistentObject(id, value, labels, context.getInitialZObjectShape());
 			}
 			case ZConstants.STRING:
 				members.remove(ZConstants.ZOBJECT_TYPE);
