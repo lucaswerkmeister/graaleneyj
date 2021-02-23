@@ -26,7 +26,7 @@ public abstract class ZPairNode extends Node {
 			@CachedLibrary(limit = "3") DynamicObjectLibrary putFirst,
 			@CachedLibrary(limit = "3") DynamicObjectLibrary putSecond) {
 		DynamicObject pair = new ZPlainObject(context.getInitialZObjectShape());
-		putType.put(pair, ZConstants.ZOBJECT_TYPE, new ZReference(ZConstants.PAIR));
+		putType.put(pair, ZConstants.ZOBJECT_TYPE, new ZReference(ZConstants.PAIR, context.getInitialZObjectShape()));
 		putFirst.put(pair, ZConstants.PAIR_FIRST, first);
 		putSecond.put(pair, ZConstants.PAIR_SECOND, second);
 		return pair;
