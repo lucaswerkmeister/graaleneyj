@@ -7,8 +7,10 @@ import com.oracle.truffle.api.interop.InteropLibrary;
 import com.oracle.truffle.api.interop.InvalidArrayIndexException;
 import com.oracle.truffle.api.interop.TruffleObject;
 import com.oracle.truffle.api.interop.UnknownIdentifierException;
+import com.oracle.truffle.api.library.CachedLibrary;
 import com.oracle.truffle.api.library.ExportLibrary;
 import com.oracle.truffle.api.library.ExportMessage;
+import com.oracle.truffle.api.object.DynamicObjectLibrary;
 import com.oracle.truffle.api.object.Shape;
 
 import de.lucaswerkmeister.graaleneyj.ZConstants;
@@ -21,16 +23,22 @@ import de.lucaswerkmeister.graaleneyj.ZConstants;
 public class ZString extends ZObject {
 
 	private final String value;
-	private final Map<String, Object> extraMembers;
 
-	public ZString(String value, Shape shape, Map<String, Object> extraMembers) {
+	public ZString(String value, Shape shape) {
 		super(shape);
 		assert value != null;
+		this.value = value;
+	}
+
+	public ZString(String value, Shape shape, Map<String, Object> extraMembers) {
+		this(value, shape);
 		assert !extraMembers.containsKey(ZConstants.ZOBJECT_TYPE);
 		assert !extraMembers.containsKey(ZConstants.STRING_STRING_VALUE);
 		assert !extraMembers.isEmpty();
-		this.value = value;
-		this.extraMembers = Map.copyOf(extraMembers);
+		DynamicObjectLibrary objects = DynamicObjectLibrary.getUncached();
+		for (Map.Entry<String, Object> entry : extraMembers.entrySet()) {
+			objects.put(this, entry.getKey(), entry.getValue());
+		}
 	}
 
 	@ExportMessage
@@ -49,26 +57,29 @@ public class ZString extends ZObject {
 	}
 
 	@ExportMessage
-	public final ZStringKeys getMembers(boolean includeInternal) {
-		return new ZStringKeys(extraMembers.keySet().toArray(new String[extraMembers.size()]));
+	public final ZStringKeys getMembers(boolean includeInternal,
+			@CachedLibrary("this") DynamicObjectLibrary objectLibrary) {
+		return new ZStringKeys(objectLibrary.getKeyArray(this));
 	}
 
 	@ExportMessage
-	public final boolean isMemberReadable(String member) {
+	public final boolean isMemberReadable(String member, @CachedLibrary("this") DynamicObjectLibrary objectLibrary) {
 		return ZConstants.ZOBJECT_TYPE.equals(member) || ZConstants.STRING_STRING_VALUE.equals(member)
-				|| extraMembers.containsKey(member);
+				|| objectLibrary.containsKey(this, member);
 	}
 
 	@ExportMessage
-	public final Object readMember(String member) throws UnknownIdentifierException {
+	public final Object readMember(String member, @CachedLibrary("this") DynamicObjectLibrary objectLibrary)
+			throws UnknownIdentifierException {
 		switch (member) {
 		case ZConstants.ZOBJECT_TYPE:
 			return new ZReference(ZConstants.STRING);
 		case ZConstants.STRING_STRING_VALUE:
 			return value;
 		}
-		if (extraMembers.containsKey(member)) {
-			return extraMembers.get(member);
+		Object value = objectLibrary.getOrDefault(this, member, null);
+		if (value != null) {
+			return value;
 		} else {
 			throw UnknownIdentifierException.create(member);
 		}
@@ -90,9 +101,9 @@ public class ZString extends ZObject {
 	@ExportLibrary(InteropLibrary.class)
 	static final class ZStringKeys implements TruffleObject {
 
-		private final String[] extraKeys;
+		private final Object[] extraKeys;
 
-		public ZStringKeys(String[] extraKeys) {
+		public ZStringKeys(Object[] extraKeys) {
 			this.extraKeys = extraKeys;
 		}
 
@@ -112,7 +123,7 @@ public class ZString extends ZObject {
 		}
 
 		@ExportMessage
-		public String readArrayElement(long index) throws InvalidArrayIndexException {
+		public Object readArrayElement(long index) throws InvalidArrayIndexException {
 			if (!isArrayElementReadable(index)) {
 				CompilerDirectives.transferToInterpreter();
 				throw InvalidArrayIndexException.create(index);
