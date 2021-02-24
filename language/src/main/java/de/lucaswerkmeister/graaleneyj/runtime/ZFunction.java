@@ -6,12 +6,10 @@ import java.util.Collection;
 import com.oracle.truffle.api.Assumption;
 import com.oracle.truffle.api.CallTarget;
 import com.oracle.truffle.api.CompilerDirectives.TruffleBoundary;
-import com.oracle.truffle.api.TruffleLanguage;
 import com.oracle.truffle.api.dsl.Cached;
 import com.oracle.truffle.api.dsl.Specialization;
 import com.oracle.truffle.api.interop.ArityException;
 import com.oracle.truffle.api.interop.InteropLibrary;
-import com.oracle.truffle.api.interop.TruffleObject;
 import com.oracle.truffle.api.interop.UnsupportedMessageException;
 import com.oracle.truffle.api.interop.UnsupportedTypeException;
 import com.oracle.truffle.api.library.ExportLibrary;
@@ -20,10 +18,8 @@ import com.oracle.truffle.api.nodes.DirectCallNode;
 import com.oracle.truffle.api.nodes.IndirectCallNode;
 import com.oracle.truffle.api.utilities.CyclicAssumption;
 
-import de.lucaswerkmeister.graaleneyj.ZLanguage;
-
 @ExportLibrary(InteropLibrary.class)
-public class ZFunction implements TruffleObject {
+public class ZFunction extends ZObject {
 
 	private final ZImplementation[] implementations;
 	private final String id;
@@ -32,6 +28,7 @@ public class ZFunction implements TruffleObject {
 	private final CyclicAssumption implementationIndexStable;
 
 	public ZFunction(ZImplementation[] implementations, String id) {
+		super(STATIC_BLANK_SHAPE);
 		assert id != null;
 		this.implementations = implementations;
 		this.id = id;
@@ -113,16 +110,6 @@ public class ZFunction implements TruffleObject {
 				return function.handleUnusableImplementationException(e, arguments);
 			}
 		}
-	}
-
-	@ExportMessage
-	public final boolean hasLanguage() {
-		return true;
-	}
-
-	@ExportMessage
-	public final Class<? extends TruffleLanguage<?>> getLanguage() {
-		return ZLanguage.class;
 	}
 
 	@ExportMessage
