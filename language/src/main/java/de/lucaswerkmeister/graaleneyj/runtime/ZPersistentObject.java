@@ -10,7 +10,6 @@ import com.oracle.truffle.api.interop.UnsupportedMessageException;
 import com.oracle.truffle.api.library.CachedLibrary;
 import com.oracle.truffle.api.library.ExportLibrary;
 import com.oracle.truffle.api.library.ExportMessage;
-import com.oracle.truffle.api.object.Shape;
 
 import de.lucaswerkmeister.graaleneyj.ZConstants;
 import de.lucaswerkmeister.graaleneyj.ZLanguage;
@@ -24,8 +23,8 @@ public class ZPersistentObject extends ZObject {
 
 	private final Object labels;
 
-	public ZPersistentObject(String id, Object value, Object labels, Shape shape) {
-		super(shape);
+	public ZPersistentObject(String id, Object value, Object labels) {
+		super(STATIC_BLANK_SHAPE);
 		this.id = id;
 		this.value = value;
 		this.labels = labels;

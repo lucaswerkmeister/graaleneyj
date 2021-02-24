@@ -11,7 +11,6 @@ import com.oracle.truffle.api.interop.ArityException;
 import com.oracle.truffle.api.interop.InteropLibrary;
 import com.oracle.truffle.api.library.ExportLibrary;
 import com.oracle.truffle.api.library.ExportMessage;
-import com.oracle.truffle.api.object.Shape;
 import com.oracle.truffle.api.source.Source;
 
 import de.lucaswerkmeister.graaleneyj.ZLanguage;
@@ -25,8 +24,8 @@ public class ZReference extends ZObject {
 
 	protected final String id;
 
-	public ZReference(String id, Shape shape) {
-		super(shape);
+	public ZReference(String id) {
+		super(STATIC_BLANK_SHAPE);
 		this.id = id;
 	}
 

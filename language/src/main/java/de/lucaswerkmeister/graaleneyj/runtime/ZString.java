@@ -3,7 +3,6 @@ package de.lucaswerkmeister.graaleneyj.runtime;
 import java.util.Map;
 
 import com.oracle.truffle.api.CompilerDirectives;
-import com.oracle.truffle.api.dsl.CachedContext;
 import com.oracle.truffle.api.interop.InteropLibrary;
 import com.oracle.truffle.api.interop.InvalidArrayIndexException;
 import com.oracle.truffle.api.interop.TruffleObject;
@@ -15,7 +14,6 @@ import com.oracle.truffle.api.object.DynamicObjectLibrary;
 import com.oracle.truffle.api.object.Shape;
 
 import de.lucaswerkmeister.graaleneyj.ZConstants;
-import de.lucaswerkmeister.graaleneyj.ZLanguage;
 
 /**
  * A boxed Z6/string. Should only be used for strings that have extra members,
@@ -71,11 +69,11 @@ public class ZString extends ZObject {
 	}
 
 	@ExportMessage
-	public final Object readMember(String member, @CachedLibrary("this") DynamicObjectLibrary objectLibrary,
-			@CachedContext(ZLanguage.class) ZContext context) throws UnknownIdentifierException {
+	public final Object readMember(String member, @CachedLibrary("this") DynamicObjectLibrary objectLibrary)
+			throws UnknownIdentifierException {
 		switch (member) {
 		case ZConstants.ZOBJECT_TYPE:
-			return new ZReference(ZConstants.STRING, context.getInitialZObjectShape());
+			return new ZReference(ZConstants.STRING);
 		case ZConstants.STRING_STRING_VALUE:
 			return value;
 		}

@@ -1,7 +1,6 @@
 package de.lucaswerkmeister.graaleneyj.nodes;
 
 import com.oracle.truffle.api.CompilerDirectives;
-import com.oracle.truffle.api.dsl.CachedContext;
 import com.oracle.truffle.api.dsl.Specialization;
 import com.oracle.truffle.api.interop.InteropLibrary;
 import com.oracle.truffle.api.interop.InvalidArrayIndexException;
@@ -11,9 +10,7 @@ import com.oracle.truffle.api.library.CachedLibrary;
 import com.oracle.truffle.api.nodes.Node;
 
 import de.lucaswerkmeister.graaleneyj.ZConstants;
-import de.lucaswerkmeister.graaleneyj.ZLanguage;
 import de.lucaswerkmeister.graaleneyj.builtins.ZReifyBuiltin;
-import de.lucaswerkmeister.graaleneyj.runtime.ZContext;
 import de.lucaswerkmeister.graaleneyj.runtime.ZList;
 import de.lucaswerkmeister.graaleneyj.runtime.ZPersistentObject;
 import de.lucaswerkmeister.graaleneyj.runtime.ZReference;
@@ -45,7 +42,7 @@ public abstract class ZReifyNode extends Node {
 	}
 
 	@Specialization
-	public Object doPersistentObject(ZPersistentObject value, @CachedContext(ZLanguage.class) ZContext context) {
+	public Object doPersistentObject(ZPersistentObject value) {
 		ZList ret = ZList.NIL;
 		Object labels = value.getLabels();
 		if (labels != null) {
@@ -53,8 +50,7 @@ public abstract class ZReifyNode extends Node {
 		}
 		ret = new ZList(pair.execute(ZConstants.PERSISTENTOBJECT_VALUE, execute(value.getValue())), ret);
 		ret = new ZList(pair.execute(ZConstants.PERSISTENTOBJECT_ID, value.getId()), ret);
-		ret = new ZList(pair.execute(ZConstants.ZOBJECT_TYPE,
-				new ZReference(ZConstants.PERSISTENTOBJECT, context.getInitialZObjectShape())), ret);
+		ret = new ZList(pair.execute(ZConstants.ZOBJECT_TYPE, new ZReference(ZConstants.PERSISTENTOBJECT)), ret);
 		return ret;
 	}
 

@@ -25,6 +25,11 @@ import de.lucaswerkmeister.graaleneyj.ZLanguage;
 @ExportLibrary(InteropLibrary.class)
 public abstract class ZObject extends DynamicObject implements TruffleObject {
 
+	/**
+	 * A shape for subclasses that are not meant to have dynamic members.
+	 */
+	protected static final Shape STATIC_BLANK_SHAPE = Shape.newBuilder().build();
+
 	public ZObject(Shape shape) {
 		super(shape);
 	}

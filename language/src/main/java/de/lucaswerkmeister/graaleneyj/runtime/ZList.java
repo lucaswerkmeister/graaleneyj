@@ -3,7 +3,6 @@ package de.lucaswerkmeister.graaleneyj.runtime;
 import com.oracle.truffle.api.CompilerDirectives;
 import com.oracle.truffle.api.CompilerDirectives.TruffleBoundary;
 import com.oracle.truffle.api.TruffleLanguage;
-import com.oracle.truffle.api.dsl.CachedContext;
 import com.oracle.truffle.api.interop.InteropLibrary;
 import com.oracle.truffle.api.interop.InvalidArrayIndexException;
 import com.oracle.truffle.api.interop.TruffleObject;
@@ -101,20 +100,19 @@ public final class ZList implements TruffleObject {
 	}
 
 	@ExportMessage
-	public final Object readMember(String member, @CachedContext(ZLanguage.class) ZContext context)
-			throws UnknownIdentifierException {
+	public final Object readMember(String member) throws UnknownIdentifierException {
 		switch (member) {
 		case ZConstants.ZOBJECT_TYPE:
-			return new ZReference(ZConstants.LIST, context.getInitialZObjectShape());
+			return new ZReference(ZConstants.LIST);
 		case ZConstants.LIST_HEAD:
 			if (this == NIL) {
-				return new ZReference(ZConstants.LISTISNIL, context.getInitialZObjectShape());
+				return new ZReference(ZConstants.LISTISNIL);
 			} else {
 				return head;
 			}
 		case ZConstants.LIST_TAIL:
 			if (this == NIL) {
-				return new ZReference(ZConstants.LISTISNIL, context.getInitialZObjectShape());
+				return new ZReference(ZConstants.LISTISNIL);
 			} else {
 				return tail;
 			}
