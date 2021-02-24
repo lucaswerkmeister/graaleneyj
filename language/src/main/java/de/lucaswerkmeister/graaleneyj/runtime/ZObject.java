@@ -16,8 +16,7 @@ import de.lucaswerkmeister.graaleneyj.ZLanguage;
  * <p>
  * <p>
  * Subclasses must at least export
- * {@link InteropLibrary#toDisplayString(Object, boolean) toDisplayString} and
- * {@link InteropLibrary#hasMembers(Object) hasMembers} with related methods.
+ * {@link InteropLibrary#toDisplayString(Object, boolean) toDisplayString}.
  * </p>
  *
  * @see ZPlainObject
