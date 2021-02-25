@@ -103,11 +103,16 @@ public abstract class ZAbstractNode extends Node {
 				members.remove(ZConstants.ZOBJECT_TYPE);
 				Object character = members.remove(ZConstants.CHARACTER_CHARACTER);
 				// TODO proper error handling
-				ZCharacter ret = new ZCharacter(((String) character).codePointAt(0), context.getInitialZObjectShape());
-				for (Map.Entry<String, Object> entry : members.entrySet()) {
-					stringMembers.put(ret, entry.getKey(), entry.getValue());
+				int codePoint = ((String) character).codePointAt(0);
+				if (members.isEmpty()) {
+					return ZCharacter.cast(codePoint);
+				} else {
+					ZCharacter ret = new ZCharacter(codePoint, context.getInitialZObjectShape());
+					for (Map.Entry<String, Object> entry : members.entrySet()) {
+						stringMembers.put(ret, entry.getKey(), entry.getValue());
+					}
+					return ret;
 				}
-				return ret;
 			}
 			ZPlainObject ret = new ZPlainObject(context.getInitialZObjectShape());
 			for (Map.Entry<String, Object> entry : members.entrySet()) {

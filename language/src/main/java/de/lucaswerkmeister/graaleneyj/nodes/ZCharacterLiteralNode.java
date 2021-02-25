@@ -63,7 +63,7 @@ public abstract class ZCharacterLiteralNode extends ZNode {
 			}
 			return ret;
 		} else {
-			return ZCharacter.cast(getCharacter(), context.getInitialZObjectShape());
+			return ZCharacter.cast(getCharacter());
 		}
 	}
 

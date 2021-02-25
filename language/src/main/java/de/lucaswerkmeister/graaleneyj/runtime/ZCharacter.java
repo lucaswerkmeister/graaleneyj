@@ -27,8 +27,8 @@ public class ZCharacter extends ZObject {
 		this.codepoint = codepoint;
 	}
 
-	public static ZCharacter cast(int codepoint, Shape shape) {
-		return new ZCharacter(codepoint, shape);
+	public static ZCharacter cast(int codepoint) {
+		return new ZCharacter(codepoint, STATIC_BLANK_SHAPE);
 	}
 
 	public int getCodepoint() {
