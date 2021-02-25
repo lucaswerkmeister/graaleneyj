@@ -10,6 +10,7 @@ import com.oracle.truffle.api.interop.UnknownIdentifierException;
 import com.oracle.truffle.api.interop.UnsupportedMessageException;
 import com.oracle.truffle.api.library.CachedLibrary;
 import com.oracle.truffle.api.nodes.Node;
+import com.oracle.truffle.api.object.DynamicObjectLibrary;
 
 import de.lucaswerkmeister.graaleneyj.ZConstants;
 import de.lucaswerkmeister.graaleneyj.ZLanguage;
@@ -42,7 +43,10 @@ public abstract class ZAbstractNode extends Node {
 
 	@Specialization
 	public Object doList(ZList list, @CachedContext(ZLanguage.class) ZContext context,
-			@CachedLibrary(limit = "3") InteropLibrary pairs) {
+			@CachedLibrary(limit = "3") InteropLibrary pairs,
+			@CachedLibrary(limit = "3") DynamicObjectLibrary stringMembers,
+			@CachedLibrary(limit = "3") DynamicObjectLibrary characterMembers,
+			@CachedLibrary(limit = "3") DynamicObjectLibrary objectMembers) {
 		// TODO use multiple InteropLibrary instances for different keys?
 		try {
 			Map<String, Object> members = new HashMap<>();
@@ -71,7 +75,11 @@ public abstract class ZAbstractNode extends Node {
 					return string;
 				} else {
 					// TODO proper error handling
-					return new ZString((String) string, context.getInitialZObjectShape(), members);
+					ZString ret = new ZString((String) string, context.getInitialZObjectShape());
+					for (Map.Entry<String, Object> entry : members.entrySet()) {
+						stringMembers.put(ret, entry.getKey(), entry.getValue());
+					}
+					return ret;
 				}
 			case ZConstants.LIST:
 				members.remove(ZConstants.ZOBJECT_TYPE);
@@ -95,9 +103,17 @@ public abstract class ZAbstractNode extends Node {
 				members.remove(ZConstants.ZOBJECT_TYPE);
 				Object character = members.remove(ZConstants.CHARACTER_CHARACTER);
 				// TODO proper error handling
-				return new ZCharacter(((String) character).codePointAt(0), context.getInitialZObjectShape(), members);
+				ZCharacter ret = new ZCharacter(((String) character).codePointAt(0), context.getInitialZObjectShape());
+				for (Map.Entry<String, Object> entry : members.entrySet()) {
+					stringMembers.put(ret, entry.getKey(), entry.getValue());
+				}
+				return ret;
 			}
-			return new ZPlainObject(context.getInitialZObjectShape(), members);
+			ZPlainObject ret = new ZPlainObject(context.getInitialZObjectShape());
+			for (Map.Entry<String, Object> entry : members.entrySet()) {
+				stringMembers.put(ret, entry.getKey(), entry.getValue());
+			}
+			return ret;
 		} catch (UnknownIdentifierException | UnsupportedMessageException e) {
 			throw new RuntimeException(e); // TODO
 		}

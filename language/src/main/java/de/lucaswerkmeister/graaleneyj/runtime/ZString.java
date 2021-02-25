@@ -1,7 +1,5 @@
 package de.lucaswerkmeister.graaleneyj.runtime;
 
-import java.util.Map;
-
 import com.oracle.truffle.api.CompilerDirectives;
 import com.oracle.truffle.api.interop.InteropLibrary;
 import com.oracle.truffle.api.interop.InvalidArrayIndexException;
@@ -28,17 +26,6 @@ public class ZString extends ZObject {
 		super(shape);
 		assert value != null;
 		this.value = value;
-	}
-
-	public ZString(String value, Shape shape, Map<String, Object> extraMembers) {
-		this(value, shape);
-		assert !extraMembers.containsKey(ZConstants.ZOBJECT_TYPE);
-		assert !extraMembers.containsKey(ZConstants.STRING_STRING_VALUE);
-		assert !extraMembers.isEmpty();
-		DynamicObjectLibrary objects = DynamicObjectLibrary.getUncached();
-		for (Map.Entry<String, Object> entry : extraMembers.entrySet()) {
-			objects.put(this, entry.getKey(), entry.getValue());
-		}
 	}
 
 	@ExportMessage

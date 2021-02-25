@@ -1,7 +1,5 @@
 package de.lucaswerkmeister.graaleneyj.runtime;
 
-import java.util.Map;
-
 import com.oracle.truffle.api.CompilerDirectives;
 import com.oracle.truffle.api.CompilerDirectives.TruffleBoundary;
 import com.oracle.truffle.api.interop.InteropLibrary;
@@ -35,14 +33,6 @@ public class ZPlainObject extends ZObject {
 
 	public ZPlainObject(Shape shape) {
 		super(shape);
-	}
-
-	public ZPlainObject(Shape shape, Map<String, Object> members) {
-		this(shape);
-		DynamicObjectLibrary objects = DynamicObjectLibrary.getUncached();
-		for (Map.Entry<String, Object> entry : members.entrySet()) {
-			objects.put(this, entry.getKey(), entry.getValue());
-		}
 	}
 
 	/**
