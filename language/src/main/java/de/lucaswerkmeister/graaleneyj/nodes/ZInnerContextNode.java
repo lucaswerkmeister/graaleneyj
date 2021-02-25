@@ -5,7 +5,6 @@ import com.oracle.truffle.api.TruffleContext;
 import com.oracle.truffle.api.TruffleLanguage.ContextReference;
 import com.oracle.truffle.api.dsl.Cached;
 import com.oracle.truffle.api.dsl.CachedContext;
-import com.oracle.truffle.api.dsl.CachedLanguage;
 import com.oracle.truffle.api.dsl.Specialization;
 import com.oracle.truffle.api.frame.VirtualFrame;
 import com.oracle.truffle.api.nodes.IndirectCallNode;
@@ -35,7 +34,7 @@ public abstract class ZInnerContextNode extends RootNode {
 	@Specialization
 	public Object doGeneric(VirtualFrame frame,
 			@CachedContext(ZLanguage.class) ContextReference<ZContext> contextReference,
-			@CachedLanguage ZLanguage language, @Cached IndirectCallNode callNode) {
+			@Cached IndirectCallNode callNode) {
 		ZContext outerZContext = contextReference.get();
 		TruffleContext innerTruffleContext = outerZContext.makeInnerContext();
 		Object outerTruffleContext = innerTruffleContext.enter(this);
