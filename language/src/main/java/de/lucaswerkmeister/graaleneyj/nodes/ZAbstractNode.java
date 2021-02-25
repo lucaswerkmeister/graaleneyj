@@ -10,6 +10,7 @@ import com.oracle.truffle.api.interop.UnknownIdentifierException;
 import com.oracle.truffle.api.interop.UnsupportedMessageException;
 import com.oracle.truffle.api.library.CachedLibrary;
 import com.oracle.truffle.api.nodes.Node;
+import com.oracle.truffle.api.object.DynamicObjectLibrary;
 
 import de.lucaswerkmeister.graaleneyj.ZConstants;
 import de.lucaswerkmeister.graaleneyj.ZLanguage;
@@ -18,6 +19,7 @@ import de.lucaswerkmeister.graaleneyj.runtime.ZCharacter;
 import de.lucaswerkmeister.graaleneyj.runtime.ZContext;
 import de.lucaswerkmeister.graaleneyj.runtime.ZList;
 import de.lucaswerkmeister.graaleneyj.runtime.ZPersistentObject;
+import de.lucaswerkmeister.graaleneyj.runtime.ZPlainObject;
 import de.lucaswerkmeister.graaleneyj.runtime.ZReference;
 import de.lucaswerkmeister.graaleneyj.runtime.ZString;
 
@@ -41,7 +43,10 @@ public abstract class ZAbstractNode extends Node {
 
 	@Specialization
 	public Object doList(ZList list, @CachedContext(ZLanguage.class) ZContext context,
-			@CachedLibrary(limit = "3") InteropLibrary pairs) {
+			@CachedLibrary(limit = "3") InteropLibrary pairs,
+			@CachedLibrary(limit = "3") DynamicObjectLibrary stringMembers,
+			@CachedLibrary(limit = "3") DynamicObjectLibrary characterMembers,
+			@CachedLibrary(limit = "3") DynamicObjectLibrary objectMembers) {
 		// TODO use multiple InteropLibrary instances for different keys?
 		try {
 			Map<String, Object> members = new HashMap<>();
@@ -69,7 +74,12 @@ public abstract class ZAbstractNode extends Node {
 				if (members.isEmpty()) {
 					return string;
 				} else {
-					return new ZString((String) string, members); // TODO proper error handling
+					// TODO proper error handling
+					ZString ret = new ZString((String) string, context.getInitialZObjectShape());
+					for (Map.Entry<String, Object> entry : members.entrySet()) {
+						stringMembers.put(ret, entry.getKey(), entry.getValue());
+					}
+					return ret;
 				}
 			case ZConstants.LIST:
 				members.remove(ZConstants.ZOBJECT_TYPE);
@@ -92,9 +102,23 @@ public abstract class ZAbstractNode extends Node {
 			case ZConstants.CHARACTER:
 				members.remove(ZConstants.ZOBJECT_TYPE);
 				Object character = members.remove(ZConstants.CHARACTER_CHARACTER);
-				return new ZCharacter(((String) character).codePointAt(0), members); // TODO proper error handling
+				// TODO proper error handling
+				int codePoint = ((String) character).codePointAt(0);
+				if (members.isEmpty()) {
+					return ZCharacter.cast(codePoint);
+				} else {
+					ZCharacter ret = new ZCharacter(codePoint, context.getInitialZObjectShape());
+					for (Map.Entry<String, Object> entry : members.entrySet()) {
+						stringMembers.put(ret, entry.getKey(), entry.getValue());
+					}
+					return ret;
+				}
 			}
-			return context.makeObject(members);
+			ZPlainObject ret = new ZPlainObject(context.getInitialZObjectShape());
+			for (Map.Entry<String, Object> entry : members.entrySet()) {
+				stringMembers.put(ret, entry.getKey(), entry.getValue());
+			}
+			return ret;
 		} catch (UnknownIdentifierException | UnsupportedMessageException e) {
 			throw new RuntimeException(e); // TODO
 		}

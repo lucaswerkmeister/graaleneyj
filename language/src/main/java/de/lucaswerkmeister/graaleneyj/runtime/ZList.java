@@ -2,7 +2,6 @@ package de.lucaswerkmeister.graaleneyj.runtime;
 
 import com.oracle.truffle.api.CompilerDirectives;
 import com.oracle.truffle.api.CompilerDirectives.TruffleBoundary;
-import com.oracle.truffle.api.TruffleLanguage;
 import com.oracle.truffle.api.interop.InteropLibrary;
 import com.oracle.truffle.api.interop.InvalidArrayIndexException;
 import com.oracle.truffle.api.interop.TruffleObject;
@@ -12,7 +11,6 @@ import com.oracle.truffle.api.library.ExportLibrary;
 import com.oracle.truffle.api.library.ExportMessage;
 
 import de.lucaswerkmeister.graaleneyj.ZConstants;
-import de.lucaswerkmeister.graaleneyj.ZLanguage;
 
 /**
  * An object that behaves like a list in other languages: the Z10 list
@@ -24,7 +22,7 @@ import de.lucaswerkmeister.graaleneyj.ZLanguage;
  * one class is how Mumbler did it, too.
  */
 @ExportLibrary(InteropLibrary.class)
-public final class ZList implements TruffleObject {
+public final class ZList extends ZObject {
 
 	private final Object head;
 	private final ZList tail;
@@ -33,12 +31,14 @@ public final class ZList implements TruffleObject {
 	public static final ZList NIL = new ZList();
 
 	private ZList() {
+		super(STATIC_BLANK_SHAPE);
 		head = null;
 		tail = null;
 		length = 0;
 	}
 
 	public ZList(Object head, ZList tail) {
+		super(STATIC_BLANK_SHAPE);
 		assert head != null; // TODO throw instead of assert?
 		assert tail != null; // TODO throw instead of assert?
 		this.head = head;
@@ -121,16 +121,6 @@ public final class ZList implements TruffleObject {
 	}
 
 	@ExportMessage
-	public final boolean hasLanguage() {
-		return true;
-	}
-
-	@ExportMessage
-	public final Class<? extends TruffleLanguage<?>> getLanguage() {
-		return ZLanguage.class;
-	}
-
-	@ExportMessage
 	@TruffleBoundary
 	public final String toDisplayString(boolean allowSideEffects, @CachedLibrary(limit = "0") InteropLibrary interops) {
 		if (this == NIL) {
@@ -191,21 +181,6 @@ public final class ZList implements TruffleObject {
 			}
 			CompilerDirectives.transferToInterpreter();
 			throw InvalidArrayIndexException.create(index);
-		}
-
-		@ExportMessage
-		public boolean hasLanguage() {
-			return true;
-		}
-
-		@ExportMessage
-		public Class<? extends TruffleLanguage<?>> getLanguage() {
-			return ZLanguage.class;
-		}
-
-		@ExportMessage
-		public final String toDisplayString(boolean allowSideEffects) {
-			return "ZListKeys";
 		}
 	}
 

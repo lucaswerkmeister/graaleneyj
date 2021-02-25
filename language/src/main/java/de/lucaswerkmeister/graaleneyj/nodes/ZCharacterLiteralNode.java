@@ -1,16 +1,19 @@
 package de.lucaswerkmeister.graaleneyj.nodes;
 
-import java.util.HashMap;
-import java.util.Map;
-
+import com.oracle.truffle.api.dsl.CachedContext;
+import com.oracle.truffle.api.dsl.Specialization;
 import com.oracle.truffle.api.frame.VirtualFrame;
+import com.oracle.truffle.api.library.CachedLibrary;
 import com.oracle.truffle.api.nodes.Node;
 import com.oracle.truffle.api.nodes.UnexpectedResultException;
+import com.oracle.truffle.api.object.DynamicObjectLibrary;
 
 import de.lucaswerkmeister.graaleneyj.ZConstants;
+import de.lucaswerkmeister.graaleneyj.ZLanguage;
 import de.lucaswerkmeister.graaleneyj.runtime.ZCharacter;
+import de.lucaswerkmeister.graaleneyj.runtime.ZContext;
 
-public class ZCharacterLiteralNode extends ZNode {
+public abstract class ZCharacterLiteralNode extends ZNode {
 
 	public static class ZCharacterLiteralMemberNode extends Node {
 		private String key;
@@ -50,14 +53,15 @@ public class ZCharacterLiteralNode extends ZNode {
 		}
 	}
 
-	@Override
-	public Object execute(VirtualFrame virtualFrame) {
+	@Specialization
+	public Object doGeneral(VirtualFrame virtualFrame, @CachedContext(ZLanguage.class) ZContext context,
+			@CachedLibrary(limit = "3") DynamicObjectLibrary members) {
 		if (extraMembers.length > 0) {
-			Map<String, Object> extraEntries = new HashMap<>();
+			ZCharacter ret = new ZCharacter(getCharacter(), context.getInitialZObjectShape());
 			for (ZCharacterLiteralMemberNode extraMember : extraMembers) {
-				extraEntries.put(extraMember.key, extraMember.value.execute(virtualFrame));
+				members.put(ret, extraMember.key, extraMember.value.execute(virtualFrame));
 			}
-			return new ZCharacter(getCharacter(), extraEntries);
+			return ret;
 		} else {
 			return ZCharacter.cast(getCharacter());
 		}

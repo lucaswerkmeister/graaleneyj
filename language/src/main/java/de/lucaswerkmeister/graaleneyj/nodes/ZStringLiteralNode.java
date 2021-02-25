@@ -1,15 +1,18 @@
 package de.lucaswerkmeister.graaleneyj.nodes;
 
-import java.util.HashMap;
-import java.util.Map;
-
+import com.oracle.truffle.api.dsl.CachedContext;
+import com.oracle.truffle.api.dsl.Specialization;
 import com.oracle.truffle.api.frame.VirtualFrame;
+import com.oracle.truffle.api.library.CachedLibrary;
 import com.oracle.truffle.api.nodes.Node;
+import com.oracle.truffle.api.object.DynamicObjectLibrary;
 
 import de.lucaswerkmeister.graaleneyj.ZConstants;
+import de.lucaswerkmeister.graaleneyj.ZLanguage;
+import de.lucaswerkmeister.graaleneyj.runtime.ZContext;
 import de.lucaswerkmeister.graaleneyj.runtime.ZString;
 
-public class ZStringLiteralNode extends ZNode {
+public abstract class ZStringLiteralNode extends ZNode {
 
 	public static class ZStringLiteralMemberNode extends Node {
 		private String key;
@@ -38,14 +41,15 @@ public class ZStringLiteralNode extends ZNode {
 		this.extraMembers = extraMembers;
 	}
 
-	@Override
-	public Object execute(VirtualFrame virtualFrame) {
+	@Specialization
+	public Object doGeneral(VirtualFrame virtualFrame, @CachedContext(ZLanguage.class) ZContext context,
+			@CachedLibrary(limit = "3") DynamicObjectLibrary members) {
 		if (extraMembers.length > 0) {
-			Map<String, Object> extraEntries = new HashMap<>();
+			ZString ret = new ZString(value, context.getInitialZObjectShape());
 			for (ZStringLiteralMemberNode extraMember : extraMembers) {
-				extraEntries.put(extraMember.key, extraMember.value.execute(virtualFrame));
+				members.put(ret, extraMember.key, extraMember.value.execute(virtualFrame));
 			}
-			return new ZString(value, extraEntries);
+			return ret;
 		} else {
 			return value;
 		}

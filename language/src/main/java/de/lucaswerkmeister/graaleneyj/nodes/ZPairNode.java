@@ -1,7 +1,5 @@
 package de.lucaswerkmeister.graaleneyj.nodes;
 
-import java.util.Map;
-
 import com.oracle.truffle.api.dsl.CachedContext;
 import com.oracle.truffle.api.dsl.Specialization;
 import com.oracle.truffle.api.library.CachedLibrary;
@@ -12,6 +10,7 @@ import com.oracle.truffle.api.object.DynamicObjectLibrary;
 import de.lucaswerkmeister.graaleneyj.ZConstants;
 import de.lucaswerkmeister.graaleneyj.ZLanguage;
 import de.lucaswerkmeister.graaleneyj.runtime.ZContext;
+import de.lucaswerkmeister.graaleneyj.runtime.ZPlainObject;
 import de.lucaswerkmeister.graaleneyj.runtime.ZReference;
 
 /**
@@ -26,7 +25,7 @@ public abstract class ZPairNode extends Node {
 			@CachedLibrary(limit = "3") DynamicObjectLibrary putType,
 			@CachedLibrary(limit = "3") DynamicObjectLibrary putFirst,
 			@CachedLibrary(limit = "3") DynamicObjectLibrary putSecond) {
-		DynamicObject pair = context.makeObject(Map.of());
+		DynamicObject pair = new ZPlainObject(context.getInitialZObjectShape());
 		putType.put(pair, ZConstants.ZOBJECT_TYPE, new ZReference(ZConstants.PAIR));
 		putFirst.put(pair, ZConstants.PAIR_FIRST, first);
 		putSecond.put(pair, ZConstants.PAIR_SECOND, second);

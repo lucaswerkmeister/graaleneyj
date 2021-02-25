@@ -1,7 +1,5 @@
 package de.lucaswerkmeister.graaleneyj.nodes;
 
-import java.util.Map;
-
 import com.oracle.truffle.api.dsl.CachedContext;
 import com.oracle.truffle.api.dsl.Fallback;
 import com.oracle.truffle.api.dsl.Specialization;
@@ -19,6 +17,7 @@ import de.lucaswerkmeister.graaleneyj.ZLanguage;
 import de.lucaswerkmeister.graaleneyj.builtins.ZValueBuiltin;
 import de.lucaswerkmeister.graaleneyj.runtime.ZCharacter;
 import de.lucaswerkmeister.graaleneyj.runtime.ZContext;
+import de.lucaswerkmeister.graaleneyj.runtime.ZPlainObject;
 import de.lucaswerkmeister.graaleneyj.runtime.ZReference;
 import de.lucaswerkmeister.graaleneyj.runtime.ZString;
 
@@ -76,7 +75,7 @@ public abstract class ZValueNode extends Node {
 				return ZCharacter.cast(character.codePointAt(0));
 			}
 
-			DynamicObject object = context.makeObject(Map.of());
+			DynamicObject object = new ZPlainObject(context.getInitialZObjectShape());
 			Object members = values.getMembers(value);
 			long length = membersLib.getArraySize(members);
 			typeLib.put(object, ZConstants.ZOBJECT_TYPE, type);

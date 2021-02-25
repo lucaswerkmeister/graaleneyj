@@ -1,36 +1,31 @@
 package de.lucaswerkmeister.graaleneyj.runtime;
 
-import java.util.Map;
-
 import com.oracle.truffle.api.CompilerDirectives;
-import com.oracle.truffle.api.TruffleLanguage;
 import com.oracle.truffle.api.interop.InteropLibrary;
 import com.oracle.truffle.api.interop.InvalidArrayIndexException;
 import com.oracle.truffle.api.interop.TruffleObject;
 import com.oracle.truffle.api.interop.UnknownIdentifierException;
+import com.oracle.truffle.api.library.CachedLibrary;
 import com.oracle.truffle.api.library.ExportLibrary;
 import com.oracle.truffle.api.library.ExportMessage;
+import com.oracle.truffle.api.object.DynamicObjectLibrary;
+import com.oracle.truffle.api.object.Shape;
 
 import de.lucaswerkmeister.graaleneyj.ZConstants;
-import de.lucaswerkmeister.graaleneyj.ZLanguage;
 
 /**
  * A boxed Z6/string. Should only be used for strings that have extra members,
  * “plain” strings are represented by {@link String}.
  */
 @ExportLibrary(InteropLibrary.class)
-public class ZString implements TruffleObject {
+public class ZString extends ZObject {
 
 	private final String value;
-	private final Map<String, Object> extraMembers;
 
-	public ZString(String value, Map<String, Object> extraMembers) {
+	public ZString(String value, Shape shape) {
+		super(shape);
 		assert value != null;
-		assert !extraMembers.containsKey(ZConstants.ZOBJECT_TYPE);
-		assert !extraMembers.containsKey(ZConstants.STRING_STRING_VALUE);
-		assert !extraMembers.isEmpty();
 		this.value = value;
-		this.extraMembers = Map.copyOf(extraMembers);
 	}
 
 	@ExportMessage
@@ -49,39 +44,32 @@ public class ZString implements TruffleObject {
 	}
 
 	@ExportMessage
-	public final ZStringKeys getMembers(boolean includeInternal) {
-		return new ZStringKeys(extraMembers.keySet().toArray(new String[extraMembers.size()]));
+	public final ZStringKeys getMembers(boolean includeInternal,
+			@CachedLibrary("this") DynamicObjectLibrary objectLibrary) {
+		return new ZStringKeys(objectLibrary.getKeyArray(this));
 	}
 
 	@ExportMessage
-	public final boolean isMemberReadable(String member) {
+	public final boolean isMemberReadable(String member, @CachedLibrary("this") DynamicObjectLibrary objectLibrary) {
 		return ZConstants.ZOBJECT_TYPE.equals(member) || ZConstants.STRING_STRING_VALUE.equals(member)
-				|| extraMembers.containsKey(member);
+				|| objectLibrary.containsKey(this, member);
 	}
 
 	@ExportMessage
-	public final Object readMember(String member) throws UnknownIdentifierException {
+	public final Object readMember(String member, @CachedLibrary("this") DynamicObjectLibrary objectLibrary)
+			throws UnknownIdentifierException {
 		switch (member) {
 		case ZConstants.ZOBJECT_TYPE:
 			return new ZReference(ZConstants.STRING);
 		case ZConstants.STRING_STRING_VALUE:
 			return value;
 		}
-		if (extraMembers.containsKey(member)) {
-			return extraMembers.get(member);
+		Object value = objectLibrary.getOrDefault(this, member, null);
+		if (value != null) {
+			return value;
 		} else {
 			throw UnknownIdentifierException.create(member);
 		}
-	}
-
-	@ExportMessage
-	public final boolean hasLanguage() {
-		return true;
-	}
-
-	@ExportMessage
-	public final Class<? extends TruffleLanguage<?>> getLanguage() {
-		return ZLanguage.class;
 	}
 
 	@ExportMessage
@@ -100,9 +88,9 @@ public class ZString implements TruffleObject {
 	@ExportLibrary(InteropLibrary.class)
 	static final class ZStringKeys implements TruffleObject {
 
-		private final String[] extraKeys;
+		private final Object[] extraKeys;
 
-		public ZStringKeys(String[] extraKeys) {
+		public ZStringKeys(Object[] extraKeys) {
 			this.extraKeys = extraKeys;
 		}
 
@@ -122,7 +110,7 @@ public class ZString implements TruffleObject {
 		}
 
 		@ExportMessage
-		public String readArrayElement(long index) throws InvalidArrayIndexException {
+		public Object readArrayElement(long index) throws InvalidArrayIndexException {
 			if (!isArrayElementReadable(index)) {
 				CompilerDirectives.transferToInterpreter();
 				throw InvalidArrayIndexException.create(index);
@@ -135,21 +123,6 @@ public class ZString implements TruffleObject {
 			} else {
 				return ZConstants.STRING_STRING_VALUE;
 			}
-		}
-
-		@ExportMessage
-		public boolean hasLanguage() {
-			return true;
-		}
-
-		@ExportMessage
-		public Class<? extends TruffleLanguage<?>> getLanguage() {
-			return ZLanguage.class;
-		}
-
-		@ExportMessage
-		public final String toDisplayString(boolean allowSideEffects) {
-			return "ZStringKeys";
 		}
 	}
 

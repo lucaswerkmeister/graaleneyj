@@ -4,13 +4,11 @@ import java.io.IOException;
 
 import com.oracle.truffle.api.CallTarget;
 import com.oracle.truffle.api.CompilerDirectives;
-import com.oracle.truffle.api.TruffleLanguage;
 import com.oracle.truffle.api.dsl.Cached;
 import com.oracle.truffle.api.dsl.CachedContext;
 import com.oracle.truffle.api.dsl.Specialization;
 import com.oracle.truffle.api.interop.ArityException;
 import com.oracle.truffle.api.interop.InteropLibrary;
-import com.oracle.truffle.api.interop.TruffleObject;
 import com.oracle.truffle.api.library.ExportLibrary;
 import com.oracle.truffle.api.library.ExportMessage;
 import com.oracle.truffle.api.source.Source;
@@ -22,11 +20,12 @@ import de.lucaswerkmeister.graaleneyj.ZLanguage;
  * calling the function evaluates the reference.
  */
 @ExportLibrary(InteropLibrary.class)
-public class ZReference implements TruffleObject {
+public class ZReference extends ZObject {
 
 	protected final String id;
 
 	public ZReference(String id) {
+		super(STATIC_BLANK_SHAPE);
 		this.id = id;
 	}
 
@@ -74,16 +73,6 @@ public class ZReference implements TruffleObject {
 		protected static Object wrongArity(ZReference reference, Object[] arguments) throws ArityException {
 			throw ArityException.create(0, arguments.length);
 		}
-	}
-
-	@ExportMessage
-	public final boolean hasLanguage() {
-		return true;
-	}
-
-	@ExportMessage
-	public final Class<? extends TruffleLanguage<?>> getLanguage() {
-		return ZLanguage.class;
 	}
 
 	@ExportMessage
