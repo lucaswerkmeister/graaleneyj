@@ -6,6 +6,7 @@ import com.oracle.truffle.api.source.Source;
 
 import de.lucaswerkmeister.graaleneyj.ZLanguage;
 import de.lucaswerkmeister.graaleneyj.runtime.UnusableImplementationException;
+import de.lucaswerkmeister.graaleneyj.runtime.ZContext;
 
 public class ZImplementationCodeNode extends ZImplementationNode {
 
@@ -45,9 +46,16 @@ public class ZImplementationCodeNode extends ZImplementationNode {
 	public CallTarget makeCallTarget() {
 		if (source != null) {
 			Source s = Source.newBuilder(sourceLanguage, source, functionId).build();
-			ZInnerContextNode innerContextNode = ZInnerContextNodeGen.create(zLanguage, s, argumentNames,
-					getSourceSection());
-			return Truffle.getRuntime().createCallTarget(innerContextNode);
+			ZContext context = lookupContextReference(ZLanguage.class).get();
+			if (context.useInnerContexts()) {
+				ZInnerContextNode innerContextNode = ZInnerContextNodeGen.create(zLanguage, s, argumentNames,
+						getSourceSection());
+				return Truffle.getRuntime().createCallTarget(innerContextNode);
+			} else {
+				if (context.canParseLanguage(sourceLanguage)) {
+					return context.parse(s, argumentNames);
+				}
+			}
 		}
 
 		RuntimeException exception = new UnusableImplementationException("Unusable code language: " + sourceLanguage);

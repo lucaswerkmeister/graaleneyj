@@ -12,6 +12,8 @@ import com.oracle.truffle.api.TruffleLanguage;
 import com.oracle.truffle.api.TruffleLanguage.ContextPolicy;
 import com.oracle.truffle.api.object.Shape;
 
+import de.lucaswerkmeister.graaleneyj.nodes.ZImplementationCodeNode;
+import de.lucaswerkmeister.graaleneyj.nodes.ZInnerContextNode;
 import de.lucaswerkmeister.graaleneyj.nodes.ZRootNode;
 import de.lucaswerkmeister.graaleneyj.parser.ZCanonicalJsonParser;
 import de.lucaswerkmeister.graaleneyj.runtime.ZContext;
@@ -25,6 +27,15 @@ public class ZLanguage extends TruffleLanguage<ZContext> {
 
 	@Option(help = "The user interface language code, used to select the best option from multilingual text for display.", category = OptionCategory.USER, stability = OptionStability.STABLE)
 	public static final OptionKey<String> userLanguage = new OptionKey<>("en");
+
+	/**
+	 * @see ZImplementationCodeNode
+	 * @see ZInnerContextNode
+	 */
+	@Option(help = "Whether to use inner contexts or not. "
+			+ "If enabled (default), every execution of a code implementation is isolated, and thus all functions are guaranteed to be pure. "
+			+ "Disabling this can improve performance, at the cost of enabling badly-written or malicious implementations to create impure functions.", category = OptionCategory.EXPERT, stability = OptionStability.STABLE)
+	public static final OptionKey<Boolean> useInnerContexts = new OptionKey<>(true);
 
 	private final ZCanonicalJsonParser parser = new ZCanonicalJsonParser(this);
 	private final Shape initialZObjectShape = Shape.newBuilder().build();

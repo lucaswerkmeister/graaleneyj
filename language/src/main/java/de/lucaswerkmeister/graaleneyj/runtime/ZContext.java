@@ -26,12 +26,15 @@ public final class ZContext {
 
 	private final String userLanguage;
 
+	private final boolean useInnerContexts;
+
 	private final Map<String, Object> objects = new HashMap<>();
 
 	public ZContext(Env env, Shape initialZObjectShape) {
 		this.env = env;
 		this.initialZObjectShape = initialZObjectShape;
 		this.userLanguage = env.getOptions().get(ZLanguage.userLanguage);
+		this.useInnerContexts = env.getOptions().get(ZLanguage.useInnerContexts);
 	}
 
 	public TruffleFile getTruffleFile(String zid) {
@@ -87,6 +90,10 @@ public final class ZContext {
 
 	public String getUserLanguage() {
 		return userLanguage;
+	}
+
+	public boolean useInnerContexts() {
+		return useInnerContexts;
 	}
 
 }
