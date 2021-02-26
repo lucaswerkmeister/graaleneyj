@@ -7,7 +7,9 @@ import com.oracle.truffle.api.dsl.Cached;
 import com.oracle.truffle.api.dsl.CachedContext;
 import com.oracle.truffle.api.dsl.Specialization;
 import com.oracle.truffle.api.frame.VirtualFrame;
+import com.oracle.truffle.api.nodes.DirectCallNode;
 import com.oracle.truffle.api.nodes.IndirectCallNode;
+import com.oracle.truffle.api.nodes.Node;
 import com.oracle.truffle.api.nodes.RootNode;
 import com.oracle.truffle.api.source.Source;
 import com.oracle.truffle.api.source.SourceSection;
@@ -34,7 +36,7 @@ public abstract class ZInnerContextNode extends RootNode {
 	@Specialization
 	public Object doGeneric(VirtualFrame frame,
 			@CachedContext(ZLanguage.class) ContextReference<ZContext> contextReference,
-			@Cached IndirectCallNode callNode) {
+			@Cached DoCallNode doCallNode) {
 		ZContext outerZContext = contextReference.get();
 		TruffleContext innerTruffleContext = outerZContext.makeInnerContext();
 		Object outerTruffleContext = innerTruffleContext.enter(this);
@@ -42,7 +44,7 @@ public abstract class ZInnerContextNode extends RootNode {
 			ZContext innerZContext = contextReference.get();
 			if (innerZContext.canParseLanguage(source.getLanguage())) {
 				CallTarget callTarget = innerZContext.parse(source, argumentNames);
-				return callNode.call(callTarget, frame.getArguments());
+				return doCallNode.execute(callTarget, frame.getArguments());
 			} else {
 				throw new UnusableImplementationException("Unusable code language: " + source.getLanguage());
 			}
@@ -75,6 +77,23 @@ public abstract class ZInnerContextNode extends RootNode {
 	@Override
 	public SourceSection getSourceSection() {
 		return sourceSection;
+	}
+
+	protected abstract static class DoCallNode extends Node {
+
+		public abstract Object execute(CallTarget callTarget, Object[] arguments);
+
+		@Specialization(guards = { "callTarget == cachedTarget" })
+		public Object doDirect(CallTarget callTarget, Object[] arguments, @Cached("callTarget") CallTarget cachedTarget,
+				@Cached("create(cachedTarget)") DirectCallNode callNode) {
+			return callNode.call(arguments);
+		}
+
+		@Specialization(replaces = "doDirect")
+		public Object doIndirect(CallTarget callTarget, Object[] arguments, @Cached IndirectCallNode callNode) {
+			return callNode.call(callTarget, arguments);
+		}
+
 	}
 
 }
