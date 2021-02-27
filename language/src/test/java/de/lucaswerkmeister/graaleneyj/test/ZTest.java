@@ -26,6 +26,7 @@ public abstract class ZTest {
 
 	@After
 	public void tearDown() {
+		context.close();
 		context = null;
 	}
 
