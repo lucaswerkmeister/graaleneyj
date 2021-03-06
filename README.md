@@ -1,28 +1,10 @@
 # GraalEneyj
 
-An **early work in progress** [GraalVM][] implementation of [eneyj][].
+A **work in progress** [Abstract Wikipedia][] / [Wikifunctions][] evaluation engine built on [GraalVM][].
+
+It started out as an implementation of [eneyj][], an earlier version of the Wikifunctions model, hence the references to that name.
 
 ## Current status
-
-As of 25 January 2021, development on this project has been stalled for a few months,
-partly because I wasn’t sure what to do next.
-Most of the “important” builtin functions are implemented,
-and user-defined functions can be implemented in code (JavaScript or Python) or by calling other functions.
-There is some support for reading objects from an installation of [WikiLambda][].
-The last thing I worked on was a new parser (to replace the [Gson][] library),
-but this is not finished yet
-(you can find the work in progress on the `antlr` branch).
-
-Eventually, GraalEneyj will have to move from the early AbstractText/eneyj function model
-to the [Wikifunctions function model][]
-(probably via the [pre-generic function model][] first),
-and this may in fact be the next development step.
-But that means that we need a different default source of objects
-(other than the current `abstracttext` submodule);
-either some installation of WikiLambda, if the extension is “ready enough”,
-or directly include some standard objects in this repository, I suppose.
-
-## What’s ready so far
 
 The `z` launcher script accepts a JSON value on standard input,
 tries to evaluate it, and prints the result.
@@ -36,11 +18,13 @@ $ echo '{"Z1K1": "Z7", "Z7K1": "Z36", "K1": "Z28"}' | ./z
 eneyj
 ```
 
-There is rudimentary support for evaluating references and calling certain functions.
-(For example, the last command above corresponds to the function call `value(project_name)`,
-i. e. load the `project_name` object and read its value.)
-Since this README isn’t updated with every commit,
-a few more things may be supported by the time you read this, too.
+Most of the “important” builtin functions are implemented,
+and user-defined functions can be implemented in code (JavaScript or Python) or by calling other functions.
+There is some support for reading objects from an installation of [WikiLambda][].
+A migration from the [eneyj][] model to the [Wikifunctions function model][]
+(specifically, the [pre-generic function model][] at first) is underway.
+Once a test suite for other valuation engines is available ([T275093][]),
+we’ll work towards compliance with it.
 
 The `z` language can also be used together with other Graal languages,
 by running them with `--vm.Dtruffle.class.path.append=` pointing to `graaleneyj.jar`.
@@ -115,6 +99,8 @@ you agree to make your contribution available under this license.
 [SimpleLanguage IDE setup instructions]: https://www.graalvm.org/docs/graalvm-as-a-platform/implement-language/#ide-setup
 [SimpleLanguage]: https://github.com/graalvm/simplelanguage#readme
 [WikiLambda]: https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:WikiLambda
-[Gson]: https://github.com/google/gson
 [Wikifunctions function model]: https://meta.wikimedia.org/wiki/Special:MyLanguage/Abstract_Wikipedia/Function_model
 [pre-generic function model]: https://meta.wikimedia.org/wiki/Special:MyLanguage/Abstract_Wikipedia/Pre-generic_function_model
+[Abstract Wikipedia]: https://meta.wikimedia.org/wiki/Special:MyLanguage/Abstract_Wikipedia
+[Wikifunctions]: https://meta.wikimedia.org/wiki/Special:MyLanguage/Wikifunctions
+[T275093]: https://phabricator.wikimedia.org/T275093
