@@ -10,11 +10,12 @@ import com.oracle.truffle.api.interop.UnsupportedMessageException;
 import com.oracle.truffle.api.library.CachedLibrary;
 import com.oracle.truffle.api.library.ExportLibrary;
 import com.oracle.truffle.api.library.ExportMessage;
-import com.oracle.truffle.api.object.DynamicObjectLibrary;
 
 import de.lucaswerkmeister.graaleneyj.ZConstants;
 import de.lucaswerkmeister.graaleneyj.ZLanguage;
+import de.lucaswerkmeister.graaleneyj.library.ZTypeIdentityLibrary;
 
+@ExportLibrary(value = ZTypeIdentityLibrary.class, delegateTo = "value")
 @ExportLibrary(value = InteropLibrary.class, delegateTo = "value")
 public class ZPersistentObject extends ZObject {
 
@@ -26,6 +27,7 @@ public class ZPersistentObject extends ZObject {
 
 	public ZPersistentObject(String id, Object value, Object labels) {
 		super(STATIC_BLANK_SHAPE);
+		assert ZTypeIdentityLibrary.getUncached().hasTypeIdentity(value);
 		this.id = id;
 		this.value = value;
 		this.labels = labels;
@@ -43,15 +45,9 @@ public class ZPersistentObject extends ZObject {
 		return labels;
 	}
 
-	@Override
-	String getTypeIdentity(DynamicObjectLibrary objects) {
-		if (value instanceof ZObject) {
-			return ((ZObject) value).getTypeIdentity(objects);
-		}
-		if (value instanceof String) {
-			return ZConstants.STRING;
-		}
-		throw new IllegalStateException("ZPersistentObject wrapping unknown type: " + value.getClass());
+	@ExportMessage
+	public String getTypeIdentity(@CachedLibrary("this.value") ZTypeIdentityLibrary values) {
+		return values.getTypeIdentity(value);
 	}
 
 	@ExportMessage

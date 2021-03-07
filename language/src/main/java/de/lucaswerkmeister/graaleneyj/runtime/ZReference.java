@@ -11,16 +11,17 @@ import com.oracle.truffle.api.interop.ArityException;
 import com.oracle.truffle.api.interop.InteropLibrary;
 import com.oracle.truffle.api.library.ExportLibrary;
 import com.oracle.truffle.api.library.ExportMessage;
-import com.oracle.truffle.api.object.DynamicObjectLibrary;
 import com.oracle.truffle.api.source.Source;
 
 import de.lucaswerkmeister.graaleneyj.ZConstants;
 import de.lucaswerkmeister.graaleneyj.ZLanguage;
+import de.lucaswerkmeister.graaleneyj.library.ZTypeIdentityLibrary;
 
 /**
  * An unevaluated reference, exposed to other languages as a 0-adic function;
  * calling the function evaluates the reference.
  */
+@ExportLibrary(ZTypeIdentityLibrary.class)
 @ExportLibrary(InteropLibrary.class)
 public class ZReference extends ZObject {
 
@@ -35,8 +36,8 @@ public class ZReference extends ZObject {
 		return id;
 	}
 
-	@Override
-	String getTypeIdentity(DynamicObjectLibrary objects) {
+	@ExportMessage
+	public String getTypeIdentity() {
 		return ZConstants.REFERENCE;
 	}
 

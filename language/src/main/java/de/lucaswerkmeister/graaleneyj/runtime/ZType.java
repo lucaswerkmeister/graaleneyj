@@ -14,7 +14,9 @@ import com.oracle.truffle.api.object.DynamicObjectLibrary;
 import com.oracle.truffle.api.object.Shape;
 
 import de.lucaswerkmeister.graaleneyj.ZConstants;
+import de.lucaswerkmeister.graaleneyj.library.ZTypeIdentityLibrary;
 
+@ExportLibrary(ZTypeIdentityLibrary.class)
 @ExportLibrary(InteropLibrary.class)
 public class ZType extends ZObject {
 
@@ -26,8 +28,8 @@ public class ZType extends ZObject {
 		this.identity = identity;
 	}
 
-	@Override
-	String getTypeIdentity(DynamicObjectLibrary objects) {
+	@ExportMessage
+	public String getTypeIdentity() {
 		return ZConstants.TYPE;
 	}
 
@@ -80,25 +82,10 @@ public class ZType extends ZObject {
 
 	@ExportMessage
 	public abstract static class IsMetaInstance {
-		@Specialization(limit = "3")
-		public static boolean doZObject(ZType type, ZObject object,
-				@CachedLibrary("object") DynamicObjectLibrary objects) {
-			return type.identity.equals(object.getTypeIdentity(objects));
-		}
-
-		@Specialization
-		public static boolean doBoolean(ZType type, boolean bool) {
-			return ZConstants.BOOLEAN.equals(type.identity);
-		}
-
-		@Specialization
-		public static boolean doCharacter(ZType type, int character) {
-			return ZConstants.CHARACTER.equals(type.identity);
-		}
-
-		@Specialization
-		public static boolean doString(ZType type, String string) {
-			return ZConstants.STRING.equals(type.identity);
+		@Specialization(guards = { "objects.hasTypeIdentity(object)" }, limit = "3")
+		public static boolean doTypeIdentity(ZType type, Object object,
+				@CachedLibrary("object") ZTypeIdentityLibrary objects) {
+			return type.identity.equals(objects.getTypeIdentity(object));
 		}
 
 		@Fallback

@@ -12,11 +12,13 @@ import com.oracle.truffle.api.object.DynamicObjectLibrary;
 import com.oracle.truffle.api.object.Shape;
 
 import de.lucaswerkmeister.graaleneyj.ZConstants;
+import de.lucaswerkmeister.graaleneyj.library.ZTypeIdentityLibrary;
 
 /**
  * A boxed character (Unicode code point). Unboxed characters are represented by
  * {@code int}. For interop, this behaves like a string.
  */
+@ExportLibrary(ZTypeIdentityLibrary.class)
 @ExportLibrary(InteropLibrary.class)
 public class ZCharacter extends ZObject {
 
@@ -35,8 +37,8 @@ public class ZCharacter extends ZObject {
 		return codepoint;
 	}
 
-	@Override
-	String getTypeIdentity(DynamicObjectLibrary objects) {
+	@ExportMessage
+	public String getTypeIdentity() {
 		return ZConstants.CHARACTER;
 	}
 

@@ -12,11 +12,13 @@ import com.oracle.truffle.api.object.DynamicObjectLibrary;
 import com.oracle.truffle.api.object.Shape;
 
 import de.lucaswerkmeister.graaleneyj.ZConstants;
+import de.lucaswerkmeister.graaleneyj.library.ZTypeIdentityLibrary;
 
 /**
  * A boxed Z6/string. Should only be used for strings that have extra members,
  * “plain” strings are represented by {@link String}.
  */
+@ExportLibrary(ZTypeIdentityLibrary.class)
 @ExportLibrary(InteropLibrary.class)
 public class ZString extends ZObject {
 
@@ -28,8 +30,8 @@ public class ZString extends ZObject {
 		this.value = value;
 	}
 
-	@Override
-	String getTypeIdentity(DynamicObjectLibrary objects) {
+	@ExportMessage
+	public String getTypeIdentity() {
 		return ZConstants.STRING;
 	}
 

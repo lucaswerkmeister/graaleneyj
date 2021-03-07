@@ -12,6 +12,7 @@ import com.oracle.truffle.api.object.DynamicObjectLibrary;
 import com.oracle.truffle.api.object.Shape;
 
 import de.lucaswerkmeister.graaleneyj.ZLanguage;
+import de.lucaswerkmeister.graaleneyj.library.ZTypeIdentityLibrary;
 import de.lucaswerkmeister.graaleneyj.nodes.ZEvaluateReferenceNode;
 
 /**
@@ -19,8 +20,8 @@ import de.lucaswerkmeister.graaleneyj.nodes.ZEvaluateReferenceNode;
  * The base class of all objects in our language.
  * <p>
  * <p>
- * Subclasses must at least export
- * {@link InteropLibrary#toDisplayString(Object, boolean) toDisplayString}.
+ * Subclasses must at least export {@link ZTypeIdentityLibrary#getTypeIdentity}
+ * and {@link InteropLibrary#toDisplayString}.
  * </p>
  * <p>
  * All ZObjects extend {@link DynamicObject}. However, objects are meant to be
@@ -38,6 +39,7 @@ import de.lucaswerkmeister.graaleneyj.nodes.ZEvaluateReferenceNode;
  *
  * @see ZPlainObject
  */
+@ExportLibrary(ZTypeIdentityLibrary.class)
 @ExportLibrary(InteropLibrary.class)
 public abstract class ZObject extends DynamicObject implements TruffleObject {
 
@@ -50,12 +52,16 @@ public abstract class ZObject extends DynamicObject implements TruffleObject {
 		super(shape);
 	}
 
-	/**
-	 * Get the {@link ZType#identity identity} of the type of this object.
-	 *
-	 * @param objects Dynamic subclasses may use this library to look up the type.
-	 */
-	abstract String getTypeIdentity(DynamicObjectLibrary objects);
+	@ExportMessage
+	public final boolean hasTypeIdentity() {
+		return true;
+	}
+
+	@ExportMessage
+	public String getTypeIdentity() {
+		throw new IllegalStateException(
+				"Subclass did not override getTypeIdentity(): " + this.getClass().getCanonicalName());
+	}
 
 	@ExportMessage
 	public final boolean hasMetaObject() {
@@ -63,9 +69,9 @@ public abstract class ZObject extends DynamicObject implements TruffleObject {
 	}
 
 	@ExportMessage
-	public final Object getMetaObject(@CachedLibrary("this") DynamicObjectLibrary objects,
+	public final Object getMetaObject(@CachedLibrary("this") ZTypeIdentityLibrary objects,
 			@Cached("create()") ZEvaluateReferenceNode evaluateReference) {
-		String typeIdentity = getTypeIdentity(objects);
+		String typeIdentity = objects.getTypeIdentity(this);
 		ZReference typeReference = new ZReference(typeIdentity);
 		Object type = evaluateReference.execute(typeReference);
 		return type;

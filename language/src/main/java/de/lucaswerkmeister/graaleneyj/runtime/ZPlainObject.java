@@ -15,6 +15,7 @@ import com.oracle.truffle.api.object.DynamicObjectLibrary;
 import com.oracle.truffle.api.object.Shape;
 
 import de.lucaswerkmeister.graaleneyj.ZConstants;
+import de.lucaswerkmeister.graaleneyj.library.ZTypeIdentityLibrary;
 import de.lucaswerkmeister.graaleneyj.nodes.ZPairNode;
 
 /**
@@ -29,6 +30,7 @@ import de.lucaswerkmeister.graaleneyj.nodes.ZPairNode;
  * creation, before they are released to other parts of the program.
  * </p>
  */
+@ExportLibrary(ZTypeIdentityLibrary.class)
 @ExportLibrary(InteropLibrary.class)
 public class ZPlainObject extends ZObject {
 
@@ -36,8 +38,8 @@ public class ZPlainObject extends ZObject {
 		super(shape);
 	}
 
-	@Override
-	String getTypeIdentity(DynamicObjectLibrary objects) {
+	@ExportMessage
+	public String getTypeIdentity(@CachedLibrary("this") DynamicObjectLibrary objects) {
 		Object type = objects.getOrDefault(this, ZConstants.ZOBJECT_TYPE, null);
 		ZReference typeReference = (ZReference) type; // TODO handle other cases?
 		return typeReference.getId();

@@ -9,9 +9,9 @@ import com.oracle.truffle.api.interop.UnknownIdentifierException;
 import com.oracle.truffle.api.library.CachedLibrary;
 import com.oracle.truffle.api.library.ExportLibrary;
 import com.oracle.truffle.api.library.ExportMessage;
-import com.oracle.truffle.api.object.DynamicObjectLibrary;
 
 import de.lucaswerkmeister.graaleneyj.ZConstants;
+import de.lucaswerkmeister.graaleneyj.library.ZTypeIdentityLibrary;
 
 /**
  * An object that behaves like a list in other languages: the Z10 list
@@ -22,6 +22,7 @@ import de.lucaswerkmeister.graaleneyj.ZConstants;
  * export annotations (for behaving like null in interop). Combining both into
  * one class is how Mumbler did it, too.
  */
+@ExportLibrary(ZTypeIdentityLibrary.class)
 @ExportLibrary(InteropLibrary.class)
 public final class ZList extends ZObject {
 
@@ -57,8 +58,8 @@ public final class ZList extends ZObject {
 		return tail;
 	}
 
-	@Override
-	String getTypeIdentity(DynamicObjectLibrary objects) {
+	@ExportMessage
+	public String getTypeIdentity() {
 		return ZConstants.LIST;
 	}
 
