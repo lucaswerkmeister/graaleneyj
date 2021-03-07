@@ -47,6 +47,8 @@ import de.lucaswerkmeister.graaleneyj.nodes.ZRootNode;
 import de.lucaswerkmeister.graaleneyj.nodes.ZStringLiteralNode.ZStringLiteralMemberNode;
 import de.lucaswerkmeister.graaleneyj.nodes.ZStringLiteralNodeGen;
 import de.lucaswerkmeister.graaleneyj.nodes.ZThrowConstantNode;
+import de.lucaswerkmeister.graaleneyj.nodes.ZTypeNode.ZTypeMemberNode;
+import de.lucaswerkmeister.graaleneyj.nodes.ZTypeNodeGen;
 import de.lucaswerkmeister.graaleneyj.runtime.UnusableImplementationException;
 
 public class ZCanonicalJsonParser {
@@ -93,6 +95,8 @@ public class ZCanonicalJsonParser {
 		switch (type) {
 		case ZConstants.PERSISTENTOBJECT:
 			return parseJsonObjectAsPersistentObject(json);
+		case ZConstants.TYPE:
+			return parseJsonObjectAsType(json);
 		case ZConstants.STRING:
 			return parseJsonObjectAsStringLiteral(json);
 		case ZConstants.FUNCTIONCALL:
@@ -125,6 +129,25 @@ public class ZCanonicalJsonParser {
 			label = parseJsonElement(json.get(ZConstants.PERSISTENTOBJECT_LABEL));
 		}
 		ZNode ret = ZPersistentObjectNodeGen.create(id, value, label);
+		ret.setSourceSection(json.getSourceCharIndex(), json.getSourceLength());
+		return ret;
+	}
+
+	public ZNode parseJsonObjectAsType(JsonObject json) {
+		String identity = json.get(ZConstants.TYPE_IDENTITY).getAsString();
+		ZTypeMemberNode[] members = new ZTypeMemberNode[json.size() - 2];
+		int i = 0;
+		for (Entry<String, JsonElement> entry : json.entrySet()) {
+			if (ZConstants.ZOBJECT_TYPE.equals(entry.getKey())) {
+				continue;
+			}
+			if (ZConstants.TYPE_IDENTITY.equals(entry.getKey())) {
+				continue;
+			}
+			members[i] = new ZTypeMemberNode(entry.getKey(), parseJsonElement(entry.getValue()));
+			i++;
+		}
+		ZNode ret = ZTypeNodeGen.create(identity, members);
 		ret.setSourceSection(json.getSourceCharIndex(), json.getSourceLength());
 		return ret;
 	}

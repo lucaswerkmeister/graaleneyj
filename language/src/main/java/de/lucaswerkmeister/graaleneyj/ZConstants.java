@@ -7,6 +7,7 @@ public final class ZConstants {
 
 	public static final String ZOBJECT = "Z1";
 	public static final String PERSISTENTOBJECT = "Z2";
+	public static final String TYPE = "Z4";
 	public static final String STRING = "Z6";
 	public static final String FUNCTIONCALL = "Z7";
 	public static final String FUNCTION = "Z8";
@@ -39,6 +40,7 @@ public final class ZConstants {
 	public static final String PERSISTENTOBJECT_ID = "Z2K1";
 	public static final String PERSISTENTOBJECT_VALUE = "Z2K2";
 	public static final String PERSISTENTOBJECT_LABEL = "Z2K3";
+	public static final String TYPE_IDENTITY = "Z4K1";
 	public static final String STRING_STRING_VALUE = "Z6K1";
 	public static final String FUNCTIONCALL_FUNCTION = "Z7K1";
 	public static final String FUNCTION_ARGUMENTS = "Z8K1";
