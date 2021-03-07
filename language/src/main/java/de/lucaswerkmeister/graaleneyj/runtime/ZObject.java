@@ -1,8 +1,10 @@
 package de.lucaswerkmeister.graaleneyj.runtime;
 
 import com.oracle.truffle.api.TruffleLanguage;
+import com.oracle.truffle.api.dsl.Cached;
 import com.oracle.truffle.api.interop.InteropLibrary;
 import com.oracle.truffle.api.interop.TruffleObject;
+import com.oracle.truffle.api.library.CachedLibrary;
 import com.oracle.truffle.api.library.ExportLibrary;
 import com.oracle.truffle.api.library.ExportMessage;
 import com.oracle.truffle.api.object.DynamicObject;
@@ -10,6 +12,7 @@ import com.oracle.truffle.api.object.DynamicObjectLibrary;
 import com.oracle.truffle.api.object.Shape;
 
 import de.lucaswerkmeister.graaleneyj.ZLanguage;
+import de.lucaswerkmeister.graaleneyj.nodes.ZEvaluateReferenceNode;
 
 /**
  * <p>
@@ -53,6 +56,20 @@ public abstract class ZObject extends DynamicObject implements TruffleObject {
 	 * @param objects Dynamic subclasses may use this library to look up the type.
 	 */
 	abstract String getTypeIdentity(DynamicObjectLibrary objects);
+
+	@ExportMessage
+	public final boolean hasMetaObject() {
+		return true;
+	}
+
+	@ExportMessage
+	public final Object getMetaObject(@CachedLibrary("this") DynamicObjectLibrary objects,
+			@Cached("create()") ZEvaluateReferenceNode evaluateReference) {
+		String typeIdentity = getTypeIdentity(objects);
+		ZReference typeReference = new ZReference(typeIdentity);
+		Object type = evaluateReference.execute(typeReference);
+		return type;
+	}
 
 	@ExportMessage
 	public final boolean hasLanguage() {

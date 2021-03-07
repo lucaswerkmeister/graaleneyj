@@ -2,6 +2,7 @@ package de.lucaswerkmeister.graaleneyj.nodes;
 
 import com.oracle.truffle.api.dsl.Cached;
 import com.oracle.truffle.api.dsl.Fallback;
+import com.oracle.truffle.api.dsl.GenerateUncached;
 import com.oracle.truffle.api.dsl.Specialization;
 import com.oracle.truffle.api.interop.ArityException;
 import com.oracle.truffle.api.interop.InteropLibrary;
@@ -18,6 +19,7 @@ import de.lucaswerkmeister.graaleneyj.runtime.ZReference;
  *
  * @see ZResolveValueNode
  */
+@GenerateUncached
 public abstract class ZEvaluateReferenceNode extends Node {
 
 	public abstract Object execute(Object value);

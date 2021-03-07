@@ -66,6 +66,10 @@ public class ZTypeInteropTest extends ZTest {
 		for (Value type : typesWithInstances.keySet()) {
 			for (Value instance : typesWithInstances.get(type)) {
 				assertTrue(instance + " must be an instance of " + type, type.isMetaInstance(instance));
+				if (instance == unboxedString || instance == trueValue || instance == falseValue) {
+					continue;
+				}
+				assertEquals(type, instance.getMetaObject());
 			}
 			for (Value otherType : typesWithInstances.keySet()) {
 				if (type == otherType) {
