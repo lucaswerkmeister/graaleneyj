@@ -35,6 +35,11 @@ public class ZCharacter extends ZObject {
 		return codepoint;
 	}
 
+	@Override
+	String getTypeIdentity(DynamicObjectLibrary objects) {
+		return ZConstants.CHARACTER;
+	}
+
 	@ExportMessage
 	public final boolean isString() {
 		return true;

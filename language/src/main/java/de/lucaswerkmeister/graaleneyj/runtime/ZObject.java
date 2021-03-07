@@ -47,6 +47,13 @@ public abstract class ZObject extends DynamicObject implements TruffleObject {
 		super(shape);
 	}
 
+	/**
+	 * Get the {@link ZType#identity identity} of the type of this object.
+	 *
+	 * @param objects Dynamic subclasses may use this library to look up the type.
+	 */
+	abstract String getTypeIdentity(DynamicObjectLibrary objects);
+
 	@ExportMessage
 	public final boolean hasLanguage() {
 		return true;

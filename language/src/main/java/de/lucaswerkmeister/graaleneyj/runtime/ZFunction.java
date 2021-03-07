@@ -16,7 +16,10 @@ import com.oracle.truffle.api.library.ExportLibrary;
 import com.oracle.truffle.api.library.ExportMessage;
 import com.oracle.truffle.api.nodes.DirectCallNode;
 import com.oracle.truffle.api.nodes.IndirectCallNode;
+import com.oracle.truffle.api.object.DynamicObjectLibrary;
 import com.oracle.truffle.api.utilities.CyclicAssumption;
+
+import de.lucaswerkmeister.graaleneyj.ZConstants;
 
 @ExportLibrary(InteropLibrary.class)
 public class ZFunction extends ZObject {
@@ -81,6 +84,11 @@ public class ZFunction extends ZObject {
 
 	public Assumption getCallTargetStable() {
 		return implementationIndexStable.getAssumption();
+	}
+
+	@Override
+	String getTypeIdentity(DynamicObjectLibrary objects) {
+		return ZConstants.FUNCTION;
 	}
 
 	@ExportMessage

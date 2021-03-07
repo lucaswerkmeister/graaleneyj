@@ -14,6 +14,7 @@ import com.oracle.truffle.api.library.LibraryFactory;
 import com.oracle.truffle.api.object.DynamicObjectLibrary;
 import com.oracle.truffle.api.object.Shape;
 
+import de.lucaswerkmeister.graaleneyj.ZConstants;
 import de.lucaswerkmeister.graaleneyj.nodes.ZPairNode;
 
 /**
@@ -33,6 +34,13 @@ public class ZPlainObject extends ZObject {
 
 	public ZPlainObject(Shape shape) {
 		super(shape);
+	}
+
+	@Override
+	String getTypeIdentity(DynamicObjectLibrary objects) {
+		Object type = objects.getOrDefault(this, ZConstants.ZOBJECT_TYPE, null);
+		ZReference typeReference = (ZReference) type; // TODO handle other cases?
+		return typeReference.getId();
 	}
 
 	/**

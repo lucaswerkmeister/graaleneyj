@@ -9,6 +9,7 @@ import com.oracle.truffle.api.interop.UnknownIdentifierException;
 import com.oracle.truffle.api.library.CachedLibrary;
 import com.oracle.truffle.api.library.ExportLibrary;
 import com.oracle.truffle.api.library.ExportMessage;
+import com.oracle.truffle.api.object.DynamicObjectLibrary;
 
 import de.lucaswerkmeister.graaleneyj.ZConstants;
 
@@ -54,6 +55,11 @@ public final class ZList extends ZObject {
 	public ZList getTail() {
 		assert this != NIL;
 		return tail;
+	}
+
+	@Override
+	String getTypeIdentity(DynamicObjectLibrary objects) {
+		return ZConstants.LIST;
 	}
 
 	@ExportMessage

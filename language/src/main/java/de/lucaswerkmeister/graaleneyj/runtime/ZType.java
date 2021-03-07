@@ -1,6 +1,8 @@
 package de.lucaswerkmeister.graaleneyj.runtime;
 
 import com.oracle.truffle.api.CompilerDirectives;
+import com.oracle.truffle.api.dsl.Fallback;
+import com.oracle.truffle.api.dsl.Specialization;
 import com.oracle.truffle.api.interop.InteropLibrary;
 import com.oracle.truffle.api.interop.InvalidArrayIndexException;
 import com.oracle.truffle.api.interop.TruffleObject;
@@ -22,6 +24,11 @@ public class ZType extends ZObject {
 		super(shape);
 		assert identity != null; // TODO check even with assertions disabled?
 		this.identity = identity;
+	}
+
+	@Override
+	String getTypeIdentity(DynamicObjectLibrary objects) {
+		return ZConstants.TYPE;
 	}
 
 	@ExportMessage
@@ -54,6 +61,50 @@ public class ZType extends ZObject {
 			return value;
 		}
 		throw UnknownIdentifierException.create(member);
+	}
+
+	@ExportMessage
+	public boolean isMetaObject() {
+		return true;
+	}
+
+	@ExportMessage
+	public String getMetaSimpleName() {
+		return identity;
+	}
+
+	@ExportMessage
+	public String getMetaQualifiedName() {
+		return identity;
+	}
+
+	@ExportMessage
+	public abstract static class IsMetaInstance {
+		@Specialization(limit = "3")
+		public static boolean doZObject(ZType type, ZObject object,
+				@CachedLibrary("object") DynamicObjectLibrary objects) {
+			return type.identity.equals(object.getTypeIdentity(objects));
+		}
+
+		@Specialization
+		public static boolean doBoolean(ZType type, boolean bool) {
+			return ZConstants.BOOLEAN.equals(type.identity);
+		}
+
+		@Specialization
+		public static boolean doCharacter(ZType type, int character) {
+			return ZConstants.CHARACTER.equals(type.identity);
+		}
+
+		@Specialization
+		public static boolean doString(ZType type, String string) {
+			return ZConstants.STRING.equals(type.identity);
+		}
+
+		@Fallback
+		public static boolean doOther(ZType type, Object object) {
+			return false;
+		}
 	}
 
 	@ExportLibrary(InteropLibrary.class)

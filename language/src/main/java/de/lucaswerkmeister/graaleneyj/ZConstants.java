@@ -16,6 +16,7 @@ public final class ZConstants {
 	public static final String MONOLINGUALTEXT = "Z11";
 	public static final String MULTILINGUALTEXT = "Z12";
 	public static final String NIL = "Z13";
+	public static final String IMPLEMENTATION = "Z14";
 	public static final String CODE = "Z16";
 	public static final String PARAMETER = "Z17";
 	public static final String ARGUMENTREFERENCE = "Z18";

@@ -28,6 +28,11 @@ public class ZString extends ZObject {
 		this.value = value;
 	}
 
+	@Override
+	String getTypeIdentity(DynamicObjectLibrary objects) {
+		return ZConstants.STRING;
+	}
+
 	@ExportMessage
 	public final boolean isString() {
 		return true;

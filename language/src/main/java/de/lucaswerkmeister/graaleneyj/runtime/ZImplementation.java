@@ -4,6 +4,9 @@ import com.oracle.truffle.api.CallTarget;
 import com.oracle.truffle.api.interop.InteropLibrary;
 import com.oracle.truffle.api.library.ExportLibrary;
 import com.oracle.truffle.api.library.ExportMessage;
+import com.oracle.truffle.api.object.DynamicObjectLibrary;
+
+import de.lucaswerkmeister.graaleneyj.ZConstants;
 
 @ExportLibrary(InteropLibrary.class)
 public class ZImplementation extends ZObject {
@@ -19,6 +22,11 @@ public class ZImplementation extends ZObject {
 
 	public CallTarget getCallTarget() {
 		return callTarget;
+	}
+
+	@Override
+	String getTypeIdentity(DynamicObjectLibrary objects) {
+		return ZConstants.IMPLEMENTATION;
 	}
 
 	@ExportMessage

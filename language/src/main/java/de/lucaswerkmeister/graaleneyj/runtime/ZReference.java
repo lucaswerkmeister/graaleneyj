@@ -11,8 +11,10 @@ import com.oracle.truffle.api.interop.ArityException;
 import com.oracle.truffle.api.interop.InteropLibrary;
 import com.oracle.truffle.api.library.ExportLibrary;
 import com.oracle.truffle.api.library.ExportMessage;
+import com.oracle.truffle.api.object.DynamicObjectLibrary;
 import com.oracle.truffle.api.source.Source;
 
+import de.lucaswerkmeister.graaleneyj.ZConstants;
 import de.lucaswerkmeister.graaleneyj.ZLanguage;
 
 /**
@@ -31,6 +33,11 @@ public class ZReference extends ZObject {
 
 	public String getId() {
 		return id;
+	}
+
+	@Override
+	String getTypeIdentity(DynamicObjectLibrary objects) {
+		return ZConstants.REFERENCE;
 	}
 
 	@ExportMessage
