@@ -32,6 +32,11 @@ public abstract class ZReifyNode extends Node {
 	public abstract Object execute(Object value);
 
 	@Specialization
+	public boolean doBoolean(boolean value) {
+		return value;
+	}
+
+	@Specialization
 	public Object doString(String value) {
 		return value;
 	}
@@ -41,6 +46,7 @@ public abstract class ZReifyNode extends Node {
 		return value;
 	}
 
+	// TODO maybe ZPersistentObject should have members + be handled by doGeneric()?
 	@Specialization
 	public Object doPersistentObject(ZPersistentObject value) {
 		ZList ret = ZList.NIL;
@@ -54,8 +60,8 @@ public abstract class ZReifyNode extends Node {
 		return ret;
 	}
 
-	// note: that guard also ensures that this specialization does not match String
-	// and ZReference
+	// note: that guard also ensures that this specialization does not match
+	// boolean, String (but does match ZString), ZPersistentObject or ZReference
 	@Specialization(limit = "LIMIT", guards = { "values.hasMembers(value)" })
 	public Object doGeneric(Object value, @CachedLibrary("value") InteropLibrary values) {
 		try {

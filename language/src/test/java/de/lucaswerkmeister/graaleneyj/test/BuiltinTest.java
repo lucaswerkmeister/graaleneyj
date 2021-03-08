@@ -832,6 +832,14 @@ public class BuiltinTest extends ZTest {
 		assertEquals("a string", eval("{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z38\", \"K1\": " + reifyCall + "}").asString());
 	}
 
+	@Test
+	public void testAbstractReifyType() {
+		String reifyCall = "{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z37\", \"K1\": \"Z6\"}";
+		Value stringType = eval("{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z38\", \"K1\": " + reifyCall + "}");
+		assertTrue(stringType.isMetaObject());
+		assertEquals("Z6", stringType.getMetaSimpleName());
+	}
+
 	public void testSameAbstractReify(String value) {
 		String reifyCall = "{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z37\", \"K1\": " + value + "}";
 		String abstractCall = "{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z38\", \"K1\": " + reifyCall + "}";

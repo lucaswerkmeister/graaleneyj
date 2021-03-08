@@ -22,6 +22,7 @@ import de.lucaswerkmeister.graaleneyj.runtime.ZPersistentObject;
 import de.lucaswerkmeister.graaleneyj.runtime.ZPlainObject;
 import de.lucaswerkmeister.graaleneyj.runtime.ZReference;
 import de.lucaswerkmeister.graaleneyj.runtime.ZString;
+import de.lucaswerkmeister.graaleneyj.runtime.ZType;
 
 /**
  * Helper node to recursively abstract a reified list of key / reified value
@@ -30,6 +31,11 @@ import de.lucaswerkmeister.graaleneyj.runtime.ZString;
 public abstract class ZAbstractNode extends Node {
 
 	public abstract Object execute(Object value);
+
+	@Specialization
+	public boolean doBoolean(boolean value) {
+		return value;
+	}
 
 	@Specialization
 	public Object doString(String string) {
@@ -44,6 +50,7 @@ public abstract class ZAbstractNode extends Node {
 	@Specialization
 	public Object doList(ZList list, @CachedContext(ZLanguage.class) ZContext context,
 			@CachedLibrary(limit = "3") InteropLibrary pairs,
+			@CachedLibrary(limit = "3") DynamicObjectLibrary typeMembers,
 			@CachedLibrary(limit = "3") DynamicObjectLibrary stringMembers,
 			@CachedLibrary(limit = "3") DynamicObjectLibrary characterMembers,
 			@CachedLibrary(limit = "3") DynamicObjectLibrary objectMembers) {
@@ -67,6 +74,16 @@ public abstract class ZAbstractNode extends Node {
 				Object value = members.remove(ZConstants.PERSISTENTOBJECT_VALUE);
 				assert members.isEmpty();
 				return new ZPersistentObject(id, value, labels);
+			}
+			case ZConstants.TYPE: {
+				members.remove(ZConstants.ZOBJECT_TYPE);
+				// TODO proper error handling
+				String identity = ((ZReference) members.remove(ZConstants.TYPE_IDENTITY)).getId();
+				ZType ret = new ZType(identity, context.getInitialZObjectShape());
+				for (Map.Entry<String, Object> entry : members.entrySet()) {
+					typeMembers.put(ret, entry.getKey(), entry.getValue());
+				}
+				return ret;
 			}
 			case ZConstants.STRING:
 				members.remove(ZConstants.ZOBJECT_TYPE);
