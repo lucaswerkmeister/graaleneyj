@@ -4,6 +4,7 @@ import static de.lucaswerkmeister.graaleneyj.test.ZAssert.assertZReference;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.util.List;
 import java.util.Map;
@@ -81,6 +82,21 @@ public class ZTypeInteropTest extends ZTest {
 				}
 			}
 		}
+	}
+
+	@Test
+	public void testToDisplayString() {
+		Value reifiedStringTypePersistentObject = eval("{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z37\", \"K1\": \"Z6\"}");
+		for (long l = 0; l < reifiedStringTypePersistentObject.getArraySize(); l++) {
+			Value pair = reifiedStringTypePersistentObject.getArrayElement(l);
+			if (pair.getMember("Z22K1").asString().equals("Z2K2")) {
+				Value reifiedStringType = pair.getMember("Z22K2");
+				Value stringType = eval("\"Z38\"").execute().execute(reifiedStringType);
+				assertEquals("Z6", stringType.toString());
+				return;
+			}
+		}
+		fail("Did not find persistent object value pair in reified string type persistent object");
 	}
 
 }

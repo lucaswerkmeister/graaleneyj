@@ -94,6 +94,12 @@ public class ZType extends ZObject {
 		}
 	}
 
+	@ExportMessage
+	@Override
+	public String toDisplayString(boolean allowSideEffects) {
+		return identity;
+	}
+
 	@ExportLibrary(InteropLibrary.class)
 	static final class ZTypeKeys implements TruffleObject {
 
