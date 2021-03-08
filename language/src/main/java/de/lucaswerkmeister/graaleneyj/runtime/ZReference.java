@@ -48,8 +48,6 @@ public class ZReference extends ZObject {
 
 	@ExportMessage
 	public abstract static class Execute {
-		// TODO The cachedId guard *might* be unnecessary; try removing it when we have
-		// a lot more tests :)
 		@Specialization(guards = { "arguments.length == 0", "reference.id.equals(cachedId)" })
 		protected static Object cached(ZReference reference, Object[] arguments,
 				@CachedContext(ZLanguage.class) ZContext context, @Cached("reference.id") String cachedId,
