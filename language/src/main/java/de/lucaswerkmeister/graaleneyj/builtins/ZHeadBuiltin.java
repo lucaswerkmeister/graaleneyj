@@ -16,17 +16,27 @@ import de.lucaswerkmeister.graaleneyj.runtime.ZErrorException;
 @NodeInfo(shortName = "head")
 public abstract class ZHeadBuiltin extends ZBuiltinNode {
 
-	// TODO more specializations
-	@Specialization(limit = "3")
-	public Object getHead(Object list, @CachedLibrary("list") InteropLibrary lists,
-			@CachedContext(ZLanguage.class) ZContext context) {
+	protected static boolean isEmpty(Object list, InteropLibrary lists) {
+		try {
+			return lists.getArraySize(list) <= 0;
+		} catch (UnsupportedMessageException e) {
+			throw new IllegalStateException(e);
+		}
+	}
+
+	@Specialization(guards = { "lists.hasArrayElements(list)", "!isEmpty(list, lists)" }, limit = "3")
+	public Object getHeadOfNonempty(Object list, @CachedLibrary("list") InteropLibrary lists) {
 		try {
 			return lists.readArrayElement(list, 0);
-		} catch (UnsupportedMessageException e) {
-			throw new IllegalArgumentException(e); // TODO throw right error
-		} catch (InvalidArrayIndexException e) {
-			throw new ZErrorException(context.loadError(ZConstants.LISTISNIL), this);
+		} catch (UnsupportedMessageException | InvalidArrayIndexException e) {
+			throw new IllegalStateException(e);
 		}
+	}
+
+	@Specialization(guards = { "lists.hasArrayElements(list)", "isEmpty(list, lists)" }, limit = "3")
+	public Object getHeadOfEmpty(Object list, @CachedLibrary("list") InteropLibrary lists,
+			@CachedContext(ZLanguage.class) ZContext context) {
+		throw new ZErrorException(context.loadError(ZConstants.LISTISNIL), this);
 	}
 
 }
