@@ -1,6 +1,6 @@
 package de.lucaswerkmeister.graaleneyj.builtins;
 
-import com.oracle.truffle.api.dsl.CachedContext;
+import com.oracle.truffle.api.dsl.Cached;
 import com.oracle.truffle.api.dsl.Specialization;
 import com.oracle.truffle.api.interop.InteropLibrary;
 import com.oracle.truffle.api.interop.InvalidArrayIndexException;
@@ -9,9 +9,7 @@ import com.oracle.truffle.api.library.CachedLibrary;
 import com.oracle.truffle.api.nodes.NodeInfo;
 
 import de.lucaswerkmeister.graaleneyj.ZConstants;
-import de.lucaswerkmeister.graaleneyj.ZLanguage;
-import de.lucaswerkmeister.graaleneyj.runtime.ZContext;
-import de.lucaswerkmeister.graaleneyj.runtime.ZErrorException;
+import de.lucaswerkmeister.graaleneyj.nodes.ZThrowErrorNode;
 import de.lucaswerkmeister.graaleneyj.runtime.ZList;
 
 /**
@@ -46,8 +44,8 @@ public abstract class ZTailBuiltin extends ZBuiltinNode {
 	 * Get the tail of nil by throwing a “list is nil” error.
 	 */
 	@Specialization(guards = { "isNil(list)" })
-	public ZList getTailOfNil(ZList list, @CachedContext(ZLanguage.class) ZContext context) {
-		throw new ZErrorException(context.loadError(ZConstants.LISTISNIL), this);
+	public void getTailOfNil(ZList list, @Cached("create()") ZThrowErrorNode throwError) {
+		throwError.execute(ZConstants.LISTISNIL);
 	}
 
 	/**
@@ -80,9 +78,9 @@ public abstract class ZTailBuiltin extends ZBuiltinNode {
 	 */
 	@Specialization(guards = { "lists.hasArrayElements(list)",
 			"isEmpty(list, lists)" }, replaces = "getTailOfNil", limit = "3")
-	public ZList getTailOfEmpty(Object list, @CachedLibrary("list") InteropLibrary lists,
-			@CachedContext(ZLanguage.class) ZContext context) {
-		throw new ZErrorException(context.loadError(ZConstants.LISTISNIL), this);
+	public void getTailOfEmpty(Object list, @CachedLibrary("list") InteropLibrary lists,
+			@Cached("create()") ZThrowErrorNode throwError) {
+		throwError.execute(ZConstants.LISTISNIL);
 	}
 
 }

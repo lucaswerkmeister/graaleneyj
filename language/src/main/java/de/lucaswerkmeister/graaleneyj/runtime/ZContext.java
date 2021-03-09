@@ -7,11 +7,6 @@ import com.oracle.truffle.api.CallTarget;
 import com.oracle.truffle.api.TruffleContext;
 import com.oracle.truffle.api.TruffleFile;
 import com.oracle.truffle.api.TruffleLanguage.Env;
-import com.oracle.truffle.api.interop.ArityException;
-import com.oracle.truffle.api.interop.InteropLibrary;
-import com.oracle.truffle.api.interop.TruffleObject;
-import com.oracle.truffle.api.interop.UnsupportedMessageException;
-import com.oracle.truffle.api.interop.UnsupportedTypeException;
 import com.oracle.truffle.api.object.Shape;
 import com.oracle.truffle.api.source.Source;
 
@@ -70,22 +65,6 @@ public final class ZContext {
 		assert !hasObject(zid);
 		assert object != null;
 		objects.put(zid, object);
-	}
-
-	public TruffleObject loadError(String zid) {
-		Object error;
-		if (hasObject(zid)) {
-			error = getObject(zid);
-		} else {
-			ZReference errorReference = new ZReference(zid);
-			try {
-				error = InteropLibrary.getFactory().getUncached().execute(errorReference);
-			} catch (UnsupportedTypeException | ArityException | UnsupportedMessageException e) {
-				throw new RuntimeException(e);
-			}
-		}
-		assert error instanceof TruffleObject;
-		return (TruffleObject) error;
 	}
 
 	public String getUserLanguage() {

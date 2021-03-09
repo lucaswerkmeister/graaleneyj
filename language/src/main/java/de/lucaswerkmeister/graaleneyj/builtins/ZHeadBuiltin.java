@@ -1,6 +1,6 @@
 package de.lucaswerkmeister.graaleneyj.builtins;
 
-import com.oracle.truffle.api.dsl.CachedContext;
+import com.oracle.truffle.api.dsl.Cached;
 import com.oracle.truffle.api.dsl.Specialization;
 import com.oracle.truffle.api.interop.InteropLibrary;
 import com.oracle.truffle.api.interop.InvalidArrayIndexException;
@@ -9,9 +9,7 @@ import com.oracle.truffle.api.library.CachedLibrary;
 import com.oracle.truffle.api.nodes.NodeInfo;
 
 import de.lucaswerkmeister.graaleneyj.ZConstants;
-import de.lucaswerkmeister.graaleneyj.ZLanguage;
-import de.lucaswerkmeister.graaleneyj.runtime.ZContext;
-import de.lucaswerkmeister.graaleneyj.runtime.ZErrorException;
+import de.lucaswerkmeister.graaleneyj.nodes.ZThrowErrorNode;
 
 @NodeInfo(shortName = "head")
 public abstract class ZHeadBuiltin extends ZBuiltinNode {
@@ -34,9 +32,9 @@ public abstract class ZHeadBuiltin extends ZBuiltinNode {
 	}
 
 	@Specialization(guards = { "lists.hasArrayElements(list)", "isEmpty(list, lists)" }, limit = "3")
-	public Object getHeadOfEmpty(Object list, @CachedLibrary("list") InteropLibrary lists,
-			@CachedContext(ZLanguage.class) ZContext context) {
-		throw new ZErrorException(context.loadError(ZConstants.LISTISNIL), this);
+	public void getHeadOfEmpty(Object list, @CachedLibrary("list") InteropLibrary lists,
+			@Cached("create()") ZThrowErrorNode throwError) {
+		throwError.execute(ZConstants.LISTISNIL);
 	}
 
 }
