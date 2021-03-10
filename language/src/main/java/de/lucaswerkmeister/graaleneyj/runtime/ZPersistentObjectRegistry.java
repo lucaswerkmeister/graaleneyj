@@ -5,7 +5,7 @@ import com.oracle.truffle.api.object.Shape;
 
 /**
  * A registry for persistent objects, managed by the {@link ZContext}.
- * 
+ *
  * @see ZContext#getPersistentObjectRegistry()
  */
 public class ZPersistentObjectRegistry extends DynamicObject {
