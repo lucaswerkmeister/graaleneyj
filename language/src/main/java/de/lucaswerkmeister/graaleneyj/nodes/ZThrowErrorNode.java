@@ -9,6 +9,7 @@ import com.oracle.truffle.api.interop.UnsupportedMessageException;
 import com.oracle.truffle.api.interop.UnsupportedTypeException;
 import com.oracle.truffle.api.library.CachedLibrary;
 import com.oracle.truffle.api.nodes.Node;
+import com.oracle.truffle.api.object.DynamicObjectLibrary;
 
 import de.lucaswerkmeister.graaleneyj.ZLanguage;
 import de.lucaswerkmeister.graaleneyj.runtime.ZContext;
@@ -23,9 +24,12 @@ public abstract class ZThrowErrorNode extends Node {
 
 	public abstract void execute(String id);
 
-	@Specialization(guards = "context.hasObject(id)")
-	public void doExisting(String id, @CachedContext(ZLanguage.class) ZContext context) {
-		throw new ZErrorException((TruffleObject) context.getObject(id), this);
+	@Specialization(guards = "objects.containsKey(context.getPersistentObjectRegistry(), id)", limit = "1")
+	public void doExisting(String id, @CachedContext(ZLanguage.class) ZContext context,
+			@CachedLibrary("context.getPersistentObjectRegistry()") DynamicObjectLibrary objects) {
+		Object error = objects.getOrDefault(context.getPersistentObjectRegistry(), id, null);
+		assert error != null : "persistent object existed in guard condition";
+		throw new ZErrorException((TruffleObject) error, this);
 	}
 
 	@Specialization

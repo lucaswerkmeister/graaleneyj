@@ -1,6 +1,7 @@
 package de.lucaswerkmeister.graaleneyj.runtime;
 
 import java.io.IOException;
+import java.util.concurrent.locks.Lock;
 
 import com.oracle.truffle.api.CallTarget;
 import com.oracle.truffle.api.CompilerDirectives;
@@ -9,8 +10,11 @@ import com.oracle.truffle.api.dsl.CachedContext;
 import com.oracle.truffle.api.dsl.Specialization;
 import com.oracle.truffle.api.interop.ArityException;
 import com.oracle.truffle.api.interop.InteropLibrary;
+import com.oracle.truffle.api.library.CachedLibrary;
 import com.oracle.truffle.api.library.ExportLibrary;
 import com.oracle.truffle.api.library.ExportMessage;
+import com.oracle.truffle.api.object.DynamicObject;
+import com.oracle.truffle.api.object.DynamicObjectLibrary;
 import com.oracle.truffle.api.source.Source;
 
 import de.lucaswerkmeister.graaleneyj.ZConstants;
@@ -48,18 +52,22 @@ public class ZReference extends ZObject {
 
 	@ExportMessage
 	public abstract static class Execute {
-		@Specialization(guards = { "arguments.length == 0", "reference.id.equals(cachedId)" })
+		@Specialization(guards = { "arguments.length == 0", "reference.id.equals(cachedId)" }, limit = "1")
 		protected static Object cached(ZReference reference, Object[] arguments,
-				@CachedContext(ZLanguage.class) ZContext context, @Cached("reference.id") String cachedId,
-				@Cached(value = "generic(reference, arguments, context)", allowUncached = true) Object result) {
+				@CachedContext(ZLanguage.class) ZContext context,
+				@CachedLibrary("context.getPersistentObjectRegistry()") DynamicObjectLibrary objects,
+				@Cached("reference.id") String cachedId,
+				@Cached(value = "generic(reference, arguments, context, objects)", allowUncached = true) Object result) {
 			return result;
 		}
 
-		@Specialization(guards = { "arguments.length == 0" })
+		@Specialization(guards = { "arguments.length == 0" }, limit = "1")
 		protected static Object generic(ZReference reference, Object[] arguments,
-				@CachedContext(ZLanguage.class) ZContext context) {
-			if (context.hasObject(reference.id)) {
-				return context.getObject(reference.id);
+				@CachedContext(ZLanguage.class) ZContext context,
+				@CachedLibrary("context.getPersistentObjectRegistry()") DynamicObjectLibrary objects) {
+			DynamicObject persistentObjectRegistry = context.getPersistentObjectRegistry();
+			if (objects.containsKey(persistentObjectRegistry, reference.id)) {
+				return objects.getOrDefault(persistentObjectRegistry, reference.id, null);
 			}
 
 			CompilerDirectives.transferToInterpreterAndInvalidate();
@@ -68,8 +76,19 @@ public class ZReference extends ZObject {
 				source = Source.newBuilder(ZLanguage.ID, context.getTruffleFile(reference.id)).build();
 				CallTarget callTarget = context.parse(source);
 				Object value = callTarget.call();
-				context.putObject(reference.id, value);
-				return value;
+				Lock persistentObjectRegistryLock = context.getPersistentObjectRegistryLock();
+				persistentObjectRegistryLock.lock();
+				try {
+					if (objects.containsKey(persistentObjectRegistry, reference.id)) {
+						value = objects.getOrDefault(persistentObjectRegistry, reference.id, null);
+						assert value != null : "persistent object existed in if condition";
+					} else {
+						objects.put(persistentObjectRegistry, reference.id, value);
+					}
+					return value;
+				} finally {
+					persistentObjectRegistryLock.unlock();
+				}
 			} catch (IOException e) {
 				throw new RuntimeException(e); // TODO better error handling
 			}
