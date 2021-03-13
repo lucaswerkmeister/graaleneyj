@@ -369,8 +369,8 @@ public class ZCanonicalJsonParser {
 			extraMembers[i] = new ZCharacterLiteralMemberNode(entry.getKey(), parseJsonElement(entry.getValue()));
 			i++;
 		}
-		ZCharacterLiteralNode ret = ZCharacterLiteralNodeGen
-				.create(json.get(ZConstants.CHARACTER_CHARACTER).asString(), extraMembers);
+		ZCharacterLiteralNode ret = ZCharacterLiteralNodeGen.create(json.get(ZConstants.CHARACTER_CHARACTER).asString(),
+				extraMembers);
 		ret.setSourceSection(json.getSourceCharIndex(), json.getSourceLength());
 		return ret;
 	}
