@@ -21,7 +21,7 @@ public class ZFunctionNode extends ZNode {
 	@Override
 	@ExplodeLoop
 	public Object execute(VirtualFrame virtualFrame) {
-		CompilerAsserts.compilationConstant(implementations.length);
+		CompilerAsserts.partialEvaluationConstant(implementations.length);
 		ZImplementation[] impls = new ZImplementation[implementations.length];
 		for (int i = 0; i < implementations.length; i++) {
 			impls[i] = (ZImplementation) implementations[i].execute(virtualFrame);

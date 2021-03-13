@@ -18,7 +18,7 @@ public class ZListLiteralNode extends ZNode {
 	@Override
 	@ExplodeLoop
 	public ZList executeZList(VirtualFrame virtualFrame) {
-		CompilerAsserts.compilationConstant(nodes.length);
+		CompilerAsserts.partialEvaluationConstant(nodes.length);
 		Object[] values = new Object[nodes.length];
 		for (int i = 0; i < nodes.length; i++) {
 			values[i] = nodes[i].execute(virtualFrame);

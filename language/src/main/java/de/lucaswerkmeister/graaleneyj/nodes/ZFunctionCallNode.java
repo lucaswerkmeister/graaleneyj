@@ -14,7 +14,7 @@ public class ZFunctionCallNode extends ZNode {
 	private ZNode function;
 
 	@Children
-	private ZNode[] arguments;
+	private final ZNode[] arguments;
 
 	@Child
 	private InteropLibrary library;
@@ -34,7 +34,7 @@ public class ZFunctionCallNode extends ZNode {
 		Object function = this.function.execute(virtualFrame);
 		function = resolveValue.execute(function);
 
-		CompilerAsserts.compilationConstant(this.arguments.length);
+		CompilerAsserts.partialEvaluationConstant(this.arguments.length);
 		Object[] arguments = new Object[this.arguments.length];
 		for (int i = 0; i < this.arguments.length; i++) {
 			arguments[i] = this.arguments[i].execute(virtualFrame);
