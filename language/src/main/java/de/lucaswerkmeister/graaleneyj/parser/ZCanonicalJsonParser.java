@@ -27,7 +27,7 @@ import de.lucaswerkmeister.graaleneyj.builtins.ZValueBuiltinFactory;
 import de.lucaswerkmeister.graaleneyj.nodes.ZCharacterLiteralNode;
 import de.lucaswerkmeister.graaleneyj.nodes.ZCharacterLiteralNode.ZCharacterLiteralMemberNode;
 import de.lucaswerkmeister.graaleneyj.nodes.ZCharacterLiteralNodeGen;
-import de.lucaswerkmeister.graaleneyj.nodes.ZFunctionCallNode;
+import de.lucaswerkmeister.graaleneyj.nodes.ZFunctionCallNodeGen;
 import de.lucaswerkmeister.graaleneyj.nodes.ZFunctionNode;
 import de.lucaswerkmeister.graaleneyj.nodes.ZIfNode;
 import de.lucaswerkmeister.graaleneyj.nodes.ZIfNodeFactory;
@@ -209,7 +209,7 @@ public class ZCanonicalJsonParser {
 			}
 			ret = new ZIfNode(arguments.get(1), arguments.get(2), arguments.get(3));
 		} else {
-			ret = new ZFunctionCallNode(function, arguments.values().toArray(new ZNode[arguments.size()]));
+			ret = ZFunctionCallNodeGen.create(function, arguments.values().toArray(new ZNode[arguments.size()]));
 		}
 		ret.setSourceSection(json.getSourceCharIndex(), json.getSourceLength());
 		return ret;
