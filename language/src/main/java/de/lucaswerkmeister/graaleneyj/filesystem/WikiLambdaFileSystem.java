@@ -23,7 +23,7 @@ import org.graalvm.polyglot.io.FileSystem;
 /**
  * A {@link FileSystem} which reads ZObjects from a wiki with the WikiLambda
  * extension installed. Only supports paths of the form
- * abstracttext/eneyj/data/Z123.json, and only support reading.
+ * abstracttext/eneyj/data/Z123.json, and only supports reading.
  */
 public class WikiLambdaFileSystem implements FileSystem {
 
