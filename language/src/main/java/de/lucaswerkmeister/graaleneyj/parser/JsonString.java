@@ -13,7 +13,7 @@ public class JsonString extends JsonElement {
 	}
 
 	@Override
-	public String getAsString() {
+	public String asString() {
 		return string;
 	}
 

@@ -91,7 +91,7 @@ public class ZCanonicalJsonParser {
 	}
 
 	public ZNode parseJsonObject(JsonObject json) {
-		String type = json.get(ZConstants.ZOBJECT_TYPE).getAsString(); // TODO error handling
+		String type = json.get(ZConstants.ZOBJECT_TYPE).asString(); // TODO error handling
 		switch (type) {
 		case ZConstants.PERSISTENTOBJECT:
 			return parseJsonObjectAsPersistentObject(json);
@@ -122,7 +122,7 @@ public class ZCanonicalJsonParser {
 	}
 
 	public ZNode parseJsonObjectAsPersistentObject(JsonObject json) {
-		String id = json.get(ZConstants.PERSISTENTOBJECT_ID).getAsString();
+		String id = json.get(ZConstants.PERSISTENTOBJECT_ID).asString();
 		ZNode value = parseJsonElement(json.get(ZConstants.PERSISTENTOBJECT_VALUE));
 		ZNode label = null;
 		if (json.keySet().contains(ZConstants.PERSISTENTOBJECT_LABEL)) {
@@ -134,7 +134,7 @@ public class ZCanonicalJsonParser {
 	}
 
 	public ZNode parseJsonObjectAsType(JsonObject json) {
-		String identity = json.get(ZConstants.TYPE_IDENTITY).getAsString();
+		String identity = json.get(ZConstants.TYPE_IDENTITY).asString();
 		ZTypeMemberNode[] members = new ZTypeMemberNode[json.size() - 2];
 		int i = 0;
 		for (Entry<String, JsonElement> entry : json.entrySet()) {
@@ -167,7 +167,7 @@ public class ZCanonicalJsonParser {
 			extraMembers[i] = new ZStringLiteralMemberNode(entry.getKey(), parseJsonElement(entry.getValue()));
 			i++;
 		}
-		ZNode ret = ZStringLiteralNodeGen.create(json.get(ZConstants.STRING_STRING_VALUE).getAsString(), extraMembers);
+		ZNode ret = ZStringLiteralNodeGen.create(json.get(ZConstants.STRING_STRING_VALUE).asString(), extraMembers);
 		ret.setSourceSection(json.getSourceCharIndex(), json.getSourceLength());
 		return ret;
 	}
@@ -216,16 +216,16 @@ public class ZCanonicalJsonParser {
 	}
 
 	public ZFunctionNode parseJsonObjectAsFunction(JsonObject json) {
-		String functionId = json.get(ZConstants.FUNCTION_IDENTITY).getAsString();
+		String functionId = json.get(ZConstants.FUNCTION_IDENTITY).asString();
 		JsonArray arguments = json.getAsJsonArray(ZConstants.FUNCTION_ARGUMENTS);
 		String[] argumentNames = new String[arguments.size()];
 		for (int i = 0; i < argumentNames.length; i++) {
-			argumentNames[i] = arguments.get(i).getAsJsonObject().get(ZConstants.PARAMETER_KEYID).getAsString();
+			argumentNames[i] = arguments.get(i).asJsonObject().get(ZConstants.PARAMETER_KEYID).asString();
 		}
 		JsonArray implementationJsons = json.getAsJsonArray(ZConstants.FUNCTION_IMPLEMENTATIONS);
 		ZImplementationNode[] implementationNodes = new ZImplementationNode[implementationJsons.size()];
 		for (int i = 0; i < implementationNodes.length; i++) {
-			implementationNodes[i] = parseJsonObjectAsImplementation(implementationJsons.get(i).getAsJsonObject(),
+			implementationNodes[i] = parseJsonObjectAsImplementation(implementationJsons.get(i).asJsonObject(),
 					functionId, argumentNames);
 		}
 		ZFunctionNode ret = new ZFunctionNode(implementationNodes, functionId);
@@ -245,7 +245,7 @@ public class ZCanonicalJsonParser {
 			ZRootNode rootNode = new ZRootNode(language, node, implementationSourceSection);
 			ret = new ZImplementationFunctioncallNode(rootNode, functionId);
 		} else if (json.keySet().contains(ZConstants.IMPLEMENTATION_BUILTIN)) {
-			String builtin = json.get(ZConstants.IMPLEMENTATION_IMPLEMENTS).getAsString();
+			String builtin = json.get(ZConstants.IMPLEMENTATION_IMPLEMENTS).asString();
 			switch (builtin) {
 			case ZConstants.IF:
 				// note: parseJsonObjectAsFunctionCall usually parses “if” calls specially, this
@@ -288,13 +288,13 @@ public class ZCanonicalJsonParser {
 			}
 		} else if (json.keySet().contains(ZConstants.IMPLEMENTATION_CODE)) {
 			JsonObject code = json.getAsJsonObject(ZConstants.IMPLEMENTATION_CODE);
-			String sourceLanguage = code.get(ZConstants.CODE_LANGUAGE).getAsString();
-			String source = code.get(ZConstants.CODE_SOURCE).getAsString();
+			String sourceLanguage = code.get(ZConstants.CODE_LANGUAGE).asString();
+			String source = code.get(ZConstants.CODE_SOURCE).asString();
 			ret = new ZImplementationCodeNode(language, sourceLanguage, source, functionId, argumentNames);
 		} else {
 			ZThrowConstantNode throwConstantNode = new ZThrowConstantNode(
 					new UnusableImplementationException("Neither function call nor builtin nor code: "
-							+ json.get(ZConstants.IMPLEMENTATION_IMPLEMENTS).getAsString()));
+							+ json.get(ZConstants.IMPLEMENTATION_IMPLEMENTS).asString()));
 			throwConstantNode.setSourceSection(json.getSourceCharIndex(), json.getSourceLength());
 			ret = new ZImplementationBuiltinNode(
 					new ZRootNode(language, throwConstantNode, implementationSourceSection), functionId);
@@ -343,7 +343,7 @@ public class ZCanonicalJsonParser {
 
 	public ZReferenceLiteralNode parseJsonObjectAsReference(JsonObject json) {
 		// TODO error handling, and check whether it’s okay to throw away all other keys
-		String id = json.get(ZConstants.REFERENCE_ID).getAsString();
+		String id = json.get(ZConstants.REFERENCE_ID).asString();
 		ZReferenceLiteralNode ret = ZReferenceLiteralNodeGen.create(id);
 		ret.setSourceSection(json.getSourceCharIndex(), json.getSourceLength());
 		return ret;
@@ -351,7 +351,7 @@ public class ZCanonicalJsonParser {
 
 	public ZReadArgumentNode parseJsonObjectAsArgumentReference(JsonObject json) {
 		// TODO is it safe to assume that ZwhateverKi is always the (i-1)th argument?
-		String reference = json.get(ZConstants.ARGUMENTREFERENCE_REFERENCE).getAsString();
+		String reference = json.get(ZConstants.ARGUMENTREFERENCE_REFERENCE).asString();
 		int index = Integer.parseInt(reference.substring(reference.indexOf('K') + 1));
 		ZReadArgumentNode ret = new ZReadArgumentNode(index - 1);
 		ret.setSourceSection(json.getSourceCharIndex(), json.getSourceLength());
@@ -370,7 +370,7 @@ public class ZCanonicalJsonParser {
 			i++;
 		}
 		ZCharacterLiteralNode ret = ZCharacterLiteralNodeGen
-				.create(json.get(ZConstants.CHARACTER_CHARACTER).getAsString(), extraMembers);
+				.create(json.get(ZConstants.CHARACTER_CHARACTER).asString(), extraMembers);
 		ret.setSourceSection(json.getSourceCharIndex(), json.getSourceLength());
 		return ret;
 	}

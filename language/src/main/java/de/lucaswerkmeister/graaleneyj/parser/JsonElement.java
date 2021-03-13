@@ -29,11 +29,11 @@ public abstract class JsonElement {
 		return sourceLength;
 	}
 
-	public JsonObject getAsJsonObject() {
+	public JsonObject asJsonObject() {
 		throw new IllegalStateException("not an object");
 	}
 
-	public String getAsString() {
+	public String asString() {
 		throw new IllegalStateException("not a string");
 	}
 

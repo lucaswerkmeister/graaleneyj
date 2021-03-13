@@ -58,7 +58,7 @@ public class JsonObject extends JsonElement {
 		return Collections.unmodifiableSet(elements.keySet());
 	}
 
-	public JsonObject getAsJsonObject() {
+	public JsonObject asJsonObject() {
 		return this;
 	}
 
