@@ -126,14 +126,14 @@ public abstract class ZAbstractNode extends Node {
 				} else {
 					ZCharacter ret = new ZCharacter(codePoint, context.getInitialZObjectShape());
 					for (Map.Entry<String, Object> entry : members.entrySet()) {
-						stringMembers.put(ret, entry.getKey(), entry.getValue());
+						characterMembers.put(ret, entry.getKey(), entry.getValue());
 					}
 					return ret;
 				}
 			}
 			ZPlainObject ret = new ZPlainObject(context.getInitialZObjectShape());
 			for (Map.Entry<String, Object> entry : members.entrySet()) {
-				stringMembers.put(ret, entry.getKey(), entry.getValue());
+				objectMembers.put(ret, entry.getKey(), entry.getValue());
 			}
 			return ret;
 		} catch (UnknownIdentifierException | UnsupportedMessageException e) {
