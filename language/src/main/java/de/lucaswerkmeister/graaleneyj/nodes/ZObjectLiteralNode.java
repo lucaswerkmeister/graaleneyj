@@ -1,9 +1,11 @@
 package de.lucaswerkmeister.graaleneyj.nodes;
 
+import com.oracle.truffle.api.CompilerAsserts;
 import com.oracle.truffle.api.dsl.CachedContext;
 import com.oracle.truffle.api.dsl.Specialization;
 import com.oracle.truffle.api.frame.VirtualFrame;
 import com.oracle.truffle.api.library.CachedLibrary;
+import com.oracle.truffle.api.nodes.ExplodeLoop;
 import com.oracle.truffle.api.nodes.Node;
 import com.oracle.truffle.api.object.DynamicObject;
 import com.oracle.truffle.api.object.DynamicObjectLibrary;
@@ -26,15 +28,17 @@ public abstract class ZObjectLiteralNode extends ZNode {
 	}
 
 	@Children
-	private ZObjectLiteralMemberNode[] members;
+	private final ZObjectLiteralMemberNode[] members;
 
 	public ZObjectLiteralNode(ZObjectLiteralMemberNode[] members) {
 		this.members = members;
 	}
 
+	@ExplodeLoop
 	@Specialization
 	public Object doGeneric(VirtualFrame virtualFrame, @CachedContext(ZLanguage.class) ZContext context,
 			@CachedLibrary(limit = "3") DynamicObjectLibrary putMember) {
+		CompilerAsserts.partialEvaluationConstant(members.length);
 		DynamicObject object = new ZPlainObject(context.getInitialZObjectShape());
 		for (ZObjectLiteralMemberNode member : members) {
 			putMember.put(object, member.key, member.value.execute(virtualFrame));
