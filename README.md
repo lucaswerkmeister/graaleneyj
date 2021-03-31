@@ -4,14 +4,34 @@ A **work in progress** [Abstract Wikipedia][] / [Wikifunctions][] evaluation eng
 
 It started out as an implementation of [eneyj][], an earlier version of the Wikifunctions model, hence the references to that name.
 
+## Setup
+
+Open a terminal and clone the repository, including Git submodules:
+
+```sh
+git clone --recurse-submodules https://github.com/lucaswerkmeister/graaleneyj.git
+```
+
+Ensure that the `JAVA_HOME` environment variable points to an installation of GraalVM 21.0.0, JDK11 version
+(on Arch Linux, use the [jdk11-graalvm-bin][] package):
+
+```sh
+export JAVA_HOME=/path/to/java-11-graalvm/
+# e.g. /usr/lib/jvm/java-11-graalvm/
+```
+
+Then, build GraalEneyj:
+
+```sh
+mvn package
+```
+
 ## Current status
 
 The `z` launcher script accepts a JSON value on standard input,
 tries to evaluate it, and prints the result.
 
 ```sh
-$ export JAVA_HOME=/path/to/java-11-graalvm/
-$ mvn package
 $ echo '"Hello, World!"' | ./z
 Hello, World!
 $ echo '{"Z1K1": "Z7", "Z7K1": "Z36", "K1": "Z28"}' | ./z
@@ -104,3 +124,4 @@ you agree to make your contribution available under this license.
 [Abstract Wikipedia]: https://meta.wikimedia.org/wiki/Special:MyLanguage/Abstract_Wikipedia
 [Wikifunctions]: https://meta.wikimedia.org/wiki/Special:MyLanguage/Wikifunctions
 [T275093]: https://phabricator.wikimedia.org/T275093
+[jdk11-graalvm-bin]: https://aur.archlinux.org/packages/jdk11-graalvm-bin/
