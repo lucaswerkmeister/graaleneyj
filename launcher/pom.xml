@@ -61,6 +61,11 @@
   </build>
   <dependencies>
     <dependency>
+      <groupId>de.lucaswerkmeister</groupId>
+      <artifactId>fs</artifactId>
+      <version>0.0.1-SNAPSHOT</version>
+    </dependency>
+    <dependency>
       <groupId>org.graalvm.sdk</groupId>
       <artifactId>graal-sdk</artifactId>
       <version>${graalvm.version}</version>

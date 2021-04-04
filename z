@@ -3,7 +3,7 @@
 java_options=(
     -Dtruffle.class.path.append=language/target/graaleneyj.jar
     -Dorg.graalvm.language.z.home="$PWD"
-    -cp launcher/target/launcher-0.0.1-SNAPSHOT.jar
+    -cp launcher/target/launcher-0.0.1-SNAPSHOT.jar:fs/target/fs-0.0.1-SNAPSHOT.jar
 )
 
 infile=/dev/stdin
@@ -17,18 +17,25 @@ for arg; do
                 -Dpolyglot.engine.TraceCompilation=true
                 -Dpolyglot.engine.TraceCompilationDetails=true
             )
+            shift
             ;;
         --enable-assertions)
-            java_options+=(-ea);;
+            java_options+=(-ea)
+            shift
+            ;;
+        --)
+            shift
+            break
+            ;;
         -)
-            infile=/dev/stdin
+            break
             ;;
         -*)
             printf >&2 '%s: unknown option: %s\n' "$0" "$arg"
             exit 1
             ;;
         *)
-            infile=$arg
+            break
             ;;
     esac
 done
@@ -37,4 +44,4 @@ exec \
     "${JAVA_HOME:?not set, must be set}/bin/java" \
     "${java_options[@]}" \
     de.lucaswerkmeister.graaleneyj.launcher.ZMain \
-    < "$infile"
+    "$@"
