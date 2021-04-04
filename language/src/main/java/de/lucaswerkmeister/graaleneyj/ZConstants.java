@@ -22,7 +22,6 @@ public final class ZConstants {
 	public static final String ARGUMENTREFERENCE = "Z18";
 	public static final String PAIR = "Z22";
 	public static final String NOTHING = "Z23";
-	public static final String IF = "Z31";
 	public static final String SAME = "Z33";
 	public static final String VALUE = "Z36";
 	public static final String REIFY = "Z37";
@@ -36,6 +35,7 @@ public final class ZConstants {
 	public static final String HEAD = "Z64";
 	public static final String TAIL = "Z65";
 	public static final String LISTISNIL = "Z441";
+	public static final String IF = "Z802";
 
 	public static final String ZOBJECT_TYPE = "Z1K1";
 	public static final String PERSISTENTOBJECT_ID = "Z2K1";

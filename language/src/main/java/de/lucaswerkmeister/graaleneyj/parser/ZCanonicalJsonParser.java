@@ -177,8 +177,8 @@ public class ZCanonicalJsonParser {
 	 * arguments) or local keys (positional arguments); additionally, the function
 	 * being called may be a reference to another function, and the global keys
 	 * might not use the function as the prefix (e. g. the function could be
-	 * Z104/if_boolean but the arguments would be Z31K1, Z31K2, Z31K3). We cope with
-	 * this by collecting all keys except Z1K* and Z7K* and asserting that they
+	 * Z104/if_boolean but the arguments would be Z802K1, Z802K2, Z802K3). We cope
+	 * with this by collecting all keys except Z1K* and Z7K* and asserting that they
 	 * share the same prefix and are contiguous.
 	 */
 	public ZNode parseJsonObjectAsFunctionCall(JsonObject json) {
