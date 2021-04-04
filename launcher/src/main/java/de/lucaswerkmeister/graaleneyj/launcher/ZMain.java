@@ -61,6 +61,10 @@ public final class ZMain {
 		Context context = contextBuilder.build();
 		try {
 			Value result = context.eval(source);
+			if (result.canExecute()) {
+				// assume it’s a reference (0-adic function) and resolve it
+				result = result.execute();
+			}
 			if (!result.isNull()) {
 				System.out.println(result);
 			}
