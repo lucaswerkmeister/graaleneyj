@@ -11,6 +11,7 @@
   </properties>
   <packaging>pom</packaging>
   <modules>
+    <module>fs</module>
     <module>language</module>
     <module>launcher</module>
   </modules>

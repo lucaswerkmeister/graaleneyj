@@ -134,6 +134,11 @@
     </build>
     <dependencies>
         <dependency>
+            <groupId>de.lucaswerkmeister</groupId>
+            <artifactId>fs</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
             <groupId>org.graalvm.truffle</groupId>
             <artifactId>truffle-api</artifactId>
             <version>${graalvm.version}</version>
