@@ -2,6 +2,7 @@ package de.lucaswerkmeister.graaleneyj.test;
 
 import static de.lucaswerkmeister.graaleneyj.test.ZAssert.assertZReference;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.nio.file.Path;
@@ -29,7 +30,8 @@ public class WikiLambdaTest {
 		WikiLambdaFileSystem wikiLambdaFileSystem = new WikiLambdaFileSystem("notwikilambda.toolforge.org");
 		Path z1Path = WikiLambdaFileSystem.zidToPath("Z1");
 		Path z28Path = WikiLambdaFileSystem.zidToPath("Z28");
-		UnionFileSystem fileSystem = new UnionFileSystem(Set.of(z1Path, z28Path), wikiLambdaFileSystem);
+		Path z777Path = WikiLambdaFileSystem.zidToPath("Z777");
+		UnionFileSystem fileSystem = new UnionFileSystem(Set.of(z1Path, z28Path, z777Path), wikiLambdaFileSystem);
 		context = Context.newBuilder() //
 				.allowIO(true) // needed for .fileSystem()
 				.fileSystem(fileSystem) //
@@ -67,6 +69,13 @@ public class WikiLambdaTest {
 		assertZReference("Z30", validator);
 		// TODO all of the above tests the inner object of the persistent object;
 		// test the label of the outer object somehow?
+	}
+
+	@Test
+	public void testPersistentFunctionCall() {
+		Value result = eval("\"Z777\"").execute();
+		assertTrue(result.isBoolean());
+		assertFalse(result.asBoolean());
 	}
 
 }
