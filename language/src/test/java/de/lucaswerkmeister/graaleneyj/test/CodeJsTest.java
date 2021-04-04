@@ -26,25 +26,25 @@ public class CodeJsTest extends ZTest {
 	@Test
 	public void testNandFalseFalse() {
 		assertEquals(true, eval("{\"Z1K1\": \"Z7\", \"Z7K1\": " + nandWithOnlyJsImplementation()
-				+ ", \"K1\": \"Z55\", \"K2\": \"Z55\"}").asBoolean());
+				+ ", \"K1\": \"Z42\", \"K2\": \"Z42\"}").asBoolean());
 	}
 
 	@Test
 	public void testNandFalseTrue() {
 		assertEquals(true, eval("{\"Z1K1\": \"Z7\", \"Z7K1\": " + nandWithOnlyJsImplementation()
-				+ ", \"K1\": \"Z55\", \"K2\": \"Z54\"}").asBoolean());
+				+ ", \"K1\": \"Z42\", \"K2\": \"Z41\"}").asBoolean());
 	}
 
 	@Test
 	public void testNandTrueFalse() {
 		assertEquals(true, eval("{\"Z1K1\": \"Z7\", \"Z7K1\": " + nandWithOnlyJsImplementation()
-				+ ", \"K1\": \"Z54\", \"K2\": \"Z55\"}").asBoolean());
+				+ ", \"K1\": \"Z41\", \"K2\": \"Z42\"}").asBoolean());
 	}
 
 	@Test
 	public void testNandTrueTrue() {
 		assertEquals(false, eval("{\"Z1K1\": \"Z7\", \"Z7K1\": " + nandWithOnlyJsImplementation()
-				+ ", \"K1\": \"Z54\", \"K2\": \"Z54\"}").asBoolean());
+				+ ", \"K1\": \"Z41\", \"K2\": \"Z41\"}").asBoolean());
 	}
 
 	private String negateWithOnlyJsImplementation() {
@@ -55,14 +55,14 @@ public class CodeJsTest extends ZTest {
 	@Test
 	public void testNegateTrue() {
 		assertEquals(false,
-				eval("{\"Z1K1\": \"Z7\", \"Z7K1\": " + negateWithOnlyJsImplementation() + ", \"K1\": \"Z54\"}")
+				eval("{\"Z1K1\": \"Z7\", \"Z7K1\": " + negateWithOnlyJsImplementation() + ", \"K1\": \"Z41\"}")
 						.asBoolean());
 	}
 
 	@Test
 	public void testNegateFalse() {
 		assertEquals(true,
-				eval("{\"Z1K1\": \"Z7\", \"Z7K1\": " + negateWithOnlyJsImplementation() + ", \"K1\": \"Z55\"}")
+				eval("{\"Z1K1\": \"Z7\", \"Z7K1\": " + negateWithOnlyJsImplementation() + ", \"K1\": \"Z42\"}")
 						.asBoolean());
 	}
 

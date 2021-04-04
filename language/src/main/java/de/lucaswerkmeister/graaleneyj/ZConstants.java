@@ -26,9 +26,9 @@ public final class ZConstants {
 	public static final String VALUE = "Z36";
 	public static final String REIFY = "Z37";
 	public static final String ABSTRACT = "Z38";
-	public static final String BOOLEAN = "Z50";
-	public static final String TRUE = "Z54";
-	public static final String FALSE = "Z55";
+	public static final String BOOLEAN = "Z40";
+	public static final String TRUE = "Z41";
+	public static final String FALSE = "Z42";
 	public static final String CHARACTER = "Z60";
 	public static final String CHARACTERTOSTRING = "Z61";
 	public static final String STRINGTOCHARACTERLIST = "Z62";
@@ -63,7 +63,7 @@ public final class ZConstants {
 	public static final String ARGUMENTREFERENCE_REFERENCE = "Z18K1";
 	public static final String PAIR_FIRST = "Z22K1";
 	public static final String PAIR_SECOND = "Z22K2";
-	public static final String BOOLEAN_IDENTITY = "Z50K1";
+	public static final String BOOLEAN_IDENTITY = "Z40K1";
 	public static final String CHARACTER_CHARACTER = "Z60K1";
 
 	private ZConstants() {

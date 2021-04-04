@@ -20,13 +20,13 @@ public class FunctioncallTest extends ZTest {
 	@Test
 	public void testIdentityOfTrue() {
 		assertEquals(true,
-				eval("{\"Z1K1\": \"Z7\", \"Z7K1\": " + booleanIdentityFunction() + ", \"K1\": \"Z54\"}").asBoolean());
+				eval("{\"Z1K1\": \"Z7\", \"Z7K1\": " + booleanIdentityFunction() + ", \"K1\": \"Z41\"}").asBoolean());
 	}
 
 	@Test
 	public void testIdentityOfFalse() {
 		assertEquals(false,
-				eval("{\"Z1K1\": \"Z7\", \"Z7K1\": " + booleanIdentityFunction() + ", \"K1\": \"Z55\"}").asBoolean());
+				eval("{\"Z1K1\": \"Z7\", \"Z7K1\": " + booleanIdentityFunction() + ", \"K1\": \"Z42\"}").asBoolean());
 	}
 
 	@Test
@@ -47,12 +47,12 @@ public class FunctioncallTest extends ZTest {
 
 	@Test
 	public void testNegateOfTrue() {
-		assertEquals(false, eval("{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z56\", \"K1\": \"Z54\"}").asBoolean());
+		assertEquals(false, eval("{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z56\", \"K1\": \"Z41\"}").asBoolean());
 	}
 
 	@Test
 	public void testNegateOfFalse() {
-		assertEquals(true, eval("{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z56\", \"K1\": \"Z55\"}").asBoolean());
+		assertEquals(true, eval("{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z56\", \"K1\": \"Z42\"}").asBoolean());
 	}
 
 }

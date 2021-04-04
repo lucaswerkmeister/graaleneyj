@@ -79,7 +79,7 @@ For example, a [`ZListLiteralNode`][] tree node is evaluated by evaluating its c
 then collecting them into a [`ZList`][] runtime value
 (a linked list ending with the `ZList.NIL` singleton).
 Note that not all runtime values are instances of our custom classes:
-for example, we map strings (`Z6`) and booleans (`Z54`, `Z55`) to the corresponding Java types.
+for example, we map strings (`Z6`) and booleans (`Z41`, `Z42`) to the corresponding Java types.
 
 GraalVM, then, is a special version of the Java Virtual Machine (JVM)
 which knows how to compile language implementations written in Truffle into high-performance native code.

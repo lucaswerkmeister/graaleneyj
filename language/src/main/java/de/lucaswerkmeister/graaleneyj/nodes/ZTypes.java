@@ -11,7 +11,7 @@ import de.lucaswerkmeister.graaleneyj.runtime.ZNothing;
 import de.lucaswerkmeister.graaleneyj.runtime.ZReference;
 
 @TypeSystem({
-		// Z50/boolean (Z54/true and Z55/false)
+		// Z40/boolean (Z41/true and Z42/false)
 		boolean.class,
 		// Z60/character (int, not char, to fully represent Unicode code points)
 		int.class,

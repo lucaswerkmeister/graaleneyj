@@ -40,7 +40,7 @@ public class ZTypeInteropTest extends ZTest {
 		Value functionType = eval("\"Z8\"").execute();
 		Value referenceType = eval("\"Z9\"").execute();
 		Value listType = eval("\"Z10\"").execute();
-		Value booleanType = eval("\"Z50\"").execute();
+		Value booleanType = eval("\"Z40\"").execute();
 		Value characterType = eval("\"Z60\"").execute();
 
 		Value nothing = eval("\"Z23\"");
@@ -50,8 +50,8 @@ public class ZTypeInteropTest extends ZTest {
 		Value projectNameReference = eval("\"Z28\"");
 		Value emptyList = eval("[]");
 		Value nonemptyList = eval("[\"element\"]");
-		Value trueValue = eval("\"Z54\"");
-		Value falseValue = eval("\"Z55\"");
+		Value trueValue = eval("\"Z41\"");
+		Value falseValue = eval("\"Z42\"");
 		Value unboxedCharacter = eval("{\"Z1K1\": \"Z60\", \"Z60K1\": \"a\"}");
 		Value boxedCharacter = eval("{\"Z1K1\": \"Z60\", \"Z1K2\": \"Z0\", \"Z60K1\": \"a\"}");
 

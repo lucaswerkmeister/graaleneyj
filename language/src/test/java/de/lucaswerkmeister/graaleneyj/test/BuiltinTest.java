@@ -40,13 +40,13 @@ public class BuiltinTest extends ZTest {
 
 	@Test
 	public void testValueOfBooleanLiteral() {
-		assertEquals(true, eval("{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z36\", \"K1\": \"Z54\"}").asBoolean());
+		assertEquals(true, eval("{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z36\", \"K1\": \"Z41\"}").asBoolean());
 	}
 
 	@Test
 	public void testValueOfBooleanObject() {
 		assertEquals(true,
-				eval("{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z36\", \"K1\": " + "{\"Z1K1\": \"Z50\", \"Z50K1\": \"Z54\"}" + "}")
+				eval("{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z36\", \"K1\": " + "{\"Z1K1\": \"Z40\", \"Z40K1\": \"Z41\"}" + "}")
 						.asBoolean());
 	}
 
@@ -199,25 +199,25 @@ public class BuiltinTest extends ZTest {
 
 	@Test
 	public void testSameTrueTrue() {
-		assertEquals(true, eval("{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z33\", \"K1\": \"Z54\", \"K2\": \"Z54\"}").asBoolean());
+		assertEquals(true, eval("{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z33\", \"K1\": \"Z41\", \"K2\": \"Z41\"}").asBoolean());
 	}
 
 	@Test
 	public void testSameTrueFalse() {
 		assertEquals(false,
-				eval("{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z33\", \"K1\": \"Z54\", \"K2\": \"Z55\"}").asBoolean());
+				eval("{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z33\", \"K1\": \"Z41\", \"K2\": \"Z42\"}").asBoolean());
 	}
 
 	@Test
 	public void testSameTrueString() {
 		assertEquals(false,
-				eval("{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z33\", \"K1\": \"Z54\", \"K2\": \"true\"}").asBoolean());
+				eval("{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z33\", \"K1\": \"Z41\", \"K2\": \"true\"}").asBoolean());
 	}
 
 	@Test
 	public void testSameTrueObjectTrue() {
-		assertEquals(true, eval("{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z33\", \"K1\": \"Z54\", \"K2\": "
-				+ "{\"Z1K1\": \"Z50\", \"Z50K1\": \"Z54\"}}").asBoolean());
+		assertEquals(true, eval("{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z33\", \"K1\": \"Z41\", \"K2\": "
+				+ "{\"Z1K1\": \"Z40\", \"Z40K1\": \"Z41\"}}").asBoolean());
 	}
 
 	@Test

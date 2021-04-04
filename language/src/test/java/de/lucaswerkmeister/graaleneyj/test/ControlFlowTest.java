@@ -9,26 +9,26 @@ public class ControlFlowTest extends ZTest {
 	@Test
 	public void testIfTrueConstant() {
 		assertEquals("then",
-				eval("{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z802\", \"K1\": \"Z54\", \"K2\": \"then\", \"K3\": \"else\"}")
+				eval("{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z802\", \"K1\": \"Z41\", \"K2\": \"then\", \"K3\": \"else\"}")
 						.asString());
 	}
 
 	@Test
 	public void testIfElseConstant() {
 		assertEquals("else",
-				eval("{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z802\", \"K1\": \"Z55\", \"K2\": \"then\", \"K3\": \"else\"}")
+				eval("{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z802\", \"K1\": \"Z42\", \"K2\": \"then\", \"K3\": \"else\"}")
 						.asString());
 	}
 
 	@Test
 	public void testIfNamedArguments() {
 		assertEquals("then", eval("{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z802\", "
-				+ "\"Z802K1\": \"Z54\", \"Z802K2\": \"then\", \"Z802K3\": \"else\"}").asString());
+				+ "\"Z802K1\": \"Z41\", \"Z802K2\": \"then\", \"Z802K3\": \"else\"}").asString());
 	}
 
 	@Test
 	public void testIfValueOfTrue() {
-		String condition = "{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z36\", \"K1\": \"Z54\"}";
+		String condition = "{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z36\", \"K1\": \"Z41\"}";
 		assertEquals("then", eval("{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z802\", " + "\"K1\": " + condition
 				+ ", \"K2\": \"then\", \"K3\": \"else\"}").asString());
 	}
@@ -37,7 +37,7 @@ public class ControlFlowTest extends ZTest {
 	public void testIfCalledIndirectly() {
 		String ifFunction = "{\"Z1K1\": \"Z7\", \"Z7K1\": \"Z36\", \"K1\": \"Z802\"}";
 		assertEquals("then", eval(
-				"{\"Z1K1\": \"Z7\", \"Z7K1\": " + ifFunction + ", \"K1\": \"Z54\", \"K2\": \"then\", \"K3\": \"else\"}")
+				"{\"Z1K1\": \"Z7\", \"Z7K1\": " + ifFunction + ", \"K1\": \"Z41\", \"K2\": \"then\", \"K3\": \"else\"}")
 						.asString());
 	}
 

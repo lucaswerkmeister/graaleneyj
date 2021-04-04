@@ -21,7 +21,7 @@ import de.lucaswerkmeister.graaleneyj.runtime.ZReference;
  * </p>
  * TODO:
  * <ul>
- * <li>Handle other specially handled types – Z50/boolean, Z23/nothing, etc.
+ * <li>Handle other specially handled types – Z40/boolean, Z23/nothing, etc.
  * </ul>
  */
 @NodeInfo(shortName = "reify")
