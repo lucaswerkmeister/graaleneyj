@@ -38,7 +38,10 @@ public abstract class ZObjectLiteralNode extends ZNode {
 	@ExplodeLoop
 	@Specialization
 	public Object doGeneric(VirtualFrame virtualFrame, @CachedContext(ZLanguage.class) ZContext context,
-			@CachedLibrary(limit = "3") DynamicObjectLibrary putMember, @Cached("create()") ZTypeCheckNode typeCheck) {
+			@CachedLibrary(limit = "3") DynamicObjectLibrary putMember,
+			@CachedLibrary(limit = "1") DynamicObjectLibrary getType,
+			@CachedLibrary(limit = "1") DynamicObjectLibrary getIdentity,
+			@Cached("create()") ZTypeCheckNode typeCheck) {
 		CompilerAsserts.partialEvaluationConstant(members.length);
 		DynamicObject object = new ZPlainObject(context.getInitialZObjectShape());
 		for (ZObjectLiteralMemberNode member : members) {

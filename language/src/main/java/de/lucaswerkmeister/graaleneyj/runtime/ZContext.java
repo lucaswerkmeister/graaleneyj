@@ -62,8 +62,10 @@ public final class ZContext {
 	 * </p>
 	 * <p>
 	 * The registry is a dynamic object storing the persistent objects, using their
-	 * ID as the key. Any key may change state exactly once, from unassigned to
-	 * assigned; afterwards, it may never change again, nor may it be deleted.
+	 * ID as the key. Any key changes state exactly twice: from not present to null,
+	 * to indicate that the object is currently being created, and then from null to
+	 * non-null, representing its actual value. Afterwards, the key may never change
+	 * again, nor may it be deleted.
 	 * </p>
 	 * <p>
 	 * Writes to the registry must be guarded by

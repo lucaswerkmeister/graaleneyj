@@ -65,23 +65,59 @@ public class ZReference extends ZObject {
 		protected static Object generic(ZReference reference, Object[] arguments,
 				@CachedContext(ZLanguage.class) ZContext context,
 				@CachedLibrary("context.getPersistentObjectRegistry()") DynamicObjectLibrary objects) {
+			// Check if the value already exists. This is the only part that makes it into
+			// compiled code.
 			DynamicObject persistentObjectRegistry = context.getPersistentObjectRegistry();
 			if (objects.containsKey(persistentObjectRegistry, reference.id)) {
-				return objects.getOrDefault(persistentObjectRegistry, reference.id, null);
+				Object value = objects.getOrDefault(persistentObjectRegistry, reference.id, null);
+				if (value != null) {
+					return value;
+				} else {
+					// We were already trying to evaluate the reference, which is why it’s present,
+					// but set to {@code null}, in the registry. Since we’re now trying to evaluate
+					// it again, there must be a cycle – abort.
+					throw new CyclicValueException();
+				}
 			}
 
+			// We were unable to load an already-evaluated value. This is the slow path.
 			CompilerDirectives.transferToInterpreterAndInvalidate();
+
+			// Set the ID to null in the persistent object registry, to mark that we’re now
+			// trying to evaluate it, making it possible to detect cycles. Since this is a
+			// modification to the registry, it must happen under lock. Additionally,
+			// because the earlier check was not guarded by the lock, it’s possible that the
+			// ID now exists in the registry, so we also repeat the whole check above.
+			Lock persistentObjectRegistryLock = context.getPersistentObjectRegistryLock();
+			persistentObjectRegistryLock.lock();
+			try {
+				if (objects.containsKey(persistentObjectRegistry, reference.id)) {
+					Object value = objects.getOrDefault(persistentObjectRegistry, reference.id, null);
+					if (value != null) {
+						return value;
+					} else {
+						throw new CyclicValueException();
+					}
+				}
+				objects.put(persistentObjectRegistry, reference.id, null);
+			} finally {
+				// Release the lock, since the next part (evaluating the value) is slow.
+				persistentObjectRegistryLock.unlock();
+			}
+
+			// The value really doesn’t exist yet. Load its source and evaluate it.
 			Source source;
 			try {
 				source = Source.newBuilder(ZLanguage.ID, context.getTruffleFile(reference.id)).build();
 				CallTarget callTarget = context.parse(source);
 				Object value = callTarget.call();
-				Lock persistentObjectRegistryLock = context.getPersistentObjectRegistryLock();
+				// We have the value, let’s put it in the persistent object registry.
 				persistentObjectRegistryLock.lock();
 				try {
-					if (objects.containsKey(persistentObjectRegistry, reference.id)) {
-						value = objects.getOrDefault(persistentObjectRegistry, reference.id, null);
-						assert value != null : "persistent object existed in if condition";
+					Object storedValue = objects.getOrDefault(persistentObjectRegistry, reference.id, null);
+					if (storedValue != null) {
+						// Another thread beat us to it. Discard our value.
+						value = storedValue;
 					} else {
 						objects.put(persistentObjectRegistry, reference.id, value);
 					}
