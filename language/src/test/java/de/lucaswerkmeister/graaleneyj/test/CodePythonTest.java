@@ -7,10 +7,12 @@ import org.graalvm.polyglot.Context;
 import org.graalvm.polyglot.PolyglotAccess;
 import org.graalvm.polyglot.Source;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import de.lucaswerkmeister.graaleneyj.ZLanguage;
 
+@Ignore("Python support broken in GraalVM 21.1.0, see https://github.com/oracle/graal/issues/3372")
 public class CodePythonTest extends ZTest {
 
 	@Before
