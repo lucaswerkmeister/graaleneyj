@@ -12,7 +12,7 @@ Open a terminal and clone the repository, including Git submodules:
 git clone --recurse-submodules https://github.com/lucaswerkmeister/graaleneyj.git
 ```
 
-Ensure that the `JAVA_HOME` environment variable points to an installation of GraalVM 21.1.0, JDK11 version
+Ensure that the `JAVA_HOME` environment variable points to an installation of GraalVM 21.2.0, JDK11 version
 (on Arch Linux, use the [jdk11-graalvm-bin][] package):
 
 ```sh
@@ -65,7 +65,8 @@ None
 
 I have also briefly, but successfully, tested the same flags with the FastR, TruffleRuby and GraalJS (Node.js) launchers.
 
-As of GraalVM 21.1.0, implementations in Python are broken (see [oracle/graal#3372][]).
+Since GraalVM 21.1.0 and continuing as of GraalVM 21.2.0,
+implementations in Python are broken (see [oracle/graal#3372][]).
 
 ## High-level overview
 

@@ -15,14 +15,14 @@
             </activation>
             <properties>
                 <jar.dir>${project.build.directory}/jars</jar.dir>
-                <test.argLine>--upgrade-module-path='${jar.dir}/truffle-api.jar' --add-opens org.graalvm.sdk/org.graalvm.polyglot=ALL-UNNAMED --add-exports java.base/jdk.internal.module=ALL-UNNAMED -Dorg.graalvm.language.z.home=${project.basedir}</test.argLine>
+                <test.argLine>--upgrade-module-path='${jar.dir}/truffle-api.jar:${jar.dir}/graal-sdk.jar' --add-opens org.graalvm.sdk/org.graalvm.polyglot=ALL-UNNAMED --add-exports java.base/jdk.internal.module=ALL-UNNAMED -Dorg.graalvm.language.z.home=${project.basedir}</test.argLine>
             </properties>
             <build>
                 <plugins>
                     <plugin>
                         <groupId>org.antlr</groupId>
                         <artifactId>antlr4-maven-plugin</artifactId>
-                        <version>4.7.2</version>
+                        <version>4.9.2</version>
                         <executions>
                             <execution>
                                 <id>antlr</id>
@@ -52,6 +52,14 @@
                                             <type>jar</type>
                                             <overWrite>true</overWrite>
                                             <destFileName>truffle-api.jar</destFileName>
+                                        </artifactItem>
+                                        <artifactItem>
+                                            <groupId>org.graalvm.sdk</groupId>
+                                            <artifactId>graal-sdk</artifactId>
+                                            <version>${graalvm.version}</version>
+                                            <type>jar</type>
+                                            <overWrite>true</overWrite>
+                                            <destFileName>graal-sdk.jar</destFileName>
                                         </artifactItem>
                                     </artifactItems>
                                     <outputDirectory>${jar.dir}</outputDirectory>

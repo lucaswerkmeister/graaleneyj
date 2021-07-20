@@ -12,7 +12,7 @@ import org.junit.Test;
 
 import de.lucaswerkmeister.graaleneyj.ZLanguage;
 
-@Ignore("Python support broken in GraalVM 21.1.0, see https://github.com/oracle/graal/issues/3372")
+@Ignore("Python support broken since GraalVM 21.1.0, see https://github.com/oracle/graal/issues/3372")
 public class CodePythonTest extends ZTest {
 
 	@Before
