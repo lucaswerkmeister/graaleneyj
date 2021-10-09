@@ -6,6 +6,7 @@ import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
 import java.nio.channels.SeekableByteChannel;
+import java.nio.charset.Charset;
 import java.nio.file.AccessMode;
 import java.nio.file.DirectoryStream;
 import java.nio.file.DirectoryStream.Filter;
@@ -18,7 +19,15 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+
 import org.graalvm.polyglot.io.FileSystem;
+import org.w3c.dom.Document;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
+import org.xml.sax.SAXException;
 
 /**
  * A {@link FileSystem} which reads ZObjects from a wiki with the WikiLambda
@@ -28,6 +37,7 @@ import org.graalvm.polyglot.io.FileSystem;
 public class WikiLambdaFileSystem implements FileSystem {
 
 	private static final Pattern PATH_PATTERN = Pattern.compile("^abstracttext/eneyj/data/(Z[1-9][0-9]*).json$");
+	private static final Charset UTF8 = Charset.forName("UTF-8");
 
 	private final String protocol;
 	private final String host;
@@ -89,18 +99,40 @@ public class WikiLambdaFileSystem implements FileSystem {
 			throw new IOException("Path does not match expected pattern");
 		}
 		String zid = matcher.group(1);
-		URL url = new URL(protocol, host,
-				scriptPath + "/index.php?action=raw&ctype=application/json&title=ZObject:" + zid);
+		URL url = new URL(protocol, host, scriptPath + "/api.php?action=wikilambda_fetch&format=xml&zids=" + zid);
 		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 		InputStream inputStream = connection.getInputStream();
 		if (connection.getResponseCode() != 200) {
 			throw new IOException("Bad response for " + zid + ": " + connection.getResponseCode());
 		}
-		byte[] bytes = inputStream.readAllBytes();
-		if (bytes.length == 0) {
-			throw new IOException("Empty response for " + zid);
+		Document document;
+		try {
+			document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(inputStream);
+		} catch (SAXException | IOException | ParserConfigurationException e) {
+			throw new IOException("Error parsing XML API response", e);
 		}
-		return new ByteArraySeekableByteChannel(bytes);
+		Node child = document.getDocumentElement().getFirstChild();
+		NamedNodeMap attributes = child.getAttributes();
+		if (child.getNodeName().equals("error")) {
+			String message = "API returned error";
+			Node codeAttribute = attributes.getNamedItem("code");
+			if (codeAttribute != null) {
+				message += ", code `" + codeAttribute.getNodeValue() + "`";
+			}
+			Node infoAttribute = attributes.getNamedItem("info");
+			if (infoAttribute != null) {
+				message += ", info \"" + infoAttribute.getNodeValue() + "\"";
+			}
+			message += ", contents: " + child.getTextContent();
+			throw new IOException(message);
+		} else if (!child.getNodeName().equals(zid)) {
+			throw new IOException("Expected API response for " + zid + " but got " + child.getNodeName());
+		}
+		Node fetchAttribute = attributes.getNamedItem("wikilambda_fetch");
+		if (fetchAttribute == null) {
+			throw new IOException("Response element for " + zid + " had no wikilambda_fetch attribute");
+		}
+		return new ByteArraySeekableByteChannel(fetchAttribute.getNodeValue().getBytes(UTF8));
 	}
 
 	@Override
