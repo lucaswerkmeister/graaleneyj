@@ -66,7 +66,7 @@ public class WikiLambdaTest {
 		assertZReference("Z3", typeKey.getMember("Z1K1"));
 		// no further assertions on the typeKey for now
 		Value validator = ztype.getMember("Z4K3");
-		assertZReference("Z30", validator);
+		assertZReference("Z101", validator);
 		// TODO all of the above tests the inner object of the persistent object;
 		// test the label of the outer object somehow?
 	}
