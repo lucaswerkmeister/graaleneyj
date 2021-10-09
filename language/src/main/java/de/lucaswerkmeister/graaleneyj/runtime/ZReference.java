@@ -96,7 +96,7 @@ public class ZReference extends ZObject {
 
 		@Specialization(guards = { "arguments.length > 0" })
 		protected static Object wrongArity(ZReference reference, Object[] arguments) throws ArityException {
-			throw ArityException.create(0, arguments.length);
+			throw ArityException.create(0, 0, arguments.length);
 		}
 	}
 
